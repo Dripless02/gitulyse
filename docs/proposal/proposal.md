@@ -45,11 +45,16 @@
 
 ### Achievements
 
-> What functions will the project provide? Who will the users be?
+<!-- > What functions will the project provide? Who will the users be? -->
+The project will provide users with the ability to get more insight into what either their or another users contributions are to GitHub repositories. Users will also be able to produce a report of the contributions that can be used as a virtual GitHub CV or be used by employers to get a quick rundown of a candidate's contributions on GitHub.
+
+The userbase for this project is very large, it can be used by management for insights on employees, it can be used by employers for insights on candidates and it can be used by personal users.
+
 
 ### Justification
 
-> Why/when/where/how will it be useful?
+<!-- > Why/when/where/how will it be useful? -->
+This project can be useful to many different users. From a management perspective it can be used to look at an employees contributions for more insight on the work that the employee is doing. It can be used by an employer to look at a prospective candidate's open source contributions and gain greater insights into how the candidate works. And finally it can be used by personal users to either check their own or another person's contributions to repos and see how much work has been done in multiple timespans.
 
 ### Programming language(s)
 
@@ -61,7 +66,7 @@
 
 ### Hardware
 
-> Describe any non-standard hardware components which will be required.
+N/A
 
 ### Learning Challenges
 
@@ -92,4 +97,3 @@
 <p align="center">
   <img src="./res/cat.png" width="300px">
 </p>
-
