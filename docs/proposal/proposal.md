@@ -33,7 +33,7 @@
 
 ### Introduction
 
-The project is a code reporting/summarizing tool which uses git functions such as "git webhooks" to parse information and metrics to a webapp/dashboard. The webapp/dashboard will display the information in a user friendly way. The project will be written in Python and will use the Flask framework. The project will be useful for persons who want to see the progress of contributors to a git repository.
+The project is a code reporting/summarizing tool which uses git functions such as "git webhooks" to parse information and metrics to a webapp/dashboard. The webapp/dashboard will display the information in a user friendly way. The project will be written in ___. The project will be useful for persons who want to see the progress of contributors to a git repository.
 
 ### Outline
 
