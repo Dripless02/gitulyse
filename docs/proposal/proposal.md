@@ -33,15 +33,15 @@
 
 ### Introduction
 
-> Describe the general area covered by the project.
+The project is a code reporting/summarizing tool which uses git functions such as "git webhooks", and the github api to parse information and metrics to a webapp/dashboard. The webapp/dashboard will display the information in a user friendly way. The project will be written in ___. The project will be useful for persons who want to see the progress of contributors to a git repository.
 
 ### Outline
 
-> Outline the proposed project.
+The project will be a webapp/dashboard that will display information about a git repository. The information will parsed from git commits and will be display useful metrics such as the rate of contribution over time, deployment frequency, and change faliure rate, in a user friendly way as it is targeted to users who might not necessarily have an extensive programming background. The project will be written in ____. The project will be useful for persons who want to see the progress of contributors to a git repository.
 
 ### Background
 
-> Where did the ideas come from?
+The project idea came from the need of people in management postions to constantly monitor the progress of programmers in their team. During our INTRA placements we were constantly required to give updates on our progress and this was done by sending screenshots of our git commits and updating a seemingly never ending google sheet. This was not a very efficient way of displaying information as with bigger projects the spreadsheets could be quite daunting. So with this issue in mind we decided to create a tool that would automate this process to a certain degeree and display information in a more consise and user friendly manner. Other use cases that arose from this idea came from the fact that a user might want to track their own progress and have it up as a virtual portfolio.
 
 ### Achievements
 
