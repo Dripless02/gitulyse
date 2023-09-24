@@ -95,13 +95,3 @@ N/A
 #### Student 2
 
 > *Student 2 should complete this section.*
-
-## Example
-
-> Example: Here's how you can include images in markdown documents...
-
-<!-- Basically, just use HTML! -->
-
-<p align="center">
-  <img src="./res/cat.png" width="300px">
-</p>
