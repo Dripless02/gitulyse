@@ -9,12 +9,12 @@
 
 |                     |                   |
 |---------------------|-------------------|
-|Project Title:       | xxxxxx            |
-|Student 1 Name:      | xxxxxx            |
-|Student 1 ID:        | xxxxxx            |
-|Student 2 Name:      | xxxxxx            |
-|Student 2 ID:        | xxxxxx            |
-|Project Supervisor:  | xxxxxx            |
+|Project Title:       | Gitulyse          |
+|Student 1 Name:      | Adrian Irwin      |
+|Student 1 ID:        | 20415624          |
+|Student 2 Name:      | Afolabi Fatogun   |
+|Student 2 ID:        | 20409054          |
+|Project Supervisor:  | Stephen Blott     |
 
 > Ensure that the Supervisor formally agrees to supervise your project; this is only recognised once the
 > Supervisor assigns herself/himself via the project Dashboard.
