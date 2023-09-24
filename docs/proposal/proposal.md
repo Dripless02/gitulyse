@@ -33,11 +33,11 @@
 
 ### Introduction
 
-The project is a code reporting/summarizing tool which uses git functions such as "git webhooks", and the github api to parse information and metrics to a webapp/dashboard. The webapp/dashboard will display the information in a user friendly way. The project will be written in ___. The project will be useful for persons who want to see the progress of contributors to a git repository.
+The project is a code reporting/summarizing tool which uses git functions such as "git webhooks", and the github api to parse information and metrics to a webapp/dashboard. The webapp/dashboard will display the information in a user friendly way. The project will be written in JavaScript and Python. The project will be useful for persons who want to see the progress of contributors to a git repository.
 
 ### Outline
 
-The project will be a webapp/dashboard that will display information about a git repository. The information will parsed from git commits and will be display useful metrics such as the rate of contribution over time, deployment frequency, and change faliure rate, in a user friendly way as it is targeted to users who might not necessarily have an extensive programming background. The project will be written in ____. The project will be useful for persons who want to see the progress of contributors to a git repository.
+The project will be a webapp/dashboard that will display information about a git repository. The information will parsed from git commits and will be display useful metrics such as the rate of contribution over time, deployment frequency, and change faliure rate, in a user friendly way as it is targeted to users who might not necessarily have an extensive programming background. The project will be written in JavaScript and Python. The project will be useful for persons who want to see the progress of contributors to a git repository.
 
 ### Background
 
@@ -58,11 +58,15 @@ This project can be useful to many different users. From a management perspectiv
 
 ### Programming language(s)
 
-> List the proposed language(s) to be used.
+<!-- > List the proposed language(s) to be used. -->
+
+For our frontend we will be using JavaScript, and for the backend we will be using Python.
 
 ### Programming tools / Tech stack
 
-> Describe the compiler, database, web server, etc., and any other software tools you plan to use.
+<!-- > Describe the compiler, database, web server, etc., and any other software tools you plan to use. -->
+
+For the frontend we will be using the React library. On the backend side we will be using Flask to create our REST API. The database we will be using is SQLite, this will making it easier for us to test the database locally, this could change in the long run to something like MySQL or PostgreSQL.
 
 ### Hardware
 
@@ -70,7 +74,11 @@ N/A
 
 ### Learning Challenges
 
-> List the main new things (technologies, languages, tools, etc) that you will have to learn.
+<!-- > List the main new things (technologies, languages, tools, etc) that you will have to learn. -->
+
+- Interaction with the GitHub API and parsing the data from it.
+- Creating a backend using Flask in Python.
+- Connecting our application to a SQLite database.
 
 ### Breakdown of work
 
