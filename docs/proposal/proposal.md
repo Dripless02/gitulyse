@@ -1,9 +1,9 @@
 # School of Computing &mdash; Year 4 Project Proposal Form
 
-> Edit (then commit and push) this document to complete your proposal form.
+<!-- > Edit (then commit and push) this document to complete your proposal form.
 > Make use of figures / diagrams where appropriate.
 >
-> Do not rename this file.
+> Do not rename this file. -->
 
 ## SECTION A
 
@@ -16,19 +16,19 @@
 |Student 2 ID:        | 20409054          |
 |Project Supervisor:  | Stephen Blott     |
 
-> Ensure that the Supervisor formally agrees to supervise your project; this is only recognised once the
+<!-- > Ensure that the Supervisor formally agrees to supervise your project; this is only recognised once the
 > Supervisor assigns herself/himself via the project Dashboard.
 >
 > Project proposals without an assigned
-> Supervisor will not be accepted for presentation to the Approval Panel.
+> Supervisor will not be accepted for presentation to the Approval Panel. -->
 
 ## SECTION B
 
-> Guidance: This document is expected to be approximately 3 pages in length, but it can exceed this page limit.
+<!-- > Guidance: This document is expected to be approximately 3 pages in length, but it can exceed this page limit.
 > It is also permissible to carry forward content from this proposal to your later documents (e.g. functional
 > specification) as appropriate.
 >
-> Your proposal must include *at least* the following sections.
+> Your proposal must include *at least* the following sections. -->
 
 
 ### Introduction
@@ -60,7 +60,8 @@ This project can be useful to many different users. From a management perspectiv
 
 <!-- > List the proposed language(s) to be used. -->
 
-For our frontend we will be using JavaScript, and for the backend we will be using Python.
+For our frontend we will be using JavaScript.  
+For the backend we will be using Python.
 
 ### Programming tools / Tech stack
 
@@ -82,16 +83,26 @@ N/A
 
 ### Breakdown of work
 
-> Clearly identify who will undertake which parts of the project.
+<!-- > Clearly identify who will undertake which parts of the project.
 >
 > It must be clear from the explanation of this breakdown of work both that each student is responsible for
 > separate, clearly-defined tasks, and that those responsibilities substantially cover all of the work required
-> for the project.
+> for the project. -->
 
 #### Student 1
 
-> *Student 1 should complete this section.*
+<!-- > *Student 1 should complete this section.* -->
+
+- Flask API Design and Development (Backend)
+- GitHub API Integration
+- Data Storage and Management
+- User Testing
 
 #### Student 2
 
-> *Student 2 should complete this section.*
+<!-- > *Student 2 should complete this section.* -->
+
+- React Development (Frontend)
+- User Interface Design
+- Frontend and Backend Testing
+- Authentication
