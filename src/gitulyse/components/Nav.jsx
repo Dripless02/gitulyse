@@ -2,9 +2,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import {useState, useEffect} from 'react';
-// import {signIn, signOut, useSession, getproviders} from 'next-auth/react';
+import {signIn, signOut, useSession, getproviders} from 'next-auth/react';
 
 const Nav = () => {
+    const isUserLoggedIn = true;
   return (
     <nav className='flex-between w-full mb-15 pt-3'>
         <Link href="/" className='flex gap-2 flex-center'>
@@ -17,7 +18,22 @@ const Nav = () => {
 
         </Link>
         <div className='sm:flex hidden'>
+            {isUserLoggedIn ? (
+                <div className = "flex gap-3 md:gap-5">
+                    <Link href="/search" className='black_btn'>
+                        <p className='nav_text'> Search </p>
+                    </Link>
 
+                    <button type='button' onClick={signOut} className='outline_btn'>Sign Out</button>
+
+
+
+                </div>
+            ): (
+                <>
+
+                </>
+            )}
         </div>
 
     </nav>
