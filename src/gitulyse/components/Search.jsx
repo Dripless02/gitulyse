@@ -1,9 +1,9 @@
 import React from 'react'
 
-const Feed = () => {
+const Search = () => {
   return (
-    <div>Feed</div>
+    <div>Search</div>
   )
 }
 
-export default Feed
+export default Search
