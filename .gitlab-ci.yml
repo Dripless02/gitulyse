@@ -12,12 +12,17 @@ test-job:
 
 build-job:
   stage: build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   script:
     - echo "Compiling the code..."
     - echo "Compile complete."
 
 deploy-job:
   stage: deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   script:
     - echo "Deploying application..."
     - echo "Application successfully deployed."
