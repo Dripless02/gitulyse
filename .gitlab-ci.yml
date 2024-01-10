@@ -1,0 +1,23 @@
+stages:
+  - test
+  - build
+  - deploy
+
+test-job:
+  stage: test
+  script:
+    - echo "Running tests... This will take about 60 seconds."
+    - sleep 60
+    - echo "Tests complete."
+
+build-job:
+  stage: build
+  script:
+    - echo "Compiling the code..."
+    - echo "Compile complete."
+
+deploy-job:
+  stage: deploy
+  script:
+    - echo "Deploying application..."
+    - echo "Application successfully deployed."
