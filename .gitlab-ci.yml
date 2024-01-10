@@ -3,8 +3,14 @@ stages:
   - build
   - deploy
 
+.standard-rules:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
 test-job:
   stage: test
+  extends: .standard-rules
   script:
     - echo "Running tests... This will take about 60 seconds."
     - sleep 60
@@ -12,9 +18,7 @@ test-job:
 
 build-job:
   stage: build
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  extends: .standard-rules
   script:
     - echo "Compiling the code..."
     - echo "Compile complete."
