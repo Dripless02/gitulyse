@@ -22,9 +22,6 @@ const Nav = () => {
             <div className="sm:flex hidden">
                 {session ? (
                     <div className="flex gap-3 md:gap-5">
-                        <Link href="/search" className="black_btn">
-                            <p className="nav_text"> Search </p>
-                        </Link>
                         <button
                             type="button"
                             onClick={() => signOut()}

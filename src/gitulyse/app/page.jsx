@@ -1,5 +1,5 @@
 import React from 'react'
-
+import Search from '@components/Search';
 
 const Home = () => {
   return (
@@ -9,6 +9,7 @@ const Home = () => {
         <br className='max-md: hidden' />
         <span className='blue_gradient'> Code Summarization and Reporting Tool</span>
       </h1>
+      <Search/>
     </section>
   )
 }
