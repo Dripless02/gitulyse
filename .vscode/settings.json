@@ -1,0 +1,5 @@
+{
+    "eslint.options": {
+        "overrideConfigFile": "./src/gitulyse/vscode.eslintrc.json"
+    }
+}

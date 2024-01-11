@@ -3,17 +3,33 @@ stages:
   - build
   - deploy
 
+default:
+  image: node
+
 .standard-rules:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+frontend-lint:
+  stage: test
+  extends: .standard-rules
+  before_script:
+    - echo "Installing dependencies..."
+    - cd src/gitulyse
+    - npm i
+    - echo "Dependencies installed."
+  script:
+    - echo "Running eslint..."
+    - npm run lint
+    - echo "Eslint complete."
 
 test-job:
   stage: test
   extends: .standard-rules
   script:
     - echo "Running tests... This will take about 60 seconds."
-    - sleep 60
+    - sleep 10
     - echo "Tests complete."
 
 build-job:
