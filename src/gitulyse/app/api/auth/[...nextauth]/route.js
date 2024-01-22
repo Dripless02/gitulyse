@@ -22,6 +22,8 @@ export const authOptions = {
                     access_token: user.account.access_token,
                 }),
             });
+
+            return true;
         },
     },
 };
