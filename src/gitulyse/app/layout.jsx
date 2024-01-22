@@ -19,7 +19,7 @@ async function Rootlayout({ children }) {
       </head>
       <body>
         <SessionProvider session={session}>
-          <MantineProvider>
+          <MantineProvider defaultColorScheme="dark" >
             <div className="app">
               <Nav />
               {children}
