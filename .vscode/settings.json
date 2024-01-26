@@ -1,5 +1,8 @@
 {
     "eslint.options": {
         "overrideConfigFile": "./src/gitulyse/vscode.eslintrc.json"
-    }
+    },
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    },
 }
