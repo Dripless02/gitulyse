@@ -1,7 +1,7 @@
 import NextAuth from "next-auth/next";
 import GitHubProvider from "next-auth/providers/github";
 
-const BACKEND_URL = process.env.BACKEND_URL;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
 export const authOptions = {
     providers: [
@@ -17,7 +17,7 @@ export const authOptions = {
     callbacks: {
         // send access token to the backend
         async signIn(user, access, profile) {
-            fetch(`${BACKEND_URL}/github/callback`, {
+            fetch(`${BACKEND_URL}/github-token`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
