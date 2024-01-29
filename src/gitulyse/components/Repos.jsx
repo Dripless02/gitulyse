@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 const Repos = () => {
     const [userAccessToken, setUserAccessToken] = useState("");
     const [repos, setRepos] = useState([]);
-    const { data: session, authenticated } = useSession();
+    const { data: session } = useSession();
 
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -18,7 +18,9 @@ const Repos = () => {
             }
         }
 
-        getInfo();
+        getInfo().catch((err) => {
+            console.error(err);
+        });
     }, []);
 
     useEffect(() => {
@@ -32,21 +34,14 @@ const Repos = () => {
     }, [userAccessToken]);
 
     return (
-        <>
-            {session ? (
-                <div className="w-full flex-center flex-col">
-                    {authenticated}
-                    <p className="text-center text-xl py-4">Repos Owned by {session.user.name}</p>
-                    <ul>
-                        {repos.map((repo) => (
-                            <li key={repo}>{repo}</li>
-                        ))}
-                    </ul>
-                </div>
-            ) : (
-                <></>
-            )}
-        </>
+        <div className="w-full flex-center flex-col">
+            <p className="text-center text-xl py-4">Repos Owned by {session.user.name}</p>
+            <ul>
+                {repos.map((repo) => (
+                    <li key={repo}>{repo}</li>
+                ))}
+            </ul>
+        </div>
     );
 };
 
