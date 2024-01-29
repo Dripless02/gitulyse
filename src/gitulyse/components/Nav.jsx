@@ -1,11 +1,10 @@
 "use client";
-import Link from "next/link";
-import Image from "next/image";
 import { signIn, signOut, useSession } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
 
 const Nav = () => {
     const { data: session } = useSession();
-
     return (
         <nav className="flex-between w-full mb-15 pt-3">
             <Link href="/" className="flex gap-2 flex-center">
@@ -18,7 +17,7 @@ const Nav = () => {
                 />
                 <p className="logo_text">Gitulyse</p>
             </Link>
-            <div className="sm:flex hidden">
+            <div className="sm:flex hidden items-center">
                 {session ? (
                     <div className="flex items-center gap-3 md:gap-5">
                         <button type="button" onClick={() => signOut()} className="outline_btn">
