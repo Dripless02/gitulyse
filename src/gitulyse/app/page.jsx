@@ -14,6 +14,7 @@ const Home = () => {
                 <br className="max-md: hidden" />
                 <span className="blue_gradient"> Code Summarization and Reporting Tool</span>
             </h1>
+
             {status === "authenticated" ? (
                 <>
                     <Search />

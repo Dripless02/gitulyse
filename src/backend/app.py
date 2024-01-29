@@ -32,7 +32,7 @@ def get_repos():
     auth = Auth.Token(token)
     g = Github(auth=auth)
 
-    repos = g.get_user().get_repos(affiliation="owner")
+    repos = g.get_user().get_repos()
     repo_list = []
     for repo in repos:
         repo_list.append(repo.full_name)
