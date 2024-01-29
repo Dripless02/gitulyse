@@ -1,6 +1,7 @@
 "use client";
 
 import { PieChart } from "@mantine/charts";
+import { List } from "@mantine/core";
 import { getSession, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
@@ -81,11 +82,11 @@ const Repos = () => {
             />
 
             <p className="text-center text-xl py-4">Repos Owned by {session.user.name}</p>
-            <ul>
+            <List withPadding listStyleType="disc">
                 {repos.map((repo) => (
-                    <li key={repo}>{repo}</li>
+                    <List.Item key={repo}>{repo}</List.Item>
                 ))}
-            </ul>
+            </List>
         </div>
     );
 };
