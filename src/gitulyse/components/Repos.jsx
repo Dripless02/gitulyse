@@ -1,9 +1,7 @@
 "use client";
 
 import { PieChart } from "@mantine/charts";
-import { List } from "@mantine/core";
 import { getSession, useSession } from "next-auth/react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const Repos = () => {
