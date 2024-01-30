@@ -1,5 +1,6 @@
 "use client";
 
+import { PieChart } from "@mantine/charts";
 import { getSession, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
@@ -33,14 +34,58 @@ const Repos = () => {
             });
     }, [userAccessToken]);
 
+    const repos_to_data = (repos) => {
+        // https://mantine.dev/theming/colors/#default-colors
+        const colors = [
+            "red.6",
+            "pink.6",
+            "grape.6",
+            "violet.6",
+            "indigo.6",
+            "blue.6",
+            "cyan.6",
+            "teal.6",
+            "green.6",
+            "lime.6",
+            "yellow.6",
+            "orange.6",
+        ];
+
+        let data = [];
+        repos.forEach((repo, index) => {
+            data.push({
+                value: repo.commit_count,
+                color: colors[index % colors.length],
+                name: repo.name,
+            });
+        });
+
+        return data;
+    };
+
     return (
-        <div className="w-full flex-center flex-col">
-            <p className="text-center text-xl py-4">Repos Owned by {session.user.name}</p>
-            <ul>
-                {repos.map((repo) => (
-                    <li key={repo}>{repo}</li>
-                ))}
-            </ul>
+        <div className="w-full flex-center flex-col pt-6">
+            <p className="text-center text-3xl pb-3 pt-6">
+                Your Repos
+            </p>
+            <PieChart
+                size={300}
+                data={repos_to_data(repos)}
+                withTooltip
+                tooltipDataSource="segment"
+                mx="auto"
+                strokeWidth={2}
+                onClick={(event) => {
+                    // as there is no way to get the exact segment that the user clicked on
+                    // we can use the event target to get the name of the repo assigned to
+                    // the segment that was clicked on
+                    const repo_name = event.target.attributes["name"].value;
+                    window.open(`https://www.github.com/${repo_name}`);
+                }}
+            />
+
+
+
         </div>
     );
 };

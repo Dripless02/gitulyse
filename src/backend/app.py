@@ -11,18 +11,20 @@ CORS(app)
 
 @app.route("/", methods=["GET"])
 def index():
-    data = {
-        "data": "Hello from the Gitulyse backend index endpoint",
-    }
-
-    return data, 200
+    return (
+        jsonify(
+            {
+                "data": "Hello from the Gitulyse backend index endpoint",
+            }
+        ),
+        200,
+    )
 
 
 @app.route("/github-token", methods=["POST"])
 def github_token():
     token = request.get_json()["access_token"]
-    print("Token Retrieved from Frontend")
-    return "Token Retrieved from Frontend", 200
+    return jsonify({"message": "Token Retrieved from Frontend"}), 200
 
 
 @app.route("/get-repos", methods=["GET"])
@@ -32,10 +34,17 @@ def get_repos():
     auth = Auth.Token(token)
     g = Github(auth=auth)
 
-    repos = g.get_user().get_repos(affiliation="owner")
+    user = g.get_user()
+    repos = user.get_repos(sort="updated")
     repo_list = []
     for repo in repos:
-        repo_list.append(repo.full_name)
+        if len(repo_list) == 6:
+            break
+        repo_info = {
+            "name": repo.full_name,
+            "commit_count": repo.get_commits(author=user).totalCount,
+        }
+        repo_list.append(repo_info)
 
     return jsonify({"repos": repo_list})
 

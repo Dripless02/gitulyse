@@ -7,7 +7,7 @@ const Search = () => {
     return (
         <Center>
             <TextInput
-                className="pt-40"
+                className="pt-4"
                 variant="filled"
                 placeholder="Enter Repo URL..."
                 size="xl"
