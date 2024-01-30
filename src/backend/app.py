@@ -35,12 +35,14 @@ def get_repos():
     g = Github(auth=auth)
 
     user = g.get_user()
-    repos = user.get_repos()
+    repos = user.get_repos(sort="updated")
     repo_list = []
     for repo in repos:
+        if len(repo_list) == 6:
+            break
         repo_info = {
             "name": repo.full_name,
-            "commit_count": repo.get_commits(author=user).totalCount
+            "commit_count": repo.get_commits(author=user).totalCount,
         }
         repo_list.append(repo_info)
 
