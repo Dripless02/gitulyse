@@ -17,7 +17,7 @@ const Nav = () => {
                 />
                 <p className="logo_text">Gitulyse</p>
             </Link>
-            <div className="sm:flex hidden items-center">
+            <div className="sm:flex items-center">
                 {session ? (
                     <div className="flex items-center gap-3 md:gap-5">
                         <button type="button" onClick={() => signOut()} className="outline_btn">
