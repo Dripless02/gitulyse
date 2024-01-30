@@ -67,7 +67,7 @@ const Repos = () => {
 
     return (
         <div className="w-full flex-center flex-col pt-6">
-            <p className="text-center text-2xl pb-3">
+            <p className="text-center text-3xl pb-3 pt-6">
                 Your Repo's
             </p>
             <PieChart
@@ -87,7 +87,7 @@ const Repos = () => {
             />
 
 
-           
+
         </div>
     );
 };
