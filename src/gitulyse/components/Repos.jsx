@@ -3,6 +3,7 @@
 import { PieChart } from "@mantine/charts";
 import { List } from "@mantine/core";
 import { getSession, useSession } from "next-auth/react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const Repos = () => {
@@ -55,9 +56,9 @@ const Repos = () => {
         let data = [];
         repos.forEach((repo, index) => {
             data.push({
-                value: 1,
+                value: repo.commit_count,
                 color: colors[index % colors.length],
-                name: repo,
+                name: repo.name,
             });
         });
 
@@ -66,7 +67,11 @@ const Repos = () => {
 
     return (
         <div className="w-full flex-center flex-col pt-6">
+            <p className="text-center text-2xl pb-3">
+                Pie Chart of Commits in Repos '{session.user.name}' has Contributed to
+            </p>
             <PieChart
+                size={300}
                 data={repos_to_data(repos)}
                 withTooltip
                 tooltipDataSource="segment"
@@ -81,10 +86,16 @@ const Repos = () => {
                 }}
             />
 
-            <p className="text-center text-xl py-4">Repos Owned by {session.user.name}</p>
-            <List withPadding listStyleType="disc">
+            <p className="text-center text-xl py-4">
+                Repos '{session.user.name}' has Contributed to
+            </p>
+            <List listStyleType="disc">
                 {repos.map((repo) => (
-                    <List.Item key={repo}>{repo}</List.Item>
+                    <List.Item key={repo.name}>
+                        <Link href={`https://www.github.com/${repo.name}/commits`}>
+                            <p className="text-blue-500">{repo.name}</p>
+                        </Link>
+                    </List.Item>
                 ))}
             </List>
         </div>
