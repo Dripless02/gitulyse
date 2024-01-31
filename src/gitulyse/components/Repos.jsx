@@ -1,13 +1,12 @@
 "use client";
 
-import { PieChart } from "@mantine/charts";
-import { getSession, useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { Chart } from "react-google-charts";
 
 const Repos = () => {
     const [userAccessToken, setUserAccessToken] = useState("");
     const [repos, setRepos] = useState([]);
-    const { data: session } = useSession();
 
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -35,57 +34,44 @@ const Repos = () => {
     }, [userAccessToken]);
 
     const repos_to_data = (repos) => {
-        // https://mantine.dev/theming/colors/#default-colors
-        const colors = [
-            "red.6",
-            "pink.6",
-            "grape.6",
-            "violet.6",
-            "indigo.6",
-            "blue.6",
-            "cyan.6",
-            "teal.6",
-            "green.6",
-            "lime.6",
-            "yellow.6",
-            "orange.6",
-        ];
-
-        let data = [];
-        repos.forEach((repo, index) => {
-            data.push({
-                value: repo.commit_count,
-                color: colors[index % colors.length],
-                name: repo.name,
-            });
+        let data = [["reponame", "commitcount"]];
+        repos.forEach((repo) => {
+            data.push([repo.name, repo.commit_count]);
         });
 
         return data;
     };
 
     return (
-        <div className="w-full flex-center flex-col pt-6">
-            <p className="text-center text-3xl pb-3 pt-6">
-                Your Repos
-            </p>
-            <PieChart
-                size={300}
+        <div className="w-full pt-3">
+            <Chart
+                chartType="PieChart"
                 data={repos_to_data(repos)}
-                withTooltip
-                tooltipDataSource="segment"
-                mx="auto"
-                strokeWidth={2}
-                onClick={(event) => {
-                    // as there is no way to get the exact segment that the user clicked on
-                    // we can use the event target to get the name of the repo assigned to
-                    // the segment that was clicked on
-                    const repo_name = event.target.attributes["name"].value;
-                    window.open(`https://www.github.com/${repo_name}`);
+                options={{
+                    is3D: true,
+                    backgroundColor: "transparent",
+                    legend: "none",
                 }}
+                width="100%"
+                height="600px"
+                chartEvents={[
+                    {
+                        // select = onClick
+                        eventName: "select",
+                        callback: ({ chartWrapper }) => {
+                            const chart = chartWrapper.getChart();
+                            const selection = chart.getSelection();
+                            if (selection.length === 1) {
+                                const [selectedItem] = selection;
+                                const dataTable = chartWrapper.getDataTable();
+
+                                const { row } = selectedItem;
+                                console.log(dataTable.getValue(row, 0));
+                            }
+                        },
+                    },
+                ]}
             />
-
-
-
         </div>
     );
 };

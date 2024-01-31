@@ -19,6 +19,7 @@
     "node": "^21.2.0",
     "react": "^18",
     "react-dom": "^18",
+    "react-google-charts": "^4.0.1",
     "recharts": "^2.11.0"
   },
   "devDependencies": {
