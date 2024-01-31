@@ -1,8 +1,8 @@
 "use client";
 
-import { PieChart } from "@mantine/charts";
 import { getSession, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { Chart } from "react-google-charts";
 
 const Repos = () => {
     const [userAccessToken, setUserAccessToken] = useState("");
@@ -51,40 +51,40 @@ const Repos = () => {
             "orange.6",
         ];
 
-        let data = [];
+        let data = [["reponame", "commitcount"]];
         repos.forEach((repo, index) => {
-            data.push({
-                value: repo.commit_count,
-                color: colors[index % colors.length],
-                name: repo.name,
-            });
+            // data.push({
+            //     value: repo.commit_count,
+            //     color: colors[index % colors.length],
+            //     name: repo.name,
+            // });
+            data.push([repo.name, repo.commit_count]);
         });
 
         return data;
     };
 
     return (
-        <div className="w-full flex-center flex-col pt-6">
-            <p className="text-center text-3xl pb-3 pt-6">
-                Your Repos
-            </p>
-            <PieChart
-                size={300}
+        <div className="w-full pt-3">
+            <Chart
+                chartType="PieChart"
                 data={repos_to_data(repos)}
-                withTooltip
-                tooltipDataSource="segment"
-                mx="auto"
-                strokeWidth={2}
-                onClick={(event) => {
+                options={{
+                    is3D: true,
+                    backgroundColor: "transparent",
+                    legend: "none",
+                    
+                  }}
+                width="100%"
+                height="600px"
+                // onClick={(event) => {
                     // as there is no way to get the exact segment that the user clicked on
                     // we can use the event target to get the name of the repo assigned to
                     // the segment that was clicked on
-                    const repo_name = event.target.attributes["name"].value;
-                    window.open(`https://www.github.com/${repo_name}`);
-                }}
+                    // const repo_name = event.target.attributes["name"].value;
+                    // window.open(`https://www.github.com/${repo_name}`);
+                // }}
             />
-
-
 
         </div>
     );
