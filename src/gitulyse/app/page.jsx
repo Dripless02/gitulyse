@@ -19,7 +19,7 @@ const Home = () => {
 
                 <div>
                     <h1 className="head_text text-center pb-5 bigtext blue_gradient antialiased ">
-                        &nbsp;&nbsp;&nbsp;Seearch for a repository or user to get started.&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;Search for a repository or user to get started.&nbsp;&nbsp;&nbsp;
                     </h1>
                 </div>
 
