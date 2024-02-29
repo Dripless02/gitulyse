@@ -8,7 +8,7 @@ const Repos = () => {
     const [userAccessToken, setUserAccessToken] = useState("");
     const [repos, setRepos] = useState([]);
 
-    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
     useEffect(() => {
         async function getInfo() {
