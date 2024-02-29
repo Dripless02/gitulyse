@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+    database:
+        image: mongodb/mongodb-community-server:7.0.5-ubi8
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=user
+            - MONGO_INITDB_ROOT_PASSWORD=pass
+        ports:
+            - 27017:27017
+
+    backend:
+        build: ./backend
+        ports:
+            - 5000:5000
+        depends_on:
+            - database
+        environment:
+            FLASK_DEBUG: "true"
+        volumes:
+            - ./backend:/app
+
+    frontend:
+        build: ./gitulyse
+        ports:
+            - 3000:3000
+        environment:
+            - WATCHPACK_POLLING=true
+        depends_on:
+            - backend
+        volumes:
+            - ./gitulyse:/app
+            - /app/node_modules
