@@ -49,5 +49,32 @@ def get_repos():
     return jsonify({"repos": repo_list})
 
 
+@app.route("/get-commits", methods=["GET"])
+def get_commits_from_repo():
+    token = request.args.get("token")
+    repo = request.args.get("repo") # format: "username/repo"
+
+    auth = Auth.Token(token)
+    g = Github(auth=auth)
+
+    repo = g.get_repo(repo)
+    commits = repo.get_commits()
+    commit_list = []
+    for commit in commits:
+        commit_info = {
+            "message": commit.commit.message,
+            "date": commit.commit.author.date,
+            "author": commit.commit.author.name,
+        }
+        commit_list.append(commit_info)
+
+    return jsonify(
+        {
+            "commit_count": commits.totalCount,
+            "commits": commit_list,
+        }
+    )
+
+
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
