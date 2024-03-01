@@ -49,5 +49,38 @@ def get_repos():
     return jsonify({"repos": repo_list})
 
 
+@app.route("/get-pull-requests", methods=["GET"])
+def get_pull_requests():
+    token = request.args.get("token")
+    owner = request.args.get("owner")
+    repo_name = request.args.get("repo")
+
+    repo = f"{owner}/{repo_name}"
+
+    auth = Auth.Token(token)
+    g = Github(auth=auth)
+
+    repo = g.get_repo(repo)
+    pull_requests = repo.get_pulls(state="all", direction="asc")
+    pull_request_list = []
+    for pull_request in pull_requests:
+        if pull_request.merged_at is not None:
+            state = "merged"
+        else:
+            state = pull_request.state
+        pull_request_info = {
+            "title": pull_request.title,
+            "state": state,
+            "created_at": pull_request.created_at,
+            "updated_at": pull_request.updated_at,
+            "closed_at": pull_request.closed_at,
+            "id": pull_request.number,
+            "merged_at": pull_request.merged_at if pull_request.merged_at else None,
+        }
+        pull_request_list.append(pull_request_info)
+
+    return jsonify({"pull_requests": pull_request_list})
+
+
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
