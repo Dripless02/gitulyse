@@ -74,6 +74,23 @@ def get_pull_requests():
         if pull_request.merged_at is not None:
             pull_request_info["state"] = "merged"
             pull_request_info["merged_at"] = pull_request.merged_at
+
+            time_to_merge = (
+                pull_request.merged_at - pull_request.created_at
+            ).total_seconds()
+
+            days, remainder = divmod(time_to_merge, 86400)
+            hours, remainder = divmod(remainder, 3600)
+            minutes, seconds = divmod(remainder, 60)
+
+            time_to_merge_obj = {
+                "days": int(days),
+                "hours": int(hours),
+                "minutes": int(minutes),
+                "seconds": int(seconds),
+            }
+
+            pull_request_info["time_to_merge"] = time_to_merge_obj
         elif pull_request.closed_at is not None:
             pull_request_info["state"] = pull_request.state
             pull_request_info["closed_at"] = pull_request.closed_at

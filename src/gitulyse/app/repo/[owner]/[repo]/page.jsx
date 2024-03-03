@@ -46,23 +46,37 @@ export default function PullRequestPage({ params }) {
 
             <p className="mb-4 text-2xl">Pull Requests</p>
             <div className=" flex-col flexitems-center">
-                {pullRequests.map((pr) => (
-                    <Card key={pr.pr_number} className="mb-4 w-auto">
-                        <Group justify="space-between" mt="md" mb="xs">
-                            <p className="text-xl font-bold">
-                                PR #{pr.pr_number} - {pr.title}
-                            </p>
-                            <p>{pr.state}</p>
-                        </Group>
-                        <p>Created at {pr.created_at}</p>
-                        <p>Updated at {pr.updated_at}</p>
-                        {pr.merged_at ? (
-                            <p>Merged at {pr.merged_at}</p>
-                        ) : (
-                            pr.closed_at && <p>Closed at {pr.closed_at}</p>
-                        )}
-                    </Card>
-                ))}
+                {pullRequests.map((pr) => {
+                    let time_to_merge = "";
+                    if (pr.time_to_merge) {
+                        const { days, hours, minutes, seconds } = pr.time_to_merge;
+                        if (days) time_to_merge += `${days} days `;
+                        if (hours) time_to_merge += `${hours} hours `;
+                        if (minutes) time_to_merge += `${minutes} minutes `;
+                        if (seconds) time_to_merge += `${seconds} seconds`;
+                    }
+
+                    return (
+                        <Card key={pr.pr_number} className="mb-4 w-auto">
+                            <Group justify="space-between" mt="md" mb="xs">
+                                <p className="text-xl font-bold">
+                                    PR #{pr.pr_number} - {pr.title}
+                                </p>
+                                <p>{pr.state}</p>
+                            </Group>
+                            <p>Created at {pr.created_at}</p>
+                            <p>Updated at {pr.updated_at}</p>
+                            {pr.merged_at ? (
+                                <>
+                                    <p>Merged at {pr.merged_at}</p>
+                                    <p>Time to Merge: {time_to_merge} </p>
+                                </>
+                            ) : (
+                                pr.closed_at && <p>Closed at {pr.closed_at}</p>
+                            )}
+                        </Card>
+                    );
+                })}
             </div>
         </div>
     );
