@@ -66,6 +66,7 @@ def get_pull_requests():
     for pull_request in pull_requests:
         pull_request_info = {
             "title": pull_request.title,
+            "author": pull_request.user.login,
             "created_at": pull_request.created_at,
             "updated_at": pull_request.updated_at,
             "pr_number": pull_request.number,
@@ -88,6 +89,7 @@ def get_pull_requests():
                 "hours": int(hours),
                 "minutes": int(minutes),
                 "seconds": int(seconds),
+                "total_seconds": int(time_to_merge),
             }
 
             pull_request_info["time_to_merge"] = time_to_merge_obj
