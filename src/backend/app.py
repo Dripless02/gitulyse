@@ -64,19 +64,22 @@ def get_pull_requests():
     pull_requests = repo.get_pulls(state="all", direction="asc")
     pull_request_list = []
     for pull_request in pull_requests:
-        if pull_request.merged_at is not None:
-            state = "merged"
-        else:
-            state = pull_request.state
         pull_request_info = {
             "title": pull_request.title,
-            "state": state,
             "created_at": pull_request.created_at,
             "updated_at": pull_request.updated_at,
-            "closed_at": pull_request.closed_at,
-            "id": pull_request.number,
-            "merged_at": pull_request.merged_at if pull_request.merged_at else None,
+            "pr_number": pull_request.number,
         }
+
+        if pull_request.merged_at is not None:
+            pull_request_info["state"] = "merged"
+            pull_request_info["merged_at"] = pull_request.merged_at
+        elif pull_request.closed_at is not None:
+            pull_request_info["state"] = pull_request.state
+            pull_request_info["closed_at"] = pull_request.closed_at
+        else:
+            pull_request_info["state"] = pull_request.state
+
         pull_request_list.append(pull_request_info)
 
     return jsonify({"pull_requests": pull_request_list})

@@ -47,10 +47,10 @@ export default function PullRequestPage({ params }) {
             <p className="mb-4 text-2xl">Pull Requests</p>
             <div className=" flex-col flexitems-center">
                 {pullRequests.map((pr) => (
-                    <Card key={pr.id} className="mb-4 w-auto">
+                    <Card key={pr.pr_number} className="mb-4 w-auto">
                         <Group justify="space-between" mt="md" mb="xs">
                             <p className="text-xl font-bold">
-                                PR #{pr.id} - {pr.title}
+                                PR #{pr.pr_number} - {pr.title}
                             </p>
                             <p>{pr.state}</p>
                         </Group>
