@@ -12,6 +12,8 @@ export default function PullRequestPage({ params }) {
     const [pullRequests, setPullRequests] = useState([]);
     const [averageTimeToMerge, setAverageTimeToMerge] = useState({});
     const [ownerAverageTimeToMerge, setOwnerAverageTimeToMerge] = useState({});
+    const [averageTimeToMergeString, setAverageTimeToMergeString] = useState([]);
+    const [ownerAverageTimeToMergeString, setOwnerAverageTimeToMergeString] = useState([]);
 
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
@@ -40,7 +42,6 @@ export default function PullRequestPage({ params }) {
             });
     }, [userAccessToken]);
 
-    // calculate average time to merge
     const calculateAverageTimeToMerge = () => {
         let countAll = 0;
         let totalSecondsAll = 0;
@@ -49,7 +50,6 @@ export default function PullRequestPage({ params }) {
 
         pullRequests.forEach((pr) => {
             if (pr.time_to_merge) {
-                console.log(pr.time_to_merge.total_seconds);
                 totalSecondsAll += pr.time_to_merge.total_seconds;
                 countAll++;
                 if (pr.author === owner) {
@@ -86,6 +86,36 @@ export default function PullRequestPage({ params }) {
         }
     }, [pullRequests]);
 
+    useEffect(() => {
+        const {
+            days: overallDays,
+            hours: overallHours,
+            minutes: overallMinutes,
+            seconds: overallSeconds,
+        } = averageTimeToMerge;
+
+        setAverageTimeToMergeString([
+            overallDays !== 0 ? `${overallDays} days` : "",
+            overallHours !== 0 ? `${overallHours} hours` : "",
+            overallMinutes !== 0 ? `${overallMinutes} minutes` : "",
+            overallSeconds !== 0 ? `${overallSeconds} seconds` : "",
+        ]);
+
+        const {
+            days: ownerDays,
+            hours: ownerHours,
+            minutes: ownerMinutes,
+            seconds: ownerSeconds,
+        } = ownerAverageTimeToMerge;
+
+        setOwnerAverageTimeToMergeString([
+            ownerDays ? `${ownerDays} days` : "",
+            ownerHours ? `${ownerHours} hours` : "",
+            ownerMinutes ? `${ownerMinutes} minutes` : "",
+            ownerSeconds ? `${ownerSeconds} seconds` : "",
+        ]);
+    }, [averageTimeToMerge, ownerAverageTimeToMerge]);
+
     return (
         <div className="mt-4 flex flex-col items-center">
             <p className="mb-4 text-5xl">
@@ -94,17 +124,14 @@ export default function PullRequestPage({ params }) {
 
             <p className="mb-4 text-2xl">Pull Requests</p>
             <p className="mb-4 text-xl">
-                Overall Average Time to Merge: {averageTimeToMerge.days} days{" "}
-                {averageTimeToMerge.hours} hours {averageTimeToMerge.minutes} minutes{" "}
-                {averageTimeToMerge.seconds} seconds
+                Overall Average Time to Merge: {averageTimeToMergeString.join(" ")}
             </p>
             <p className="mb-4 text-xl">
-                Average Time to Merge where '{owner}' is the author: {ownerAverageTimeToMerge.days}{" "}
-                days {ownerAverageTimeToMerge.hours} hours {ownerAverageTimeToMerge.minutes} minutes{" "}
-                {ownerAverageTimeToMerge.seconds} seconds
+                Average Time to Merge where '{owner}' is the author:{" "}
+                {ownerAverageTimeToMergeString.join(" ")}
             </p>
 
-            <div className=" flex-col flexitems-center">
+            <div className="flex-col flexitems-center">
                 {pullRequests.map((pr) => {
                     let time_to_merge = "";
                     if (pr.time_to_merge) {

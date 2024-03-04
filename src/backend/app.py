@@ -12,11 +12,7 @@ CORS(app)
 @app.route("/", methods=["GET"])
 def index():
     return (
-        jsonify(
-            {
-                "data": "Hello from the Gitulyse backend index endpoint",
-            }
-        ),
+        jsonify({"data": "Hello from the Gitulyse backend index endpoint"}),
         200,
     )
 
