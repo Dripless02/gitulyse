@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Group } from "@mantine/core";
+import { Button, Card } from "@mantine/core";
 import { useEffect, useState } from "react";
 
 export default function PullRequests({ userAccessToken, owner, repo }) {
@@ -9,6 +9,7 @@ export default function PullRequests({ userAccessToken, owner, repo }) {
     const [ownerAverageTimeToMerge, setOwnerAverageTimeToMerge] = useState({});
     const [averageTimeToMergeString, setAverageTimeToMergeString] = useState([]);
     const [ownerAverageTimeToMergeString, setOwnerAverageTimeToMergeString] = useState([]);
+    const [showPullRequests, setShowPullRequests] = useState(false);
 
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
@@ -109,40 +110,52 @@ export default function PullRequests({ userAccessToken, owner, repo }) {
                 {ownerAverageTimeToMergeString.join(" ")}
             </p>
 
-            <div className="flex-col flexitems-center">
-                {pullRequests.map((pr) => {
-                    let time_to_merge = "";
-                    if (pr.time_to_merge) {
-                        const { days, hours, minutes, seconds } = pr.time_to_merge;
-                        if (days) time_to_merge += `${days} days `;
-                        if (hours) time_to_merge += `${hours} hours `;
-                        if (minutes) time_to_merge += `${minutes} minutes `;
-                        if (seconds) time_to_merge += `${seconds} seconds`;
-                    }
+            <Button
+                variant="filled"
+                onClick={() => {
+                    setShowPullRequests(!showPullRequests);
+                }}
+                className="mb-6"
+            >
+                Show Pull Requests
+            </Button>
 
-                    return (
-                        <Card key={pr.pr_number} className="mb-4 w-auto">
-                            <Group justify="space-between" mt="md" mb="xs">
-                                <p className="text-xl font-bold">
-                                    PR #{pr.pr_number} - {pr.title}
-                                </p>
-                                <p>{pr.state}</p>
-                            </Group>
-                            <p className="mb-4 font-bold">Author: {pr.author}</p>
-                            <p>Created at {pr.created_at}</p>
-                            <p>Updated at {pr.updated_at}</p>
-                            {pr.merged_at ? (
-                                <>
-                                    <p>Merged at {pr.merged_at}</p>
-                                    <p>Time to Merge: {time_to_merge} </p>
-                                </>
-                            ) : (
-                                pr.closed_at && <p>Closed at {pr.closed_at}</p>
-                            )}
-                        </Card>
-                    );
-                })}
-            </div>
+            {showPullRequests && (
+                <div className="flex-col items-center">
+                    {pullRequests.map((pr) => {
+                        let time_to_merge = "";
+                        if (pr.time_to_merge) {
+                            const { days, hours, minutes, seconds } = pr.time_to_merge;
+                            if (days) time_to_merge += `${days} days `;
+                            if (hours) time_to_merge += `${hours} hours `;
+                            if (minutes) time_to_merge += `${minutes} minutes `;
+                            if (seconds) time_to_merge += `${seconds} seconds`;
+                        }
+
+                        return (
+                            <Card key={pr.pr_number} className="mb-4 w-auto">
+                                <div className="flex justify-between gap-3">
+                                    <p className="text-xl font-bold">
+                                        PR #{pr.pr_number} - {pr.title}
+                                    </p>
+                                    <p>{pr.state}</p>
+                                </div>
+                                <p className="mb-4 font-bold">Author: {pr.author}</p>
+                                <p>Created at {pr.created_at}</p>
+                                <p>Updated at {pr.updated_at}</p>
+                                {pr.merged_at ? (
+                                    <>
+                                        <p>Merged at {pr.merged_at}</p>
+                                        <p>Time to Merge: {time_to_merge} </p>
+                                    </>
+                                ) : (
+                                    pr.closed_at && <p>Closed at {pr.closed_at}</p>
+                                )}
+                            </Card>
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 }
