@@ -84,6 +84,15 @@ def get_commits_from_repo():
         # Update commit stats for monthly intervals only
         commit_stats["monthly"].setdefault(monthly_key, []).append(commit_info)
 
+    for monthly_key, monthly_commits in commit_stats["monthly"].items():
+        total_lines_of_code = sum(commit["lines_of_code"] for commit in monthly_commits)
+        average_lines_of_code = total_lines_of_code / len(monthly_commits)
+        average_lines_of_code = round(average_lines_of_code, 1)
+        commit_stats["monthly"][monthly_key] = {
+            "total_lines_of_code": total_lines_of_code,
+            "average_lines_of_code": average_lines_of_code,
+            "commits": monthly_commits
+        }
     return jsonify(commit_stats)
 
 
