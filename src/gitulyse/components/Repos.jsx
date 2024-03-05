@@ -33,7 +33,7 @@ const Repos = () => {
             .then((data) => {
                 setRepos(data.repos);
             });
-    }, [userAccessToken]);
+    }, [userAccessToken, BACKEND_URL]);
 
     const repos_to_data = (repos) => {
         let data = [["reponame", "commitcount"]];

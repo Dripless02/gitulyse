@@ -23,51 +23,53 @@ export default function PullRequests({ userAccessToken, owner, repo }) {
             .then((data) => {
                 setPullRequests(data.pull_requests);
             });
-    }, [userAccessToken]);
-
-    const calculateAverageTimeToMerge = () => {
-        let countAll = 0;
-        let totalSecondsAll = 0;
-        let countOwner = 0;
-        let totalSecondsOwner = 0;
-
-        pullRequests.forEach((pr) => {
-            if (pr.time_to_merge) {
-                totalSecondsAll += pr.time_to_merge.total_seconds;
-                countAll++;
-                if (pr.author === owner) {
-                    totalSecondsOwner += pr.time_to_merge.total_seconds;
-                    countOwner++;
-                }
-            }
-        });
-
-        const calculateAverage = (totalSeconds, count) => {
-            const averageTotalSeconds = totalSeconds / count;
-            const days = Math.floor(averageTotalSeconds / 86400);
-            const hours = Math.floor((averageTotalSeconds - days * 86400) / 3600);
-            const minutes = Math.floor((averageTotalSeconds - days * 86400 - hours * 3600) / 60);
-            const seconds = Math.floor(
-                averageTotalSeconds - days * 86400 - hours * 3600 - minutes * 60,
-            );
-
-            return {
-                days: days,
-                hours: hours,
-                minutes: minutes,
-                seconds: seconds,
-            };
-        };
-
-        setAverageTimeToMerge(calculateAverage(totalSecondsAll, countAll));
-        setOwnerAverageTimeToMerge(calculateAverage(totalSecondsOwner, countOwner));
-    };
+    }, [userAccessToken, BACKEND_URL, owner, repo]);
 
     useEffect(() => {
+        const calculateAverageTimeToMerge = () => {
+            let countAll = 0;
+            let totalSecondsAll = 0;
+            let countOwner = 0;
+            let totalSecondsOwner = 0;
+
+            pullRequests.forEach((pr) => {
+                if (pr.time_to_merge) {
+                    totalSecondsAll += pr.time_to_merge.total_seconds;
+                    countAll++;
+                    if (pr.author === owner) {
+                        totalSecondsOwner += pr.time_to_merge.total_seconds;
+                        countOwner++;
+                    }
+                }
+            });
+
+            const calculateAverage = (totalSeconds, count) => {
+                const averageTotalSeconds = totalSeconds / count;
+                const days = Math.floor(averageTotalSeconds / 86400);
+                const hours = Math.floor((averageTotalSeconds - days * 86400) / 3600);
+                const minutes = Math.floor(
+                    (averageTotalSeconds - days * 86400 - hours * 3600) / 60,
+                );
+                const seconds = Math.floor(
+                    averageTotalSeconds - days * 86400 - hours * 3600 - minutes * 60,
+                );
+
+                return {
+                    days: days,
+                    hours: hours,
+                    minutes: minutes,
+                    seconds: seconds,
+                };
+            };
+
+            setAverageTimeToMerge(calculateAverage(totalSecondsAll, countAll));
+            setOwnerAverageTimeToMerge(calculateAverage(totalSecondsOwner, countOwner));
+        };
+
         if (pullRequests.length > 0) {
             calculateAverageTimeToMerge();
         }
-    }, [pullRequests]);
+    }, [pullRequests, owner]);
 
     useEffect(() => {
         const {
@@ -108,7 +110,7 @@ export default function PullRequests({ userAccessToken, owner, repo }) {
                         Overall Average Time to Merge: {averageTimeToMergeString.join(" ")}
                     </p>
                     <p className="mb-4 text-xl">
-                        Average Time to Merge where '{owner}' is the author:{" "}
+                        Average Time to Merge where &apos;{owner}&apos; is the author:{" "}
                         {ownerAverageTimeToMergeString.join(" ")}
                     </p>
                 </>
