@@ -1,48 +1,35 @@
 "use client";
 import { useEffect, useState } from "react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 
-export default function CodeContributions({userAccessToken, owner, repo}) {
-    const [codeContributions, setCodeContributions] = useState([]);
-    const [showCodeContributions, setShowCodeContributions] = useState(false);
+export default function CodeContributions({ userAccessToken, owner, repo }) {
+    const [monthlyAverages, setMonthlyAverages] = useState([]);
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
     useEffect(() => {
         if (!userAccessToken) return;
 
-        fetch(
-            `${BACKEND_URL}/get-commits?token=${userAccessToken}&owner=${owner}&repo=${repo}`,
-        )
+        fetch(`${BACKEND_URL}/get-commits?token=${userAccessToken}&owner=${owner}&repo=${repo}`)
             .then((res) => res.json())
             .then((data) => {
-                setCodeContributions(data.commits);
+                const monthlyAveragesData = Object.keys(data.monthly).map((key) => {
+                    return { month: key, average: data.monthly[key].average_lines_of_code };
+                });
+                setMonthlyAverages(monthlyAveragesData);
             });
     }, [userAccessToken, BACKEND_URL, owner, repo]);
 
-
-
     return (
-        <div>
-            <button
-                onClick={() => setShowCodeContributions(!showCodeContributions)}
-                className="mt-4 text-3xl"
-            >
-                {showCodeContributions ? "Hide" : "Show"} code contributions
-            </button>
-            {showCodeContributions && (
-                <div>
-                    {codeContributions.map((contribution) => {
-                        return (
-                            <div key={contribution.id} className="mt-4">
-                                <p>
-                                    {contribution.author} made {contribution.additions} additions and{" "}
-                                    {contribution.deletions} deletions in {contribution.file} on{" "}
-                                    {new Date(contribution.date).toLocaleString()}
-                                </p>
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
+        <div className="mt-4 flex flex-col items-center">
+          <p className="mb-4 text-2xl">Code Contributions per Month</p>
+            <LineChart width={600} height={300} data={monthlyAverages}>
+                <CartesianGrid strokeDasharray="3 4" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="average" stroke="#8884d8" activeDot={{ r: 8 }} />
+            </LineChart>
         </div>
     );
-            }
+}
