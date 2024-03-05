@@ -1,12 +1,14 @@
 "use client";
 
 import { getSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Chart } from "react-google-charts";
 
 const Repos = () => {
     const [userAccessToken, setUserAccessToken] = useState("");
     const [repos, setRepos] = useState([]);
+    const router = useRouter();
 
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
@@ -31,7 +33,7 @@ const Repos = () => {
             .then((data) => {
                 setRepos(data.repos);
             });
-    }, [userAccessToken]);
+    }, [userAccessToken, BACKEND_URL]);
 
     const repos_to_data = (repos) => {
         let data = [["reponame", "commitcount"]];
@@ -66,7 +68,8 @@ const Repos = () => {
                                 const dataTable = chartWrapper.getDataTable();
 
                                 const { row } = selectedItem;
-                                console.log(dataTable.getValue(row, 0));
+                                console.log(`'${dataTable.getValue(row, 0)}' selected`);
+                                router.push(`/repo/${dataTable.getValue(row, 0)}`);
                             }
                         },
                     },
