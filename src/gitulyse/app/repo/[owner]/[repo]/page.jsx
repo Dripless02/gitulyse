@@ -1,6 +1,6 @@
 "use client";
-
 import PullRequests from "@components/repo/PullRequests";
+import CodeContributions from "@components/repo/CodeContributions";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
@@ -29,6 +29,7 @@ export default function RepoPage({ params }) {
                 Info for {owner}/{repo}
             </p>
             <PullRequests owner={owner} repo={repo} userAccessToken={userAccessToken} />
+            <CodeContributions owner={owner} repo={repo} userAccessToken={userAccessToken} />
         </div>
     );
 }

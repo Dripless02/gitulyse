@@ -48,28 +48,43 @@ def get_repos():
 @app.route("/get-commits", methods=["GET"])
 def get_commits_from_repo():
     token = request.args.get("token")
-    repo = request.args.get("repo") # format: "username/repo"
+    owner = request.args.get("owner")
+    repo_name = request.args.get("repo")
 
     auth = Auth.Token(token)
     g = Github(auth=auth)
 
+    repo = f"{owner}/{repo_name}"
     repo = g.get_repo(repo)
     commits = repo.get_commits()
-    commit_list = []
-    for commit in commits:
-        commit_info = {
-            "message": commit.commit.message,
-            "date": commit.commit.author.date,
-            "author": commit.commit.author.name,
-        }
-        commit_list.append(commit_info)
 
-    return jsonify(
-        {
-            "commit_count": commits.totalCount,
-            "commits": commit_list,
+    commit_stats = {"monthly": {}}
+
+    for commit in commits:
+        commit_date = commit.commit.author.date
+        author_name = commit.commit.author.name
+
+        # Group commits by time intervals
+        monthly_key = commit_date.strftime("%Y-%m")
+
+        lines_added = 0
+        lines_deleted = 0
+        for file in commit.files:
+            lines_added += file.additions
+            lines_deleted += file.deletions
+
+        lines_of_code = lines_added - lines_deleted
+
+        commit_info = {
+            "date": commit_date.isoformat(),
+            "author": author_name,
+            "lines_of_code": lines_of_code,
         }
-    )
+
+        # Update commit stats for monthly intervals only
+        commit_stats["monthly"].setdefault(monthly_key, []).append(commit_info)
+
+    return jsonify(commit_stats)
 
 
 @app.route("/get-pull-requests", methods=["GET"])
