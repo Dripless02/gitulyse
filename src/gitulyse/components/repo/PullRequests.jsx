@@ -78,10 +78,10 @@ export default function PullRequests({ userAccessToken, owner, repo }) {
         } = averageTimeToMerge;
 
         setAverageTimeToMergeString([
-            overallDays !== 0 ? `${overallDays} days` : "",
-            overallHours !== 0 ? `${overallHours} hours` : "",
-            overallMinutes !== 0 ? `${overallMinutes} minutes` : "",
-            overallSeconds !== 0 ? `${overallSeconds} seconds` : "",
+            overallDays ? `${overallDays} days` : "",
+            overallHours ? `${overallHours} hours` : "",
+            overallMinutes ? `${overallMinutes} minutes` : "",
+            overallSeconds ? `${overallSeconds} seconds` : "",
         ]);
 
         const {
@@ -102,23 +102,29 @@ export default function PullRequests({ userAccessToken, owner, repo }) {
     return (
         <div className="mt-4 flex flex-col items-center">
             <p className="mb-4 text-2xl">Pull Requests</p>
-            <p className="mb-4 text-xl">
-                Overall Average Time to Merge: {averageTimeToMergeString.join(" ")}
-            </p>
-            <p className="mb-4 text-xl">
-                Average Time to Merge where '{owner}' is the author:{" "}
-                {ownerAverageTimeToMergeString.join(" ")}
-            </p>
+            {pullRequests.length > 0 && (
+                <>
+                    <p className="mb-4 text-xl">
+                        Overall Average Time to Merge: {averageTimeToMergeString.join(" ")}
+                    </p>
+                    <p className="mb-4 text-xl">
+                        Average Time to Merge where '{owner}' is the author:{" "}
+                        {ownerAverageTimeToMergeString.join(" ")}
+                    </p>
+                </>
+            )}
 
-            <Button
-                variant="filled"
-                onClick={() => {
-                    setShowPullRequests(!showPullRequests);
-                }}
-                className="mb-6"
-            >
-                Show Pull Requests
-            </Button>
+            {pullRequests.length > 0 && (
+                <Button
+                    variant="filled"
+                    onClick={() => {
+                        setShowPullRequests(!showPullRequests);
+                    }}
+                    className="mb-6"
+                >
+                    Show Pull Requests
+                </Button>
+            )}
 
             {showPullRequests && (
                 <div className="flex-col items-center">
