@@ -45,6 +45,57 @@ def get_repos():
     return jsonify({"repos": repo_list})
 
 
+@app.route("/get-commits", methods=["GET"])
+def get_commits_from_repo():
+    token = request.args.get("token")
+    owner = request.args.get("owner")
+    repo_name = request.args.get("repo")
+
+    auth = Auth.Token(token)
+    g = Github(auth=auth)
+
+    repo = f"{owner}/{repo_name}"
+    repo = g.get_repo(repo)
+    commits = repo.get_commits()
+
+    commit_stats = {"monthly": {}}
+
+    for commit in commits:
+        commit_date = commit.commit.author.date
+        author_name = commit.commit.author.name
+
+        # Group commits by time intervals
+        monthly_key = commit_date.strftime("%Y-%m")
+
+        lines_added = 0
+        lines_deleted = 0
+        for file in commit.files:
+            lines_added += file.additions
+            lines_deleted += file.deletions
+
+        lines_of_code = lines_added - lines_deleted
+
+        commit_info = {
+            "date": commit_date.isoformat(),
+            "author": author_name,
+            "lines_of_code": lines_of_code,
+        }
+
+        # Update commit stats for monthly intervals only
+        commit_stats["monthly"].setdefault(monthly_key, []).append(commit_info)
+
+    for monthly_key, monthly_commits in commit_stats["monthly"].items():
+        total_lines_of_code = sum(commit["lines_of_code"] for commit in monthly_commits)
+        average_lines_of_code = total_lines_of_code / len(monthly_commits)
+        average_lines_of_code = round(average_lines_of_code, 1)
+        commit_stats["monthly"][monthly_key] = {
+            "total_lines_of_code": total_lines_of_code,
+            "average_lines_of_code": average_lines_of_code,
+            "commits": monthly_commits
+        }
+    return jsonify(commit_stats)
+
+
 @app.route("/get-pull-requests", methods=["GET"])
 def get_pull_requests():
     token = request.args.get("token")
