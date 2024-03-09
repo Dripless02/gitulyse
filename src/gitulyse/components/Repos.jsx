@@ -28,7 +28,7 @@ const Repos = () => {
     useEffect(() => {
         if (!userAccessToken) return;
 
-        fetch(`${BACKEND_URL}/get-repos?token=${userAccessToken}`)
+        fetch(`${BACKEND_URL}/get-repos?token=${userAccessToken}&limit=6`)
             .then((res) => res.json())
             .then((data) => {
                 setRepos(data.repos);

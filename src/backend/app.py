@@ -1,4 +1,6 @@
 import os
+from time import time
+
 import pymongo.database
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
@@ -34,23 +36,61 @@ def github_token():
 @app.route("/get-repos", methods=["GET"])
 def get_repos():
     token = request.args.get("token")
+    force = request.args.get("force")
+    limit = request.args.get("limit")
 
     auth = Auth.Token(token)
     g = Github(auth=auth)
 
     user = g.get_user()
-    repos = user.get_repos(sort="updated")
-    repo_list = []
-    for repo in repos:
-        if len(repo_list) == 6:
-            break
-        repo_info = {
-            "name": repo.full_name,
-            "commit_count": repo.get_commits(author=user).totalCount,
-        }
-        repo_list.append(repo_info)
+    db_user_repos = db_repo[user.login]
 
-    return jsonify({"repos": repo_list})
+    current_date_time = time()
+    last_update_doc = db_user_repos.find_one({"name": "last_update"})
+
+    repos = user.get_repos(sort="updated")
+    if (
+        user.login in db_repo.list_collection_names()
+        and force != "true"
+        and last_update_doc is not None
+    ):
+        last_updated = last_update_doc["timestamp"]
+        time_diff = current_date_time - last_updated
+        if time_diff > 21600:
+            force = "true"
+
+    repo_list = []
+    if user.login not in db_repo.list_collection_names() or force == "true":
+        db_user_repos.create_index("name", unique=True)
+        for repo in repos:
+            repo_info = {
+                "name": repo.full_name,
+                "commit_count": repo.get_commits().totalCount,
+            }
+            repo_list.append(repo_info)
+
+            if db_user_repos.find_one({"name": repo.full_name}) is None:
+                db_user_repos.update_one(
+                    {"name": repo.full_name}, {"$set": repo_info.copy()}, upsert=True
+                )
+        db_user_repos.update_one(
+            {"name": "last_update"},
+            {
+                "$set": {
+                    "timestamp": current_date_time,
+                    "total_repos": len(repo_list.copy()),
+                }
+            },
+            upsert=True,
+        )
+    else:
+        repo_list = list(
+            db_user_repos.find({"name": {"$ne": "last_update"}}, {"_id": 0})
+        )
+    if limit is not None:
+        return jsonify({"repos": repo_list[: int(limit)]})
+    else:
+        return jsonify({"repos": repo_list})
 
 
 @app.route("/get-commits", methods=["GET"])
@@ -99,7 +139,7 @@ def get_commits_from_repo():
         commit_stats["monthly"][monthly_key] = {
             "total_lines_of_code": total_lines_of_code,
             "average_lines_of_code": average_lines_of_code,
-            "commits": monthly_commits
+            "commits": monthly_commits,
         }
     return jsonify(commit_stats)
 
