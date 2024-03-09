@@ -52,14 +52,14 @@ export default function PullRequests({ userAccessToken, owner, repo }) {
     };
 
     return (
-        <div className="mt-4 flex flex-col items-center">
+        <div className="mt-3 flex flex-col items-center">
             <p className="mb-4 text-2xl">Time to Merge Pull requests</p>
 
             {pullRequests.length > 0 && (
                 <BarChart width={600} height={300} data={timeToMergeData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" tickFormatter={(value) => `PR ${value}`} />
-                    <YAxis />
+                    <YAxis tickFormatter={(value) => formatTime(value)}/>
                     <Tooltip formatter={(value) => formatTime(value)} />
                     <Legend />
                     <Bar dataKey="time_to_merge" fill="#8884d8" name="Time to Merge" />
