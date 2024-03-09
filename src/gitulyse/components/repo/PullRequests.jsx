@@ -51,6 +51,23 @@ export default function PullRequests({ userAccessToken, owner, repo }) {
         return formattedTime;
     };
 
+    const largestFormatTime = (totalSeconds) => {
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+
+        if (days > 0) {
+            return `${days}d`;
+        }
+        if (hours > 0) {
+            return `${hours}h`;
+        }
+        if (minutes > 0) {
+            return `${minutes}m`;
+        }
+        return `${totalSeconds}s`;
+    };
+
     return (
         <div className="mt-3 flex flex-col items-center">
             <p className="mb-4 text-2xl">Time to Merge Pull requests</p>
@@ -59,7 +76,7 @@ export default function PullRequests({ userAccessToken, owner, repo }) {
                 <BarChart width={600} height={300} data={timeToMergeData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" tickFormatter={(value) => `PR ${value}`} />
-                    <YAxis tickFormatter={(value) => formatTime(value)}/>
+                    <YAxis tickFormatter={(value) => largestFormatTime(value)}/>
                     <Tooltip formatter={(value) => formatTime(value)} />
                     <Legend />
                     <Bar dataKey="time_to_merge" fill="#8884d8" name="Time to Merge" />
