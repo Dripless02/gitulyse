@@ -31,10 +31,24 @@ export default function PullRequests({ userAccessToken, owner, repo }) {
     }, [pullRequests]);
 
     const formatTime = (totalSeconds) => {
-        const hours = Math.floor(totalSeconds / 3600);
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
         const seconds = Math.floor(totalSeconds % 60);
-        return `${hours}h ${minutes}m ${seconds}s`;
+
+        let formattedTime = '';
+        if (days > 0) {
+            formattedTime += `${days}d `;
+        }
+        if (hours > 0) {
+            formattedTime += `${hours}h `;
+        }
+        if (minutes > 0) {
+            formattedTime += `${minutes}m `;
+        }
+        formattedTime += `${seconds}s`;
+
+        return formattedTime;
     };
 
     return (
