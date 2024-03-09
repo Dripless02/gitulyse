@@ -28,8 +28,8 @@ export default function RepoPage({ params }) {
             <p className="mb-4 text-5xl">
                 Info for {owner}/{repo}
             </p>
-            <PullRequests owner={owner} repo={repo} userAccessToken={userAccessToken} />
             <CodeContributions owner={owner} repo={repo} userAccessToken={userAccessToken} />
+            <PullRequests owner={owner} repo={repo} userAccessToken={userAccessToken} />
         </div>
     );
 }
