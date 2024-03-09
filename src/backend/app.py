@@ -1,12 +1,20 @@
+import os
+import pymongo.database
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from github import Auth, Github
+from pymongo import MongoClient
 
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
+
+MONGODB_URL = os.getenv("MONGODB_URL")
+
+db_client: MongoClient = MongoClient(MONGODB_URL)
+db_repo: pymongo.database.Database = db_client.repo
 
 
 @app.route("/", methods=["GET"])
