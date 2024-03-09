@@ -39,7 +39,7 @@ export default function PullRequests({ userAccessToken, owner, repo }) {
 
     return (
         <div className="mt-4 flex flex-col items-center">
-            <p className="mb-4 text-2xl">Pull Requests</p>
+            <p className="mb-4 text-2xl">Time to Merge Pull requests</p>
 
             {pullRequests.length > 0 && (
                 <BarChart width={600} height={300} data={timeToMergeData}>
