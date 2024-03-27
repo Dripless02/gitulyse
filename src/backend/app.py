@@ -199,6 +199,57 @@ def get_pull_requests():
 
     return jsonify({"pull_requests": pull_request_list})
 
+# get issues get request
+@app.route("/get-issues", methods=["GET"])
+def get_issues():
+    token = request.args.get("token")
+    owner = request.args.get("owner")
+    repo_name = request.args.get("repo")
+
+    repo = f"{owner}/{repo_name}"
+
+    auth = Auth.Token(token)
+    g = Github(auth=auth)
+
+    repo = g.get_repo(repo)
+    issues = repo.get_issues(state="all", direction="asc")
+    issue_list = []
+    for issue in issues:
+        issue_info = {
+            "title": issue.title,
+            "author": issue.user.login,
+            "created_at": issue.created_at,
+            "updated_at": issue.updated_at,
+            "issue_number": issue.number,
+        }
+
+        if issue.closed_at is not None:
+            issue_info["state"] = "closed"
+            issue_info["closed_at"] = issue.closed_at
+
+            time_to_close = (
+                issue.closed_at - issue.created_at
+            ).total_seconds()
+
+            days, remainder = divmod(time_to_close, 86400)
+            hours, remainder = divmod(remainder, 3600)
+            minutes, seconds = divmod(remainder, 60)
+
+            time_to_close_obj = {
+                "days": int(days),
+                "hours": int(hours),
+                "minutes": int(minutes),
+                "seconds": int(seconds),
+                "total_seconds": int(time_to_close),
+            }
+
+            issue_info["time_to_close"] = time_to_close_obj
+        else:
+            issue_info["state"] = issue.state
+
+        issue_list.append(issue_info)
+
+    return jsonify({"issues": issue_list})
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
