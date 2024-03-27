@@ -4,8 +4,8 @@ services:
     database:
         image: mongodb/mongodb-community-server:7.0.5-ubi8
         environment:
-            - MONGO_INITDB_ROOT_USERNAME=user
-            - MONGO_INITDB_ROOT_PASSWORD=pass
+            - MONGODB_INITDB_ROOT_USERNAME=user
+            - MONGODB_INITDB_ROOT_PASSWORD=pass
         ports:
             - 27017:27017
         volumes:

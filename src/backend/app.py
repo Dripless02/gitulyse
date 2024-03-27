@@ -1,6 +1,7 @@
 import os
 from time import time
 
+
 import pymongo.database
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
@@ -65,7 +66,7 @@ def get_repos():
         for repo in repos:
             repo_info = {
                 "name": repo.full_name,
-                "commit_count": repo.get_commits().totalCount,
+                "commit_count": repo.get_commits(author=user.login).totalCount,
             }
             repo_list.append(repo_info)
 
