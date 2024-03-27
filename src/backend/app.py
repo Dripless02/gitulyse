@@ -133,7 +133,7 @@ def get_commits_from_repo():
 
     commit_stats = {"monthly": {}}
 
-    with ThreadPoolExecutor(max_workers=10) as executor:
+    with ThreadPoolExecutor(max_workers=20) as executor:
         for monthly_key, commit_info in executor.map(parse_commit, commits):
             commit_stats["monthly"].setdefault(monthly_key, []).append(commit_info)
 
@@ -202,7 +202,7 @@ def get_pull_requests():
     repo = g.get_repo(repo)
     pull_requests = repo.get_pulls(state="all", direction="asc")
     pull_request_list = []
-    with ThreadPoolExecutor(max_workers=10) as executor:
+    with ThreadPoolExecutor(max_workers=20) as executor:
         for pull_request_info in executor.map(parse_pull_request, pull_requests):
             pull_request_list.append(pull_request_info)
 
