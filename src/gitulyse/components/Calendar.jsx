@@ -35,7 +35,7 @@ export default function Calendar({ userAccessToken }) {
     }, [data]);
 
     return (
-        <div className='w-full overflow-hidden p-4'>
+        <div className='h-72 w-full overflow-hidden p-4'>
             <ResponsiveCalendar
                 data={calendarData}
                 from="2024-01-01"
@@ -59,6 +59,13 @@ export default function Calendar({ userAccessToken }) {
                         itemDirection: 'right-to-left'
                     }
                 ]}
+                theme={{
+                    labels: {
+                        text: {
+                            fill: '#fff' // Change text color to white
+                        }
+                    }
+                }}
             />
         </div>
 
