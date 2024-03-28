@@ -2,7 +2,6 @@
 
 import Calendar from "@components/Calendar";
 import Repos from "@components/Repos";
-import Search from "@components/Search";
 import { getSession, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
@@ -27,7 +26,13 @@ const Home = () => {
 
     return (
         <section className="w-full flex-center flex-col">
-            <Marquee speed={100}>
+
+
+            {status === "authenticated" ? (
+                <>
+                <Calendar userAccessToken={userAccessToken} />
+                
+                <Marquee speed={100}>
                 <div>
                     <h1 className="head_text text-center pb-5 bigtext blue_gradient antialiased ">
                         &nbsp;&nbsp;&nbsp;Gitulyse, Analyse your Git Repositories.&nbsp;&nbsp;&nbsp;
@@ -46,12 +51,7 @@ const Home = () => {
                     </h1>
                 </div>
             </Marquee>
-
-            {status === "authenticated" ? (
-                <>
-                    <Search />
-                    <Calendar userAccessToken={userAccessToken} />
-                    <Repos />
+                <Repos />
                 </>
             ) : (
                 <></>
