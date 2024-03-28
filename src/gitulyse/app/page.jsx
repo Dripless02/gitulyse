@@ -1,12 +1,29 @@
 "use client";
 
+import Calendar from "@components/Calendar";
 import Repos from "@components/Repos";
 import Search from "@components/Search";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
 
 const Home = () => {
     const { status } = useSession();
+
+    const [userAccessToken, setUserAccessToken] = useState("");
+
+    useEffect(() => {
+        async function getInfo() {
+            const info = await getSession();
+            if (info) {
+                setUserAccessToken(info.accessToken);
+            }
+        }
+
+        getInfo().catch((err) => {
+            console.error(err);
+        });
+    }, []);
 
     return (
         <section className="w-full flex-center flex-col">
@@ -33,6 +50,7 @@ const Home = () => {
             {status === "authenticated" ? (
                 <>
                     <Search />
+                    <Calendar userAccessToken={userAccessToken} />
                     <Repos />
                 </>
             ) : (
