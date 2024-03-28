@@ -45,7 +45,7 @@ const Repos = () => {
     };
 
     return (
-        <div className="w-full pt-3">
+        <div className="w-full">
             <Chart
                 chartType="PieChart"
                 data={repos_to_data(repos)}
