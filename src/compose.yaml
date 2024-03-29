@@ -10,15 +10,15 @@ services:
       - MONGODB_INITDB_ROOT_USERNAME=user
       - MONGODB_INITDB_ROOT_PASSWORD=pass
     ports:
-      - 27017:27017
+      - "27017:27017"
     volumes:
-      - ./db/data:/data/db
+      - mongo-data:/data/db
 
   backend:
     container_name: gitulyse-api
     build: ./backend
     ports:
-      - 5000:5000
+      - "5000:5000"
     depends_on:
       - database
     environment:
@@ -30,7 +30,7 @@ services:
     container_name: gitulyse-web
     build: ./gitulyse
     ports:
-      - 3000:3000
+      - "3000:3000"
     environment:
       - WATCHPACK_POLLING=true
     depends_on:
@@ -38,3 +38,6 @@ services:
     volumes:
       - ./gitulyse:/app
       - /app/node_modules
+
+volumes:
+  mongo-data:
