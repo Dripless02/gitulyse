@@ -7,14 +7,17 @@ import { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
 
 const Home = () => {
-    const { status } = useSession();
+    const { status, data } = useSession();
+    const [user, setUser] =  useState();
 
     const [userAccessToken, setUserAccessToken] = useState("");
+
 
     useEffect(() => {
         async function getInfo() {
             const info = await getSession();
             if (info) {
+                setUser(info.login);
                 setUserAccessToken(info.accessToken);
             }
         }
@@ -30,8 +33,8 @@ const Home = () => {
 
             {status === "authenticated" ? (
                 <>
-                <Calendar userAccessToken={userAccessToken} />
-                
+                <Calendar userAccessToken={userAccessToken} user={user} />
+
                 <Marquee speed={100}>
                 <div>
                     <h1 className="head_text text-center pb-5 bigtext blue_gradient antialiased ">

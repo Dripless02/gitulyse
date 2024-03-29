@@ -273,11 +273,12 @@ def get_issues():
 @app.route("/github-activity", methods=["GET"])
 def github_activity():
     token = request.args.get("token")
+    user = request.args.get("user")
 
     auth = Auth.Token(token)
     g = Github(auth=auth)
 
-    user = g.get_user()
+    user = g.get_user(user)
     events = user.get_events()
 
     activity_map = {}
