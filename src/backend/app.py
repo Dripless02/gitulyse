@@ -97,23 +97,24 @@ def get_repos():
 
 def parse_commit(commit):
     commit_date = commit.commit.author.date
-    author_name = commit.commit.author.name
+    author_name = commit.author.login if commit.author is not None else commit.commit.author.name
 
     # Group commits by time intervals
     monthly_key = commit_date.strftime("%Y-%m")
 
-    lines_added = 0
-    lines_deleted = 0
-    for file in commit.files:
-        lines_added += file.additions
-        lines_deleted += file.deletions
-
-    lines_of_code = lines_added - lines_deleted
+    lines_of_code = commit.stats.additions - commit.stats.deletions
 
     commit_info = {
         "date": commit_date.isoformat(),
         "author": author_name,
         "lines_of_code": lines_of_code,
+        "timestamp": datetime.timestamp(commit_date),
+        "additions": commit.stats.additions,
+        "deletions": commit.stats.deletions,
+        "files_changed": len(commit.files),
+        "message": commit.commit.message,
+        "url": commit.html_url,
+        "sha": commit.sha,
     }
 
     return monthly_key, commit_info
