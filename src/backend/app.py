@@ -18,7 +18,7 @@ CORS(app)
 MONGODB_URL = os.getenv("MONGODB_URL")
 
 db_client: MongoClient = MongoClient(MONGODB_URL)
-db_repo: pymongo.database.Database = db_client.repo
+all_db_repos: pymongo.database.Database = db_client.repos
 
 
 @app.route("/", methods=["GET"])
@@ -45,14 +45,14 @@ def get_repos():
     g = Github(auth=auth)
 
     user = g.get_user()
-    db_user_repos = db_repo[user.login]
+    db_user_repos = all_db_repos[user.login]
 
     current_date_time = time()
     last_update_doc = db_user_repos.find_one({"name": "last_update"})
 
     repos = user.get_repos(sort="updated")
     if (
-            user.login in db_repo.list_collection_names()
+            user.login in all_db_repos.list_collection_names()
             and force != "true"
             and last_update_doc is not None
     ):
@@ -62,7 +62,7 @@ def get_repos():
             force = "true"
 
     repo_list = []
-    if user.login not in db_repo.list_collection_names() or force == "true":
+    if user.login not in all_db_repos.list_collection_names() or force == "true":
         db_user_repos.create_index("name", unique=True)
         for repo in repos:
             repo_info = {
