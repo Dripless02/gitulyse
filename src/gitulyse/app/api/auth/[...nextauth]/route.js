@@ -31,12 +31,14 @@ export const authOptions = {
         },
         async jwt({ token, user, account, profile }) {
             if (account) {
+                token.login = profile.login;
                 token.accessToken = account.access_token;
             }
             return token;
         },
         async session({ session, token, user }) {
             session.accessToken = token.accessToken;
+            session.login = token.login;
             return session;
         },
     },

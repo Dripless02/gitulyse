@@ -1,16 +1,41 @@
 "use client";
 
+import Calendar from "@components/Calendar";
 import Repos from "@components/Repos";
-import Search from "@components/Search";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
 
 const Home = () => {
-    const { status } = useSession();
+    const { status, data } = useSession();
+    const [user, setUser] =  useState();
+
+    const [userAccessToken, setUserAccessToken] = useState("");
+
+
+    useEffect(() => {
+        async function getInfo() {
+            const info = await getSession();
+            if (info) {
+                setUser(info.login);
+                setUserAccessToken(info.accessToken);
+            }
+        }
+
+        getInfo().catch((err) => {
+            console.error(err);
+        });
+    }, []);
 
     return (
         <section className="w-full flex-center flex-col">
-            <Marquee speed={100}>
+
+
+            {status === "authenticated" ? (
+                <>
+                <Calendar userAccessToken={userAccessToken} user={user} />
+
+                <Marquee speed={100}>
                 <div>
                     <h1 className="head_text text-center pb-5 bigtext blue_gradient antialiased ">
                         &nbsp;&nbsp;&nbsp;Gitulyse, Analyse your Git Repositories.&nbsp;&nbsp;&nbsp;
@@ -29,11 +54,7 @@ const Home = () => {
                     </h1>
                 </div>
             </Marquee>
-
-            {status === "authenticated" ? (
-                <>
-                    <Search />
-                    <Repos />
+                <Repos />
                 </>
             ) : (
                 <></>

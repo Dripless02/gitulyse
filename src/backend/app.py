@@ -2,7 +2,6 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 from time import time
 
-
 import pymongo.database
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
@@ -269,6 +268,31 @@ def get_issues():
         average_time_to_resolve = 0
 
     return jsonify({"issues": issue_list, "average_time_to_resolve": average_time_to_resolve})
+
+
+@app.route("/github-activity", methods=["GET"])
+def github_activity():
+    token = request.args.get("token")
+    user = request.args.get("user")
+
+    auth = Auth.Token(token)
+    g = Github(auth=auth)
+
+    user = g.get_user(user)
+    events = user.get_events()
+
+    activity_map = {}
+    for event in events:
+        created_at = event.created_at.date()
+
+        if created_at not in activity_map:
+            activity_map[created_at] = 0
+        activity_map[created_at] += 1
+
+    formatted_activity = [{"day": date.isoformat(), "value": count} for date, count in activity_map.items()]
+
+    return jsonify(formatted_activity)
+
 
 
 if __name__ == "__main__":

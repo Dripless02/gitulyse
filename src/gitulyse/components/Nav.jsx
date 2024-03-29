@@ -1,10 +1,13 @@
 "use client";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { Center, TextInput } from "@mantine/core";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 const Nav = () => {
     const { data: session } = useSession();
+    const [value, setValue] = useState("");
     return (
         <nav className="flex-between w-full mb-15 pt-3">
             <Link href="/" className="flex gap-2 flex-center">
@@ -19,7 +22,18 @@ const Nav = () => {
             </Link>
             <div className="sm:flex items-center">
                 {session ? (
-                    <div className="flex items-center gap-3 md:gap-5">
+                    <div className="flex items-center gap-3 md:gap-5 ">
+                        <Center className="pr-28 pb-1">
+                            <TextInput
+                                className="pt-4"
+                                variant="filled"
+                                placeholder="Enter Repo URL..."
+                                size="xl"
+                                radius="60"
+                                value={value}
+                                onChange={(event) => setValue(event.currentTarget.value)}
+                            />
+                        </Center>
                         <button type="button" onClick={() => signOut()} className="outline_btn">
                             Sign Out
                         </button>
