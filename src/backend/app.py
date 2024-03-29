@@ -67,8 +67,13 @@ def get_repos():
         for repo in repos:
             repo_info = {
                 "name": repo.full_name,
-                "commit_count": repo.get_commits(author=user.login).totalCount,
             }
+
+            try:
+                repo_info["commit_count"] = repo.get_commits(author=user.login).totalCount
+            except GithubException:
+                repo_info["commit_count"] = 0
+
             repo_list.append(repo_info)
 
             if db_user_repos.find_one({"name": repo.full_name}) is None:
