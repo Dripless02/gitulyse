@@ -1,12 +1,13 @@
 import os
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 from time import time
 
 import pymongo.database
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from github import Auth, Github
+from github import Auth, Github, GithubException
 from pymongo import MongoClient
 
 load_dotenv()
@@ -17,7 +18,7 @@ CORS(app)
 MONGODB_URL = os.getenv("MONGODB_URL")
 
 db_client: MongoClient = MongoClient(MONGODB_URL)
-db_repo: pymongo.database.Database = db_client.repo
+all_db_repos: pymongo.database.Database = db_client.repos
 
 
 @app.route("/", methods=["GET"])
@@ -44,14 +45,14 @@ def get_repos():
     g = Github(auth=auth)
 
     user = g.get_user()
-    db_user_repos = db_repo[user.login]
+    db_user_repos = all_db_repos[user.login]
 
     current_date_time = time()
     last_update_doc = db_user_repos.find_one({"name": "last_update"})
 
     repos = user.get_repos(sort="updated")
     if (
-            user.login in db_repo.list_collection_names()
+            user.login in all_db_repos.list_collection_names()
             and force != "true"
             and last_update_doc is not None
     ):
@@ -61,13 +62,18 @@ def get_repos():
             force = "true"
 
     repo_list = []
-    if user.login not in db_repo.list_collection_names() or force == "true":
+    if user.login not in all_db_repos.list_collection_names() or force == "true":
         db_user_repos.create_index("name", unique=True)
         for repo in repos:
             repo_info = {
                 "name": repo.full_name,
-                "commit_count": repo.get_commits(author=user.login).totalCount,
             }
+
+            try:
+                repo_info["commit_count"] = repo.get_commits(author=user.login).totalCount
+            except GithubException:
+                repo_info["commit_count"] = 0
+
             repo_list.append(repo_info)
 
             if db_user_repos.find_one({"name": repo.full_name}) is None:
@@ -96,26 +102,28 @@ def get_repos():
 
 def parse_commit(commit):
     commit_date = commit.commit.author.date
-    author_name = commit.commit.author.name
+    author_name = commit.author.login if commit.author is not None else commit.commit.author.name
 
     # Group commits by time intervals
     monthly_key = commit_date.strftime("%Y-%m")
 
-    lines_added = 0
-    lines_deleted = 0
-    for file in commit.files:
-        lines_added += file.additions
-        lines_deleted += file.deletions
-
-    lines_of_code = lines_added - lines_deleted
+    lines_of_code = commit.stats.additions - commit.stats.deletions
 
     commit_info = {
         "date": commit_date.isoformat(),
         "author": author_name,
         "lines_of_code": lines_of_code,
+        "timestamp": datetime.timestamp(commit_date),
+        "additions": commit.stats.additions,
+        "deletions": commit.stats.deletions,
+        "files_changed": len(commit.files),
+        "message": commit.commit.message,
+        "url": commit.html_url,
+        "sha": commit.sha,
+        "monthly_key": monthly_key,
     }
 
-    return monthly_key, commit_info
+    return commit_info
 
 
 @app.route("/get-commits", methods=["GET"])
@@ -129,13 +137,39 @@ def get_commits_from_repo():
 
     repo = f"{owner}/{repo_name}"
     repo = g.get_repo(repo)
-    commits = repo.get_commits()
+
+    # each user will have their own database that includes collections of their repos containing information on commits
+    db_repo = db_client[owner][repo_name]
+
+    commits = db_repo.find().sort("timestamp", pymongo.DESCENDING).limit(1)
+    try:
+        last_commit_timestamp = commits[0]["timestamp"]
+    except IndexError:
+        last_commit_timestamp = None
+
+    if last_commit_timestamp is not None:
+        commits = repo.get_commits(since=datetime.fromtimestamp(last_commit_timestamp))
+    else:
+        commits = repo.get_commits()
 
     commit_stats = {"monthly": {}}
 
-    with ThreadPoolExecutor(max_workers=20) as executor:
-        for monthly_key, commit_info in executor.map(parse_commit, commits):
-            commit_stats["monthly"].setdefault(monthly_key, []).append(commit_info)
+    # get all stored commits from the database without the "_id" field
+    stored_commits = list(db_repo.find({}, {"_id": 0}))
+
+    for stored in stored_commits:
+        commit_stats["monthly"].setdefault(stored["monthly_key"], []).append(stored)
+
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        for commit_info in executor.map(parse_commit, commits):
+            commit_stats["monthly"].setdefault(commit_info["monthly_key"], []).append(commit_info)
+            db_repo.update_one(
+                {"sha": commit_info["sha"]},
+                {"$set": commit_info},
+                upsert=True
+            )
+
+    app.logger.info(f"\033[96m commit_stats: {commit_stats} \033[0m")
 
     for monthly_key, monthly_commits in commit_stats["monthly"].items():
         total_lines_of_code = sum(commit["lines_of_code"] for commit in monthly_commits)
@@ -146,6 +180,7 @@ def get_commits_from_repo():
             "average_lines_of_code": average_lines_of_code,
             "commits": monthly_commits,
         }
+
     return jsonify(commit_stats)
 
 
@@ -202,11 +237,12 @@ def get_pull_requests():
     repo = g.get_repo(repo)
     pull_requests = repo.get_pulls(state="all", direction="asc")
     pull_request_list = []
-    with ThreadPoolExecutor(max_workers=20) as executor:
+    with ThreadPoolExecutor(max_workers=10) as executor:
         for pull_request_info in executor.map(parse_pull_request, pull_requests):
             pull_request_list.append(pull_request_info)
 
     return jsonify({"pull_requests": pull_request_list})
+
 
 # get issues get request
 @app.route("/get-issues", methods=["GET"])
