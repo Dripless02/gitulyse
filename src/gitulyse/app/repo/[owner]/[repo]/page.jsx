@@ -87,14 +87,14 @@ export default function RepoPage({ params }) {
 return (
     <DndProvider backend={HTML5Backend}>
         <div className="flex max-w-full">
-                <div className="right-96">
+                <div className=" mt-14 mr-4 flex flex-col ">
                     <DraggableNavItem name="Pull Requests" />
                     <DraggableNavItem name="Code Contributions" />
                     <DraggableNavItem name="Issue Tracking" />
                 </div>
 
             <div className="mt-4 flex flex-col items-center ">
-                <p className="mt-11 text-5xl">
+                <p className="mt-10 text-5xl">
                     Info for {repo}
                 </p>
                 <DropZone onDrop={handleDrop}>
