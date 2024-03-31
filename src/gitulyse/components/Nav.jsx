@@ -22,10 +22,10 @@ const Nav = () => {
             </Link>
             <div className="sm:flex items-center">
                 {session ? (
-                    <div className="flex items-center gap-3 md:gap-5 ">
-                        <Center className="pr-28 pb-1">
+                    <div className="  flex items-center">
+
                             <TextInput
-                                className="pt-4"
+                                className="pt-4 justify-center pr-96 mr-44"
                                 variant="filled"
                                 placeholder="Enter Repo URL..."
                                 size="xl"
@@ -33,7 +33,10 @@ const Nav = () => {
                                 value={value}
                                 onChange={(event) => setValue(event.currentTarget.value)}
                             />
-                        </Center>
+
+
+                    <div className="flex items-center gap-3 md:gap-5 ">
+
                         <button type="button" onClick={() => signOut()} className="outline_btn">
                             Sign Out
                         </button>
@@ -47,6 +50,7 @@ const Nav = () => {
                                 className="rounded-full"
                             />
                         </Link>
+                    </div>
                     </div>
                 ) : (
                     <div className="flex gap-3 md:gap-5">
