@@ -65,12 +65,13 @@ export default function RepoPage({ params }) {
       }),
     }));
 
+
     return (
       <div
         ref={drop}
         style={{
-          width: "100%",
-          minHeight: "200px",
+          minwidth: "500px",
+          minHeight: "300px",
           backgroundColor:
             isOver && canDrop ? "lightgreen" : canDrop ? "lightyellow" : "#242424",
           position: "relative",
@@ -118,7 +119,7 @@ export default function RepoPage({ params }) {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="flex max-w-full">
-        <div className="mt-14 mr-4 flex flex-col">
+        <div className="mt-36 mr-16 flex flex-col">
           <DraggableNavItem name="Pull Requests" />
           <DraggableNavItem name="Code Contributions" />
           <DraggableNavItem name="Issue Tracking" />
