@@ -1,4 +1,5 @@
 "use client";
+
 import CodeContributions from "@components/repo/CodeContributions";
 import IssueTracking from "@components/repo/IssueTracking";
 import PullRequests from "@components/repo/PullRequests";
@@ -7,14 +8,25 @@ import { useEffect, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
-
 export default function RepoPage({ params }) {
   const owner = params.owner;
   const repo = params.repo;
 
   const [userAccessToken, setUserAccessToken] = useState("");
-  const [gridLayout, setGridLayout] = useState(Array.from({ length: 2 }).map(() => Array.from({ length: 1 }).fill(null)));
+  const [dropzones, setDropzones] = useState(Array.from({ length: 4 }).fill(null));
 
+  useEffect(() => {
+    async function getInfo() {
+      const info = await getSession();
+      if (info) {
+        setUserAccessToken(info.accessToken);
+      }
+    }
+
+    getInfo().catch((err) => {
+      console.error(err);
+    });
+  }, []);
 
   const DraggableNavItem = ({ name }) => {
     const [{ isDragging }, drag] = useDrag(() => ({
@@ -43,10 +55,10 @@ export default function RepoPage({ params }) {
     );
   };
 
-  const DropZone = ({ onDrop, children }) => {
+  const DropZone = ({ onDrop, children, index }) => {
     const [{ isOver, canDrop }, drop] = useDrop(() => ({
       accept: "NAV_ITEM",
-      drop: (item) => onDrop(item),
+      drop: (item) => onDrop(item, index),
       collect: (monitor) => ({
         isOver: monitor.isOver(),
         canDrop: monitor.canDrop(),
@@ -83,24 +95,10 @@ export default function RepoPage({ params }) {
     );
   };
 
-  const GridDropZone = ({ onDrop, gridLayout }) => {
-    return (
-      <div className="grid grid-cols-2 gap-4">
-        {gridLayout.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex">
-            {row.map((item, colIndex) => (
-              <div key={colIndex} style={{ flex: 1 }}>
-                <DropZone
-                  onDrop={(itemName) => onDrop(itemName, rowIndex, colIndex)}
-                >
-                  {item && renderItem(item)}
-                </DropZone>
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-    );
+  const handleDrop = (item, index) => {
+    const newDropzones = [...dropzones];
+    newDropzones[index] = { name: item.name };
+    setDropzones(newDropzones);
   };
 
   const renderItem = (item) => {
@@ -114,27 +112,8 @@ export default function RepoPage({ params }) {
         return <IssueTracking owner={owner} repo={repo} userAccessToken={userAccessToken} />;
       default:
         return null;
-    }
-  };
 
-  useEffect(() => {
-    async function getInfo() {
-      const info = await getSession();
-      if (info) {
-        setUserAccessToken(info.accessToken);
-      }
-    }
-
-    getInfo().catch((err) => {
-      console.error(err);
-    });
-  }, []);
-
-  const handleDrop = (item, rowIndex, colIndex) => {
-    const newLayout = [...gridLayout];
-    newLayout[rowIndex][colIndex] = { name: item.name };
-    setGridLayout(newLayout);
-  };
+    }}
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -145,10 +124,22 @@ export default function RepoPage({ params }) {
           <DraggableNavItem name="Issue Tracking" />
         </div>
         <div className="mt-4 flex flex-col items-center">
-          <p className="mt-10 text-5xl">Info for {repo}</p>
-          <GridDropZone onDrop={handleDrop} gridLayout={gridLayout} />
+          <p className="mt-10 mb-10 text-5xl">Info for {repo}</p>
+          <div className="grid grid-cols-2 gap-4">
+            {dropzones.map((item, index) => (
+              <div key={index} className="flex">
+                <div style={{ flex: 1 }}>
+                  <DropZone onDrop={(itemName) => handleDrop(itemName, index)} index={index}>
+                    {item && renderItem(item)}
+                  </DropZone>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </DndProvider>
   );
 }
+
+
