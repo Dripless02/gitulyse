@@ -331,29 +331,5 @@ def github_activity():
     return jsonify(formatted_activity)
 
 
-@app.route("/analyse-code", methods=["GET"])
-def analyse_code():
-    token = request.args.get("token")
-    owner = request.args.get("owner")
-    repo_name = request.args.get("repo")
-    file_path = request.args.get("file_path")
-    repo = f"{owner}/{repo_name}"
-
-    auth = Auth.Token(token)
-    g = Github(auth=auth)
-
-    repo = g.get_repo(repo)
-    try:
-        file_content = repo.get_contents(file_path).decoded_content.decode("utf-8")
-    except Exception as e:
-        return jsonify({"error": f"Failed to fetch code from GitHub: {str(e)}"}), 400
-
-
-
-    return jsonify({"pylint_output": file_content})
-
-
-
-
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
