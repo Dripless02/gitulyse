@@ -1,4 +1,5 @@
 import os
+import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from time import time
@@ -328,6 +329,29 @@ def github_activity():
     formatted_activity = [{"day": date.isoformat(), "value": count} for date, count in activity_map.items()]
 
     return jsonify(formatted_activity)
+
+
+@app.route("/analyse-code", methods=["GET"])
+def analyse_code():
+    token = request.args.get("token")
+    owner = request.args.get("owner")
+    repo_name = request.args.get("repo")
+    file_path = request.args.get("file_path")
+    repo = f"{owner}/{repo_name}"
+
+    auth = Auth.Token(token)
+    g = Github(auth=auth)
+
+    repo = g.get_repo(repo)
+    try:
+        file_content = repo.get_contents(file_path).decoded_content.decode("utf-8")
+    except Exception as e:
+        return jsonify({"error": f"Failed to fetch code from GitHub: {str(e)}"}), 400
+
+
+
+    return jsonify({"pylint_output": file_content})
+
 
 
 
