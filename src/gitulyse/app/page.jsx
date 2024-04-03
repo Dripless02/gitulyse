@@ -7,11 +7,10 @@ import { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
 
 const Home = () => {
-    const { status, data } = useSession();
-    const [user, setUser] =  useState();
+    const { status } = useSession();
+    const [user, setUser] = useState();
 
     const [userAccessToken, setUserAccessToken] = useState("");
-
 
     useEffect(() => {
         async function getInfo() {
@@ -29,32 +28,30 @@ const Home = () => {
 
     return (
         <section className="w-full flex-center flex-col">
-
-
             {status === "authenticated" ? (
                 <>
-                <Calendar userAccessToken={userAccessToken} user={user} />
+                    <Calendar userAccessToken={userAccessToken} user={user}/>
 
-                <Marquee speed={100}>
-                <div>
-                    <h1 className="head_text text-center pb-5 bigtext blue_gradient antialiased ">
-                        &nbsp;&nbsp;&nbsp;Gitulyse, Analyse your Git Repositories.&nbsp;&nbsp;&nbsp;
-                    </h1>
-                </div>
+                    <Marquee speed={100}>
+                        <div>
+                            <h1 className="head_text text-center pb-5 bigtext blue_gradient antialiased ">
+                                &nbsp;&nbsp;&nbsp;Gitulyse, Analyse your Git Repositories.&nbsp;&nbsp;&nbsp;
+                            </h1>
+                        </div>
 
-                <div>
-                    <h1 className="head_text text-center pb-5 bigtext blue_gradient antialiased ">
-                        &nbsp;&nbsp;&nbsp;Search for a repository or user to get started.&nbsp;&nbsp;&nbsp;
-                    </h1>
-                </div>
+                        <div>
+                            <h1 className="head_text text-center pb-5 bigtext blue_gradient antialiased ">
+                                &nbsp;&nbsp;&nbsp;Search for a repository or user to get started.&nbsp;&nbsp;&nbsp;
+                            </h1>
+                        </div>
 
-                <div>
-                    <h1 className="head_text text-center pb-5 bigtext blue_gradient antialiased ">
-                        &nbsp;&nbsp;&nbsp;Find your own Repos below.&nbsp;&nbsp;&nbsp;
-                    </h1>
-                </div>
-            </Marquee>
-                <Repos />
+                        <div>
+                            <h1 className="head_text text-center pb-5 bigtext blue_gradient antialiased ">
+                                &nbsp;&nbsp;&nbsp;Find your own Repos below.&nbsp;&nbsp;&nbsp;
+                            </h1>
+                        </div>
+                    </Marquee>
+                    <Repos/>
                 </>
             ) : (
                 <></>
