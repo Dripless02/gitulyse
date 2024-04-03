@@ -1,5 +1,4 @@
 import os
-import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from time import time
