@@ -40,15 +40,7 @@ export default function RepoPage({ params }) {
         return (
             <div
                 ref={drag}
-                style={{
-                    opacity: isDragging ? 0.5 : 1,
-                    cursor: "pointer",
-                    marginBottom: "8px",
-                    padding: "8px",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    backgroundColor: "#fff",
-                }}
+                className={"cursor-pointer mb-2 p-1 border border-solid border-gray-400 rounded bg-white" + (isDragging ? " opacity-50" : "")}
             >
                 {name}
             </div>
@@ -68,15 +60,8 @@ export default function RepoPage({ params }) {
         return (
             <div
                 ref={drop}
-                style={{
-                    minwidth: "500px",
-                    minHeight: "300px",
-                    backgroundColor:
-                        isOver && canDrop ? "lightgreen" : canDrop ? "lightyellow" : "#242424",
-                    position: "relative",
-                    border: "1px dashed #ccc",
-                    padding: "20px",
-                }}
+                className={"relative min-w-[500px] min-h-96 border border-solid border-gray-400 rounded p-5" +
+                    "" + (isOver && canDrop ? " border-green-500" : "")}
             >
                 {isOver && canDrop && (
                     <p
@@ -113,10 +98,10 @@ export default function RepoPage({ params }) {
                     />
                 );
             case "Pull Requests":
-                return <PullRequests owner={owner} repo={repo} userAccessToken={userAccessToken} />;
+                return <PullRequests owner={owner} repo={repo} userAccessToken={userAccessToken}/>;
             case "Issue Tracking":
                 return (
-                    <IssueTracking owner={owner} repo={repo} userAccessToken={userAccessToken} />
+                    <IssueTracking owner={owner} repo={repo} userAccessToken={userAccessToken}/>
                 );
             default:
                 return null;
@@ -127,9 +112,9 @@ export default function RepoPage({ params }) {
         <DndProvider backend={HTML5Backend}>
             <div className="flex max-w-full">
                 <div className="mt-36 mr-16 flex flex-col">
-                    <DraggableNavItem name="Pull Requests" />
-                    <DraggableNavItem name="Code Contributions" />
-                    <DraggableNavItem name="Issue Tracking" />
+                    <DraggableNavItem name="Pull Requests"/>
+                    <DraggableNavItem name="Code Contributions"/>
+                    <DraggableNavItem name="Issue Tracking"/>
                 </div>
                 <div className="mt-4 flex flex-col items-center">
                     <p className="mt-10 mb-10 text-5xl">Info for {repo}</p>

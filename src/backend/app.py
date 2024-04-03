@@ -330,6 +330,5 @@ def github_activity():
     return jsonify(formatted_activity)
 
 
-
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
