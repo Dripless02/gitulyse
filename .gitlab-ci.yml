@@ -42,7 +42,7 @@ backend-test:
   artifacts:
     when: always
     reports:
-      junit: report.xml
+      junit: src/backend/report.xml
 
 build-job:
   stage: build
