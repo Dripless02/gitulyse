@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from github import Auth, Github
 
 from . import pull_requests, repos, commits, issues, db
@@ -9,6 +10,8 @@ from . import pull_requests, repos, commits, issues, db
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config["MONGO_URI"] = os.getenv("MONGODB_URL")
+
+    CORS(app)
 
     if test_config is None:
         app.config.from_pyfile("config.py", silent=True)
