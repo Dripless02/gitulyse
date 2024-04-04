@@ -32,7 +32,7 @@ backend-test:
   before_script:
     - echo "Installing dependencies..."
     - cd src/backend
-    - pip install -q -r requirements.txt -q
+    - pip install -q -r requirements.txt
     - pip install -q -e .
     - echo "Dependencies installed."
   script:
