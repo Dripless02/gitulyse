@@ -50,7 +50,6 @@ def get_commits_from_repo():
     repo = f"{owner}/{repo_name}"
     repo = g.get_repo(repo)
 
-    # each user will have their own database that includes collections of their repos containing information on commits
     db_repo = db_client[owner][repo_name]
 
     commits = db_repo.find().sort("timestamp", pymongo.DESCENDING).limit(1)
@@ -66,29 +65,46 @@ def get_commits_from_repo():
 
     commit_stats = {"monthly": {}}
 
-    # get all stored commits from the database without the "_id" field
     stored_commits = list(db_repo.find({}, {"_id": 0}))
 
     for stored in stored_commits:
-        commit_stats["monthly"].setdefault(stored["monthly_key"], []).append(stored)
+        monthly_key = stored["monthly_key"]
+        author_name = stored["author"]
+        lines_of_code = stored["lines_of_code"]
+        if monthly_key not in commit_stats["monthly"]:
+            commit_stats["monthly"][monthly_key] = {}
+        if author_name not in commit_stats["monthly"][monthly_key]:
+            commit_stats["monthly"][monthly_key][author_name] = []
+        commit_stats["monthly"][monthly_key][author_name].append(lines_of_code)
 
     with ThreadPoolExecutor(max_workers=10) as executor:
         for commit_info in executor.map(parse_commit, commits):
-            commit_stats["monthly"].setdefault(commit_info["monthly_key"], []).append(commit_info)
+            author_name = commit_info["author"]
+            monthly_key = commit_info["monthly_key"]
+            commit_stats["monthly"].setdefault(monthly_key, {}).setdefault(author_name, []).append(commit_info)
             db_repo.update_one(
                 {"sha": commit_info["sha"]},
                 {"$set": commit_info},
                 upsert=True
             )
 
-    for monthly_key, monthly_commits in commit_stats["monthly"].items():
-        total_lines_of_code = sum(commit["lines_of_code"] for commit in monthly_commits)
-        average_lines_of_code = total_lines_of_code / len(monthly_commits)
-        average_lines_of_code = round(average_lines_of_code, 1)
-        commit_stats["monthly"][monthly_key] = {
-            "total_lines_of_code": total_lines_of_code,
-            "average_lines_of_code": average_lines_of_code,
-            "commits": monthly_commits,
-        }
+    # Collect all unique authors across all months
+    all_authors = set()
+    for monthly_data in commit_stats["monthly"].values():
+        all_authors.update(monthly_data.keys())
+
+    # Iterate over all months and authors to ensure each author has a contribution value
+    for monthly_key, monthly_data in commit_stats["monthly"].items():
+        for author in all_authors:
+            if author not in monthly_data:
+                # If the author doesn't exist for this month, set their contribution to 0
+                commit_stats["monthly"][monthly_key][author] = [0]
+
+    for monthly_key, monthly_data in commit_stats["monthly"].items():
+        for author_name, lines_of_code_list in monthly_data.items():
+            total_lines_of_code = sum(line for line in lines_of_code_list if isinstance(line, int))
+            average_lines_of_code = total_lines_of_code / len(lines_of_code_list) if lines_of_code_list else 0
+            average_lines_of_code = round(average_lines_of_code, 1)
+            commit_stats["monthly"][monthly_key][author_name] = average_lines_of_code
 
     return jsonify(commit_stats)
