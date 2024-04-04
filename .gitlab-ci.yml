@@ -32,8 +32,8 @@ backend-test:
   before_script:
     - echo "Installing dependencies..."
     - cd src/backend
-    - pip install -r requirements.txt
-    - pip install -e .
+    - pip install -q -r requirements.txt -q
+    - pip install -q -e .
     - echo "Dependencies installed."
   script:
     - echo "Running backend tests..."
