@@ -44,14 +44,6 @@ backend-test:
     reports:
       junit: report.xml
 
-test-job:
-  stage: test
-  extends: .standard-rules
-  script:
-    - echo "Running tests... This will take about 60 seconds."
-    - sleep 10
-    - echo "Tests complete."
-
 build-job:
   stage: build
   extends: .standard-rules
