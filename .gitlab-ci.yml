@@ -24,6 +24,25 @@ frontend-lint:
     - npm run lint
     - echo "Eslint complete."
 
+backend-test:
+  stage: test
+  image: python:3.12.2
+  extends: .standard-rules
+  before_script:
+    - echo "Installing dependencies..."
+    - cd src/backend
+    - pip install -r requirements.txt
+    - pip install -e .
+    - echo "Dependencies installed."
+  script:
+    - echo "Running backend tests..."
+    - pytest --junitxml=report.xml
+    - echo "Backend tests complete."
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+
 test-job:
   stage: test
   extends: .standard-rules
