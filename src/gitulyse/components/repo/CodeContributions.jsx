@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
+import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
 
 export default function CodeContributions({ userAccessToken, owner, repo }) {
     const [monthlyData, setMonthlyData] = useState([]);
@@ -18,7 +18,7 @@ export default function CodeContributions({ userAccessToken, owner, repo }) {
             repo: repo,
         });
 
-        fetch(`${BACKEND_URL}/get-commits?${queryParams}`)
+        fetch(`${BACKEND_URL}/code-contribution-stats?${queryParams}`)
             .then((res) => res.json())
             .then((data) => {
                 // Extract all authors from the data
@@ -31,16 +31,20 @@ export default function CodeContributions({ userAccessToken, owner, repo }) {
                 setAllAuthors([...new Set(authors)]);
 
                 // Set monthly data
-                setMonthlyData(Object.entries(data.monthly).map(([month, authors]) => ({
-                    month,
-                    ...authors
-                })));
+                setMonthlyData(
+                    Object.entries(data.monthly).map(([month, authors]) => ({
+                        month,
+                        ...authors,
+                    })),
+                );
             });
     }, [userAccessToken, BACKEND_URL, owner, repo]);
 
     const handleAuthorSelection = (author) => {
         if (selectedAuthors.includes(author)) {
-            setSelectedAuthors(selectedAuthors.filter((selectedAuthor) => selectedAuthor !== author));
+            setSelectedAuthors(
+                selectedAuthors.filter((selectedAuthor) => selectedAuthor !== author),
+            );
         } else {
             setSelectedAuthors([...selectedAuthors, author]);
         }
@@ -72,8 +76,14 @@ export default function CodeContributions({ userAccessToken, owner, repo }) {
                     <button
                         key={author}
                         onClick={() => handleAuthorSelection(author)}
-                        className={`mr-2 mb-2 p-2 rounded ${selectedAuthors.includes(author) ? '' : 'bg-gray-200 text-gray-500'}`}
-                        style={{ backgroundColor: selectedAuthors.includes(author) ? getColor(index) : '' }}
+                        className={`mr-2 mb-2 p-2 rounded ${
+                            selectedAuthors.includes(author) ? "" : "bg-gray-200 text-gray-500"
+                        }`}
+                        style={{
+                            backgroundColor: selectedAuthors.includes(author)
+                                ? getColor(index)
+                                : "",
+                        }}
                     >
                         {author}
                     </button>
@@ -84,16 +94,16 @@ export default function CodeContributions({ userAccessToken, owner, repo }) {
 
     function getColor(index) {
         const colors = [
-            '#FF0000', // Red
-            '#00FF00', // Green
-            '#0000FF', // Blue
-            '#FFFF00', // Yellow
-            '#FF00FF', // Magenta
-            '#00FFFF', // Cyan
-            '#FFA500', // Orange
-            '#800080', // Purple
-            '#008000', // Dark Green
-            '#800000', // Maroon
+            "#FF0000", // Red
+            "#00FF00", // Green
+            "#0000FF", // Blue
+            "#FFFF00", // Yellow
+            "#FF00FF", // Magenta
+            "#00FFFF", // Cyan
+            "#FFA500", // Orange
+            "#800080", // Purple
+            "#008000", // Dark Green
+            "#800000", // Maroon
         ];
         return colors[index % colors.length];
     }
