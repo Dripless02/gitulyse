@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 
@@ -73,8 +72,8 @@ export default function CodeContributions({ userAccessToken, owner, repo }) {
                     <button
                         key={author}
                         onClick={() => handleAuthorSelection(author)}
-                        className={`mr-2 mb-2 p-2 rounded ${selectedAuthors.includes(author) ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-                        style={{ backgroundColor: getColor(index) }}
+                        className={`mr-2 mb-2 p-2 rounded ${selectedAuthors.includes(author) ? '' : 'bg-gray-200 text-gray-500'}`}
+                        style={{ backgroundColor: selectedAuthors.includes(author) ? getColor(index) : '' }}
                     >
                         {author}
                     </button>
