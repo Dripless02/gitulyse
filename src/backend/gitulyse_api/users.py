@@ -2,7 +2,8 @@ from concurrent.futures import ThreadPoolExecutor
 from time import time
 
 from flask import Blueprint, jsonify, request, current_app
-from github import Auth, Github, BadCredentialsException
+from github import Auth, Github, BadCredentialsException, GithubException
+from github.Repository import Repository
 
 from gitulyse_api.db import get_db
 
@@ -19,6 +20,7 @@ def calculate_addition_deletions(commit):
 
 
 def parse_repo(repo_user):
+    repo: Repository
     repo, user_login = repo_user
     commits = repo.get_commits(author=user_login)
 
@@ -27,6 +29,11 @@ def parse_repo(repo_user):
         "deletions": 0,
         "commits": 0,
     }
+
+    try:
+        commits.totalCount
+    except GithubException:
+        return contribution_counts
 
     with ThreadPoolExecutor(max_workers=3) as executor:
         for addition, deletion in executor.map(calculate_addition_deletions, commits):
