@@ -56,9 +56,9 @@ def code_contribution_stats():
             if contributions[month][author]["commits"] == 0:
                 average_contributions_per_commit = 0
             else:
-                average_contributions_per_commit = contributions[month][author]["additions"] - \
+                average_contributions_per_commit = round(contributions[month][author]["additions"] - \
                                                    contributions[month][author]["deletions"] / \
-                                                   contributions[month][author]["commits"]
+                                                   contributions[month][author]["commits"], 1)
             contributions[month][author] = average_contributions_per_commit
 
     return jsonify({"monthly": contributions}), 200
