@@ -46,8 +46,8 @@ def get_contributions_from_repo(token, owner, repo_name):
 @bp.route("/code-contribution-stats", methods=["GET"])
 def code_contribution_stats():
     token = request.args.get("token")
-    owner = request.args.get("owner")
-    repo_name = request.args.get("repo")
+    owner = request.args.get("owner").lower()
+    repo_name = request.args.get("repo").lower()
 
     contributions = get_contributions_from_repo(token, owner, repo_name)
 
@@ -56,9 +56,9 @@ def code_contribution_stats():
             if contributions[month][author]["commits"] == 0:
                 average_contributions_per_commit = 0
             else:
-                average_contributions_per_commit = round(contributions[month][author]["additions"] - \
-                                                   contributions[month][author]["deletions"] / \
-                                                   contributions[month][author]["commits"], 1)
+                average_contributions_per_commit = round(contributions[month][author]["additions"] +
+                                                         contributions[month][author]["deletions"] /
+                                                         contributions[month][author]["commits"], 1)
             contributions[month][author] = average_contributions_per_commit
 
     return jsonify({"monthly": contributions}), 200
