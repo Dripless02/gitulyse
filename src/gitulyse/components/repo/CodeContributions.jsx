@@ -55,14 +55,13 @@ export default function CodeContributions({ userAccessToken, owner, repo }) {
                 <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip />
-                <Legend />
-                {allAuthors.map((author) => (
+                {allAuthors.map((author, index) => (
                     <Line
                         key={author}
                         type="monotone"
                         dataKey={author}
                         name={author}
-                        stroke={`#${Math.floor(Math.random() * 16777215).toString(16)}`}
+                        stroke={getColor(index)}
                         activeDot={{ r: 8 }}
                         isAnimationActive={false}
                         hide={!selectedAuthors.includes(author)}
@@ -70,11 +69,12 @@ export default function CodeContributions({ userAccessToken, owner, repo }) {
                 ))}
             </LineChart>
             <div className="mt-4">
-                {allAuthors.map((author) => (
+                {allAuthors.map((author, index) => (
                     <button
                         key={author}
                         onClick={() => handleAuthorSelection(author)}
                         className={`mr-2 mb-2 p-2 rounded ${selectedAuthors.includes(author) ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                        style={{ backgroundColor: getColor(index) }}
                     >
                         {author}
                     </button>
@@ -82,4 +82,20 @@ export default function CodeContributions({ userAccessToken, owner, repo }) {
             </div>
         </div>
     );
+
+    function getColor(index) {
+        const colors = [
+            '#FF0000', // Red
+            '#00FF00', // Green
+            '#0000FF', // Blue
+            '#FFFF00', // Yellow
+            '#FF00FF', // Magenta
+            '#00FFFF', // Cyan
+            '#FFA500', // Orange
+            '#800080', // Purple
+            '#008000', // Dark Green
+            '#800000', // Maroon
+        ];
+        return colors[index % colors.length];
+    }
 }
