@@ -77,11 +77,11 @@ def get_user():
             "deletions": 0,
             "commits": 0,
         },
-        "repos": []
+        "repos": {}
     }
 
     all_user_repos = [repo for repo in user.get_repos(type="all")]
-    user_info["repos"] = [repo.full_name for repo in all_user_repos]
+    user_info["repos"] = [{"name": repo.full_name, "html_url": repo.html_url} for repo in all_user_repos]
 
     start_time = time()
     with ThreadPoolExecutor(max_workers=10) as repo_executor:
