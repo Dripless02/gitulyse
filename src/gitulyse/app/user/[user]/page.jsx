@@ -15,6 +15,7 @@ import {
 } from "@mantine/core";
 import { IconArrowRight, IconInfoSquareRounded, IconMapPin } from "@tabler/icons-react";
 import { useDisclosure } from "@node_modules/@mantine/hooks";
+import Link from "next/link";
 
 export default function UserPage({ params }) {
     const user = params.user;
@@ -148,14 +149,14 @@ export default function UserPage({ params }) {
                         {userInfo.repos.map((repo) => {
                             return (
                                 <Grid.Col key={repo.name} span={{ base: 12, md: 6, lg: 4 }}>
-                                    <a
-                                        href={repo.html_url}
-                                        target="_blank"
+                                    <Link
+                                        href={`/repo/${repo.name}`}
+                                        target="_self"
                                         className="py-1.5 px-8 w-full h-14 inline-flex items-center justify-between rounded text-xl bg-[#12b88626] text-[#63e6be] hover:bg-[#12b88633]"
                                     >
                                         {repo.name}
                                         <IconArrowRight stroke={1.5} />
-                                    </a>
+                                    </Link>
                                 </Grid.Col>
                             );
                         })}
