@@ -1,94 +1,64 @@
-from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime
-
-import pymongo
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, request, jsonify
 from github import Auth, Github
-
-from .db import get_db
+from github.StatsContributor import StatsContributor
 
 bp = Blueprint('commits', __name__)
 
 
-def parse_commit(commit):
-    commit_date = commit.commit.author.date
-    author_name = commit.author.login if commit.author is not None else commit.commit.author.name
+def parse_contributions(contributor: StatsContributor, contributions):
+    author = contributor.author
+    weeks: list[StatsContributor.Week] = contributor.weeks
+    for week in weeks:
+        month = week.w.date().strftime("%Y-%m")
+        if author.login not in contributions[month]:
+            contributions[month][author.login] = {
+                "additions": week.a,
+                "deletions": week.d,
+                "commits": week.c,
+            }
+        else:
+            contributions[month][author.login]["additions"] += week.a
+            contributions[month][author.login]["deletions"] += week.d
+            contributions[month][author.login]["commits"] += week.c
 
-    # Group commits by time intervals
-    monthly_key = commit_date.strftime("%Y-%m")
-
-    lines_of_code = commit.stats.additions - commit.stats.deletions
-
-    commit_info = {
-        "date": commit_date.isoformat(),
-        "author": author_name,
-        "lines_of_code": lines_of_code,
-        "timestamp": datetime.timestamp(commit_date),
-        "additions": commit.stats.additions,
-        "deletions": commit.stats.deletions,
-        "files_changed": len(commit.files),
-        "message": commit.commit.message,
-        "url": commit.html_url,
-        "sha": commit.sha,
-        "monthly_key": monthly_key,
-    }
-
-    return commit_info
+    return contributions
 
 
-@bp.route("/get-commits", methods=["GET"])
-def get_commits_from_repo():
-    token = request.args.get("token")
-    owner = request.args.get("owner")
-    repo_name = request.args.get("repo")
-
-    db_client = get_db()
-
+def get_contributions_from_repo(token, owner, repo_name):
     auth = Auth.Token(token)
-    g = Github(auth=auth)
+    gh = Github(auth=auth)
 
-    repo = f"{owner}/{repo_name}"
-    repo = g.get_repo(repo)
+    repo_full_name = f"{owner}/{repo_name}"
 
-    # each user will have their own database that includes collections of their repos containing information on commits
-    db_repo = db_client[owner][repo_name]
+    repo = gh.get_repo(repo_full_name)
 
-    commits = db_repo.find().sort("timestamp", pymongo.DESCENDING).limit(1)
-    try:
-        last_commit_timestamp = commits[0]["timestamp"]
-    except IndexError:
-        last_commit_timestamp = None
+    contributors = repo.get_stats_contributors()
+    contributions = {}
+    for week in contributors[0].weeks:
+        contributions[week.w.date().strftime("%Y-%m")] = {}
 
-    if last_commit_timestamp is not None:
-        commits = repo.get_commits(since=datetime.fromtimestamp(last_commit_timestamp))
-    else:
-        commits = repo.get_commits()
+    for contributor in contributors:
+        contributions = parse_contributions(contributor, contributions)
 
-    commit_stats = {"monthly": {}}
+    return contributions
 
-    # get all stored commits from the database without the "_id" field
-    stored_commits = list(db_repo.find({}, {"_id": 0}))
 
-    for stored in stored_commits:
-        commit_stats["monthly"].setdefault(stored["monthly_key"], []).append(stored)
+@bp.route("/code-contribution-stats", methods=["GET"])
+def code_contribution_stats():
+    token = request.args.get("token")
+    owner = request.args.get("owner").lower()
+    repo_name = request.args.get("repo").lower()
 
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        for commit_info in executor.map(parse_commit, commits):
-            commit_stats["monthly"].setdefault(commit_info["monthly_key"], []).append(commit_info)
-            db_repo.update_one(
-                {"sha": commit_info["sha"]},
-                {"$set": commit_info},
-                upsert=True
-            )
+    contributions = get_contributions_from_repo(token, owner, repo_name)
 
-    for monthly_key, monthly_commits in commit_stats["monthly"].items():
-        total_lines_of_code = sum(commit["lines_of_code"] for commit in monthly_commits)
-        average_lines_of_code = total_lines_of_code / len(monthly_commits)
-        average_lines_of_code = round(average_lines_of_code, 1)
-        commit_stats["monthly"][monthly_key] = {
-            "total_lines_of_code": total_lines_of_code,
-            "average_lines_of_code": average_lines_of_code,
-            "commits": monthly_commits,
-        }
+    for month in contributions:
+        for author in contributions[month]:
+            if contributions[month][author]["commits"] == 0:
+                average_contributions_per_commit = 0
+            else:
+                average_contributions_per_commit = round(contributions[month][author]["additions"] +
+                                                         contributions[month][author]["deletions"] /
+                                                         contributions[month][author]["commits"], 1)
+            contributions[month][author] = average_contributions_per_commit
 
-    return jsonify(commit_stats)
+    return jsonify({"monthly": contributions}), 200

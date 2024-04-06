@@ -31,30 +31,28 @@ const Home = () => {
             {status === "authenticated" ? (
                 <>
                     <Calendar userAccessToken={userAccessToken} user={user}/>
-
-                    <Marquee speed={100}>
-                        <div>
-                            <h1 className="head_text text-center pb-5 bigtext blue_gradient antialiased ">
-                                &nbsp;&nbsp;&nbsp;Gitulyse, Analyse your Git Repositories.&nbsp;&nbsp;&nbsp;
-                            </h1>
-                        </div>
-
-                        <div>
-                            <h1 className="head_text text-center pb-5 bigtext blue_gradient antialiased ">
-                                &nbsp;&nbsp;&nbsp;Search for a repository or user to get started.&nbsp;&nbsp;&nbsp;
-                            </h1>
-                        </div>
-
-                        <div>
-                            <h1 className="head_text text-center pb-5 bigtext blue_gradient antialiased ">
-                                &nbsp;&nbsp;&nbsp;Find your own Repos below.&nbsp;&nbsp;&nbsp;
-                            </h1>
-                        </div>
-                    </Marquee>
                     <Repos/>
                 </>
             ) : (
-                <></>
+                <Marquee speed={100} style={{ margin: "30vh auto" }}>
+                    <div>
+                        <h1 className="text-8xl text-center pb-5 blue_gradient antialiased ">
+                            &nbsp;&nbsp;&nbsp;Gitulyse, Analyse your Git Repositories.&nbsp;&nbsp;&nbsp;
+                        </h1>
+                    </div>
+
+                    <div>
+                        <h1 className="text-8xl text-center pb-5  blue_gradient antialiased ">
+                            &nbsp;&nbsp;&nbsp;Search for a repository or user, and view their workflow.&nbsp;&nbsp;&nbsp;
+                        </h1>
+                    </div>
+
+                    <div>
+                        <h1 className="text-8xl text-center pb-5 blue_gradient antialiased ">
+                            &nbsp;&nbsp;&nbsp;Sign in with your Github to get started.&nbsp;&nbsp;&nbsp;
+                        </h1>
+                    </div>
+                </Marquee>
             )}
         </section>
     );
