@@ -22,8 +22,8 @@ export default function UserPage({ params }) {
 
     const [userAccessToken, setUserAccessToken] = useState("");
     const [userInfo, setUserInfo] = useState({});
-    // const [isLoading, setIsLoading] = useState(true);
-    const [isLoading, { close: disableLoading, toggle: toggleLoading }] = useDisclosure(true);
+    const [isLoading, { close: disableLoading }] = useDisclosure(true);
+
     useEffect(() => {
         async function getInfo() {
             const info = await getSession();
@@ -47,10 +47,6 @@ export default function UserPage({ params }) {
                 disableLoading();
             });
     }, [BACKEND_URL, disableLoading, user, userAccessToken]);
-
-    useEffect(() => {
-        console.log(isLoading);
-    }, [isLoading]);
 
     return isLoading ? (
         <Container size="xl" py="xl">
