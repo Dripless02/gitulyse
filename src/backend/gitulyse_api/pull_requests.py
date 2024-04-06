@@ -48,8 +48,8 @@ def parse_pull_request(pull_request):
 @bp.route("/get-pull-requests", methods=["GET"])
 def get_pull_requests():
     token = request.args.get("token")
-    owner = request.args.get("owner")
-    repo_name = request.args.get("repo")
+    owner = request.args.get("owner").lower()
+    repo_name = request.args.get("repo").lower()
 
     repo = f"{owner}/{repo_name}"
 
