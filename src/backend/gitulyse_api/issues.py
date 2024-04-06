@@ -8,8 +8,8 @@ bp = Blueprint('issues', __name__)
 @bp.route("/get-issues", methods=["GET"])
 def get_issues():
     token = request.args.get("token")
-    owner = request.args.get("owner")
-    repo_name = request.args.get("repo")
+    owner = request.args.get("owner").lower()
+    repo_name = request.args.get("repo").lower()
 
     repo = f"{owner}/{repo_name}"
 

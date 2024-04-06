@@ -35,7 +35,7 @@ def create_app(test_config=None):
     @app.route("/github-activity", methods=["GET"])
     def github_activity():
         token = request.args.get("token")
-        user = request.args.get("user")
+        user = request.args.get("user").lower()
 
         auth = Auth.Token(token)
         g = Github(auth=auth)
