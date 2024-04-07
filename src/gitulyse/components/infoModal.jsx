@@ -21,10 +21,11 @@ const InfoModal = ({ opened, onClose }) => {
                     alignItems: "flex-start",
                     height: "100%",
                     width: "100%",
+                    paddingBottom: "50px",
                 },
             }}
         >
-            <h1 className="text-4xl font-bold text-center mb-4">How we calculate<br></br> these Metrics→</h1>
+            <h1 className="text-4xl font-bold text-center">How we calculate<br></br> these Metrics→</h1>
 
             <Container className="border-r border-gray-300 pr-10 w-1/3">
                 <h2 className="text-lg font-bold text-center mb-4">Code Contributions</h2>
