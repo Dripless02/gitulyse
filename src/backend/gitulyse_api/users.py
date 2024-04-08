@@ -1,47 +1,13 @@
-import logging
 from concurrent.futures import ThreadPoolExecutor
 from time import time
 
-from flask import Blueprint, jsonify, request, current_app
+from flask import Blueprint, jsonify, request
 from github import Auth, Github, BadCredentialsException
 
 from gitulyse_api.commits import parse_contributions
 from gitulyse_api.db import get_db
 
 bp = Blueprint('users', __name__)
-
-
-def calculate_addition_deletions(commit):
-    additions = 0
-    deletions = 0
-    for file in commit.files:
-        additions += file.additions
-        deletions += file.deletions
-    return additions, deletions
-
-
-def parse_repo(repo_user):
-    repo: Repository
-    repo, user_login = repo_user
-    commits = repo.get_commits(author=user_login)
-
-    contribution_counts = {
-        "additions": 0,
-        "deletions": 0,
-        "commits": 0,
-    }
-
-    try:
-        commits.totalCount
-    except GithubException:
-        return contribution_counts
-
-    with ThreadPoolExecutor(max_workers=3) as executor:
-        for addition, deletion in executor.map(calculate_addition_deletions, commits):
-            contribution_counts["additions"] += addition
-            contribution_counts["deletions"] += deletion
-            contribution_counts["commits"] += 1
-    return contribution_counts
 
 
 @bp.route("/get-user", methods=["GET"])
