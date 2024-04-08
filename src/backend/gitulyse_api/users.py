@@ -1,4 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 from time import time
 
 from flask import Blueprint, jsonify, request
@@ -62,12 +63,26 @@ def get_user():
     return jsonify(user_info), 200
 
 
+def clean_contributions(contributions, user_created_at):
+    print(type(user_created_at))
+    user_created_at = user_created_at.replace(month=user_created_at.month - 1)
+    to_pop = []
+    for month in contributions.keys():
+        converted_month = datetime.strptime(month, "%Y-%m")
+        if converted_month.timestamp() < user_created_at.timestamp():
+            to_pop.append(month)
+
+    for month in to_pop:
+        contributions.pop(month)
+
+    return contributions
+
+
 def process_repo(repo, user, contributions_per_repo, overall_contributions):
     contributions_per_repo[repo.full_name] = {}
 
     stats_contributors = repo.get_stats_contributors()
     if stats_contributors is None:
-        log.info(f"{repo.full_name} was None")
         return
 
     for week in stats_contributors[0].weeks:
@@ -100,6 +115,10 @@ def get_user_contributions(all_user_repos, user):
     with ThreadPoolExecutor(max_workers=5) as executor:
         _ = [executor.submit(process_repo, repo, user, contributions_per_repo, overall_contributions) for repo in
              all_user_repos]
+
+    overall_contributions = clean_contributions(overall_contributions, user.created_at)
+    for repo in contributions_per_repo.keys():
+        contributions_per_repo[repo] = clean_contributions(contributions_per_repo[repo], user.created_at)
 
     return {
         "repo_contributions": contributions_per_repo,
