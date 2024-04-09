@@ -1,8 +1,8 @@
 "use client";
 
-import CodeContributions from "@components/repo/CodeContributions";
-import IssueTracking from "@components/repo/IssueTracking";
-import PullRequests from "@components/repo/PullRequests";
+import CodeContributions from "@/components/repo/CodeContributions";
+import IssueTracking from "@/components/repo/IssueTracking";
+import PullRequests from "@/components/repo/PullRequests";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
