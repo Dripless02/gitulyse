@@ -64,7 +64,6 @@ def get_user():
 
 
 def clean_contributions(contributions, user_created_at):
-    print(type(user_created_at))
     user_created_at = user_created_at.replace(month=user_created_at.month - 1)
     to_pop = []
     for month in contributions.keys():

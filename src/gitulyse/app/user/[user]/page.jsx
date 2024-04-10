@@ -14,8 +14,62 @@ import {
     Title,
 } from "@mantine/core";
 import { IconArrowRight, IconInfoSquareRounded, IconMapPin } from "@tabler/icons-react";
-import { useDisclosure } from "@node_modules/@mantine/hooks";
+import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
+import {
+    CartesianGrid,
+    Line,
+    LineChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+} from "recharts";
+
+const getColor = (index) => {
+    const colors = [
+        "#FF0000", // Red
+        "#00FF00", // Green
+        "#0000FF", // Blue
+        "#FFFF00", // Yellow
+        "#FF00FF", // Magenta
+        "#00FFFF", // Cyan
+        "#FFA500", // Orange
+        "#800080", // Purple
+        "#008000", // Dark Green
+        "#800000", // Maroon
+    ];
+    return colors[index % colors.length];
+};
+
+const customChartTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+        return (
+            <div className="custom-tooltip bg-neutral-900/90 p-4">
+                <p className="label text-white">{label}</p>
+                <ul>
+                    {payload.map((entry, index) => {
+                        if (entry.dataKey === "overall") {
+                            return (
+                                <li key={`item-${index}`} style={{ color: entry.color }}>
+                                    Overall: {entry.value}
+                                </li>
+                            );
+                        }
+                        if (entry.value === 0) {
+                            return;
+                        }
+                        return (
+                            <li key={`item-${index}`} style={{ color: entry.color }}>
+                                {entry.name}: {entry.value}
+                            </li>
+                        );
+                    })}
+                </ul>
+            </div>
+        );
+    }
+};
 
 export default function UserPage({ params }) {
     const user = params.user;
@@ -23,6 +77,9 @@ export default function UserPage({ params }) {
 
     const [userAccessToken, setUserAccessToken] = useState("");
     const [userInfo, setUserInfo] = useState({});
+    const [rechartsData, setRechartsData] = useState([]);
+    const [largestAverageContributions, setLargestAverageContributions] = useState(0);
+
     const [isLoading, { close: disableLoading }] = useDisclosure(true);
 
     useEffect(() => {
@@ -48,6 +105,73 @@ export default function UserPage({ params }) {
                 disableLoading();
             });
     }, [BACKEND_URL, disableLoading, user, userAccessToken]);
+
+    useEffect(() => {
+        if (Object.keys(userInfo).length === 0 || rechartsData.length !== 0) return;
+        let largest = 0;
+
+        const setInfo = () => {
+            const overallContributions = userInfo.overall_contributions;
+            const repoContributions = userInfo.repo_contributions;
+
+            const newRechartsData = [];
+
+            for (const month in overallContributions) {
+                const month_info = {
+                    name: month,
+                    overall: 0,
+                };
+
+                let average_contributions_per_commit =
+                    overallContributions[month]["additions"] +
+                    overallContributions[month]["deletions"] /
+                        overallContributions[month]["commits"];
+                average_contributions_per_commit = Number(
+                    average_contributions_per_commit.toFixed(1),
+                );
+
+                if (isNaN(average_contributions_per_commit)) {
+                    average_contributions_per_commit = "0";
+                }
+                month_info["overall"] = average_contributions_per_commit;
+
+                if (largest < average_contributions_per_commit) {
+                    largest = average_contributions_per_commit;
+                }
+
+                for (const repo in repoContributions) {
+                    let data = repoContributions[repo][month];
+                    let average_contributions_per_commit;
+                    if (!data) {
+                        month_info[repo] = null;
+                        continue;
+                    }
+
+                    average_contributions_per_commit =
+                        data["additions"] + data["deletions"] / data["commits"];
+                    average_contributions_per_commit = Number(
+                        average_contributions_per_commit.toFixed(1),
+                    );
+
+                    if (isNaN(average_contributions_per_commit)) {
+                        average_contributions_per_commit = 0;
+                    }
+
+                    month_info[repo] = average_contributions_per_commit;
+
+                    if (largest < average_contributions_per_commit) {
+                        largest = average_contributions_per_commit;
+                    }
+                }
+                newRechartsData.push(month_info);
+            }
+
+            setRechartsData(newRechartsData);
+            setLargestAverageContributions(largest);
+        };
+
+        setInfo();
+    }, [rechartsData.length, userInfo]);
 
     return isLoading ? (
         <Container size="xl" py="xl">
@@ -141,6 +265,39 @@ export default function UserPage({ params }) {
                     <IconMapPin stroke={1.5} />
                     <Text>{userInfo.location}</Text>
                 </Group>
+
+                <ResponsiveContainer height={300} width="100%">
+                    <LineChart
+                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                        data={rechartsData}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis dataKey="overall" domain={[0, largestAverageContributions]} />
+                        <Tooltip content={customChartTooltip} />
+                        <Line
+                            dataKey="overall"
+                            stroke="#8884d8"
+                            type="monotone"
+                            activeDot={{ r: 8 }}
+                            isAnimationActive={false}
+                        />
+                        {userInfo.repos.map((repo) => {
+                            return (
+                                <Line
+                                    key={repo.name}
+                                    dataKey={repo.name}
+                                    type="monotone"
+                                    stroke={getColor(userInfo.repos.indexOf(repo))}
+                                    activeDot={{ r: 8 }}
+                                    isAnimationActive={false}
+                                    connectNulls
+                                />
+                            );
+                        })}
+                    </LineChart>
+                </ResponsiveContainer>
+
                 <Center mt="lg" mb="md">
                     <Title order={3}>Repositories</Title>
                 </Center>
