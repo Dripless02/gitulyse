@@ -1,5 +1,5 @@
-import Nav from "@components/Nav";
-import SessionProvider from "@components/SessionProvider";
+import Nav from "@/components/Nav";
+import SessionProvider from "@/components/SessionProvider";
 import "@mantine/charts/styles.css";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
