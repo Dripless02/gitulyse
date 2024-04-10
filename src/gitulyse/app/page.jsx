@@ -1,7 +1,7 @@
 "use client";
 
-import Calendar from "@components/Calendar";
-import Repos from "@components/Repos";
+import Calendar from "@/components/Calendar";
+import Repos from "@/components/Repos";
 import { getSession, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
