@@ -46,7 +46,7 @@ const customChartTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
         return (
             <div className="custom-tooltip bg-neutral-900/90 p-4">
-                <p className="label text-white">{label}</p>
+                <p className="label text-white underline font-bold">{label}</p>
                 <ul>
                     {payload.map((entry, index) => {
                         if (entry.dataKey === "overall") {
