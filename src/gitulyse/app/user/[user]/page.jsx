@@ -251,22 +251,32 @@ export default function UserPage({ params }) {
         <Container size="xl" py="xl">
             <Stack className="mt-7" gap="xs">
                 <Group justify="space-between" className="mb-4">
-                    <div>
-                        <Title order={1}>{userInfo.name}</Title>
-                        <Text c="dimmed">{userInfo.login}</Text>
-                    </div>
+                    {userInfo.name ? (
+                        <div>
+                            <Title order={1}>{userInfo.name}</Title>
+                            <Text c="dimmed">{userInfo.login}</Text>
+                        </div>
+                    ) : (
+                        <div>
+                            <Title order={1}>{userInfo.login}</Title>
+                        </div>
+                    )}
                     <Avatar src={userInfo.avatar_url} alt={userInfo.name} size="xl" />
                 </Group>
-                <Group>
-                    <IconInfoSquareRounded stroke={1.5} />
-                    <Text>{userInfo.bio}</Text>
-                </Group>
-                <Group>
-                    <IconMapPin stroke={1.5} />
-                    <Text>{userInfo.location}</Text>
-                </Group>
+                {userInfo.bio && (
+                    <Group>
+                        <IconInfoSquareRounded stroke={1.5} />
+                        <Text>{userInfo.bio}</Text>
+                    </Group>
+                )}
+                {userInfo.location && (
+                    <Group>
+                        <IconMapPin stroke={1.5} />
+                        <Text>{userInfo.location}</Text>
+                    </Group>
+                )}
 
-                <ResponsiveContainer height={300} width="100%">
+                <ResponsiveContainer height={300} width="100%" className="mt-4">
                     <LineChart
                         margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                         data={rechartsData}
