@@ -31,7 +31,7 @@ const Nav = () => {
                     <>
                         <div className="flex items-center gap-3 md:gap-5">
                             <TextInput
-                                className="pt-4 justify-center pr-96 mr-44"
+                                className="justify-center pr-4"
                                 variant="filled"
                                 placeholder="Enter Repo URL..."
                                 size="xl"
