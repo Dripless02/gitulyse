@@ -5,21 +5,26 @@ from github.StatsContributor import StatsContributor
 bp = Blueprint('commits', __name__)
 
 
-def parse_contributions(contributor: StatsContributor, contributions):
+def parse_contributions(contributor: StatsContributor, contributions, single_user=False):
     author = contributor.author
     weeks: list[StatsContributor.Week] = contributor.weeks
     for week in weeks:
         month = week.w.date().strftime("%Y-%m")
-        if author.login not in contributions[month]:
-            contributions[month][author.login] = {
-                "additions": week.a,
-                "deletions": week.d,
-                "commits": week.c,
-            }
+        if not single_user:
+            if author.login not in contributions[month]:
+                contributions[month][author.login] = {
+                    "additions": week.a,
+                    "deletions": week.d,
+                    "commits": week.c,
+                }
+            else:
+                contributions[month][author.login]["additions"] += week.a
+                contributions[month][author.login]["deletions"] += week.d
+                contributions[month][author.login]["commits"] += week.c
         else:
-            contributions[month][author.login]["additions"] += week.a
-            contributions[month][author.login]["deletions"] += week.d
-            contributions[month][author.login]["commits"] += week.c
+            contributions[month]["additions"] += week.a
+            contributions[month]["deletions"] += week.d
+            contributions[month]["commits"] += week.c
 
     return contributions
 

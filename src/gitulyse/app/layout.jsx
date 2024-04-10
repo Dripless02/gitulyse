@@ -3,7 +3,7 @@ import SessionProvider from "@/components/SessionProvider";
 import "@mantine/charts/styles.css";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
-import "@styles/globals.css";
+import "@/styles/globals.css";
 import { getServerSession } from "next-auth";
 
 export const metadata = {
@@ -18,6 +18,12 @@ async function Rootlayout({ children }) {
         <html lang="en">
             <head>
                 <ColorSchemeScript />
+                <link
+                    rel="icon"
+                    href="/assets/images/logo.png"
+                    type="image/png"
+                    sizes="1080x1080"
+                />
             </head>
             <body>
                 <SessionProvider session={session}>

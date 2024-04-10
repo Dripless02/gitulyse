@@ -15,7 +15,7 @@ export default function Calendar({ userAccessToken, user }) {
             .then((data) => {
                 setData(data);
             });
-    }, [userAccessToken, user]);
+    }, [userAccessToken, user, BACKEND_URL]);
 
     useEffect(() => {
         const formattedData = data.map((item) => ({

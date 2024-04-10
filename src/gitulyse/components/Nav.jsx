@@ -1,11 +1,10 @@
 "use client";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { Center, TextInput, Button } from "@mantine/core";
+import { Button, TextInput } from "@mantine/core";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import InfoModal from '../components/infoModal';
-
+import InfoModal from "../components/infoModal";
 
 const Nav = () => {
     const { data: session } = useSession();
@@ -14,7 +13,7 @@ const Nav = () => {
 
     const toggleModal = () => {
         setModalOpened((prev) => !prev);
-      };
+    };
     return (
         <nav className="flex-between w-full mb-15 pt-5">
             <Link href="/" className="flex gap-2 flex-center">
@@ -41,17 +40,21 @@ const Nav = () => {
                                 onChange={(event) => setValue(event.currentTarget.value)}
                             />
                             <div className="flex items-center gap-3 md:gap-5 ">
-                                <button type="button" onClick={() => signOut()} className="outline_btn">
+                                <button
+                                    type="button"
+                                    onClick={() => signOut()}
+                                    className="outline_btn"
+                                >
                                     Sign Out
                                 </button>
                                 <div>
-                                <Button onClick={toggleModal}>How?</Button>
-                                <InfoModal opened={modalOpened} onClose={toggleModal} />
+                                    <Button onClick={toggleModal}>How?</Button>
+                                    <InfoModal opened={modalOpened} onClose={toggleModal} />
                                 </div>
                                 <p className="text-blue-600">{session.user.name}</p>
-                                <Link href="/profile">
+                                <Link href={`/user/${session.login}`}>
                                     <Image
-                                        src="/assets/images/profile.jpg"
+                                        src={`${session.user.image}`}
                                         alt="profile picture"
                                         width={50}
                                         height={0}
