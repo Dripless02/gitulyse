@@ -1,7 +1,13 @@
 "use client";
 
-import { ResponsiveCalendar } from "@nivo/calendar";
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+const ResponsiveCalendar = dynamic(
+    () => import("@nivo/calendar").then((m) => m.ResponsiveCalendar),
+    {
+        ssr: false,
+    },
+);
 
 export default function Calendar({ userAccessToken, user }) {
     const [calendarData, setCalendarData] = useState([]);
