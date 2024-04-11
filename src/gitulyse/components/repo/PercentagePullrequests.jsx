@@ -7,10 +7,11 @@ export default function PercentagePullrequests({ userAccessToken, owner, repo })
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [percentage, setPercentage] = useState(null);
+    const [formSubmitted, setFormSubmitted] = useState(false);
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
     useEffect(() => {
-        if (!userAccessToken) return;
+        if (!formSubmitted || !userAccessToken) return;
 
         const queryParams = new URLSearchParams({
             token: userAccessToken,
@@ -26,10 +27,11 @@ export default function PercentagePullrequests({ userAccessToken, owner, repo })
             console.log("Data received", data);
             setPercentage(data.percentage_merged);
         }).catch((err) => console.error(err));
-    }, [userAccessToken, startDate, endDate, BACKEND_URL, owner, repo]);
+    }, [formSubmitted, userAccessToken, startDate, endDate, BACKEND_URL, owner, repo]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setFormSubmitted(true);
         console.log("Fetching data");
     };
 
@@ -59,7 +61,11 @@ export default function PercentagePullrequests({ userAccessToken, owner, repo })
             </form>
             {percentage !== null && (
                 <div style={{ width: '400px', margin: '20px auto' }}>
-                    <GaugeChart id="gauge-chart1" percent={percentage / 100} />
+                    <GaugeChart
+                        id="gauge-chart1"
+                        percent={percentage / 100}
+                        colors={['red', 'yellow', 'green']}
+                    />
                 </div>
             )}
         </div>
