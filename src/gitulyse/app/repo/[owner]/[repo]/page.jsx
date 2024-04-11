@@ -3,6 +3,7 @@
 import CodeContributions from "@/components/repo/CodeContributions";
 import IssueTracking from "@/components/repo/IssueTracking";
 import PullRequests from "@/components/repo/PullRequests";
+import PercentagePullrequests from "@/components/repo/PercentagePullrequests";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
@@ -11,6 +12,9 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 export default function RepoPage({ params }) {
     const owner = params.owner;
     const repo = params.repo;
+    const startDate = params.startDate;
+    const endDate = params.endDate;
+
 
     const [userAccessToken, setUserAccessToken] = useState("");
     const [dropzones, setDropzones] = useState(Array.from({ length: 4 }).fill(null));
@@ -103,6 +107,8 @@ export default function RepoPage({ params }) {
                 return (
                     <IssueTracking owner={owner} repo={repo} userAccessToken={userAccessToken}/>
                 );
+            case "Percentage Pull Requests":
+                return <PercentagePullrequests start_date={startDate} end_date={endDate} owner={owner} repo={repo} userAccessToken={userAccessToken}/>;
             default:
                 return null;
         }
@@ -115,6 +121,7 @@ export default function RepoPage({ params }) {
                     <DraggableNavItem name="Pull Requests"/>
                     <DraggableNavItem name="Code Contributions"/>
                     <DraggableNavItem name="Issue Tracking"/>
+                    <DraggableNavItem name="Percentage Pull Requests"/>
                 </div>
                 <div className="mt-4 flex flex-col items-center">
                     <p className="mt-10 mb-10 text-5xl">Info for {repo}</p>

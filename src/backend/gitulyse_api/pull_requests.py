@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from flask import Blueprint, jsonify, request
 from github import Github, Auth
-
+from datetime import datetime, timedelta, timezone
 bp = Blueprint('pull_requests', __name__)
 
 
@@ -43,6 +43,50 @@ def parse_pull_request(pull_request):
         pull_request_info["state"] = pull_request.state
 
     return pull_request_info
+
+
+
+@bp.route("/get-percentage-pull-requests", methods=["GET"])
+def get_percentage_pull_requests():
+    token = request.args.get("token")
+    owner = request.args.get("owner").lower()
+    repo_name = request.args.get("repo").lower()
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
+
+    start_date = datetime.strptime(start_date, '%Y-%m-%d').replace(tzinfo=timezone.utc)
+    end_date = datetime.strptime(end_date, '%Y-%m-%d').replace(tzinfo=timezone.utc)
+
+    repo = f"{owner}/{repo_name}"
+
+    g = Github(token)
+
+    repo = g.get_repo(repo)
+    pull_requests = repo.get_pulls(state="all", direction="asc")
+
+    total_pull_requests = 0
+    merged_pull_requests = 0
+
+    for pull_request_info in pull_requests:
+        parsed_pull_request = parse_pull_request(pull_request_info)
+        created_at = parsed_pull_request.get("created_at")
+        merged_at = parsed_pull_request.get("merged_at")
+
+        if created_at is not None and created_at >= start_date and created_at <= end_date:
+            total_pull_requests += 1
+            if parsed_pull_request.get("state") == "merged" and merged_at is not None and merged_at >= start_date and merged_at <= end_date:
+                merged_pull_requests += 1
+
+    if total_pull_requests > 0:
+        percentage_merged = round((merged_pull_requests / total_pull_requests) * 100, 1)
+    else:
+        percentage_merged = 0
+
+    return jsonify({
+        "total_pull_requests": total_pull_requests,
+        "merged_pull_requests": merged_pull_requests,
+        "percentage_merged": percentage_merged
+    })
 
 
 @bp.route("/get-pull-requests", methods=["GET"])
