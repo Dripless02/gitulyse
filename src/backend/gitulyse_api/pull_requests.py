@@ -69,16 +69,13 @@ def get_percentage_pull_requests():
 
     for pull_request_info in pull_requests:
         parsed_pull_request = parse_pull_request(pull_request_info)
+        created_at = parsed_pull_request.get("created_at")
         merged_at = parsed_pull_request.get("merged_at")
 
-        if parsed_pull_request.get("state") == "merged" and merged_at is not None:
-            merged_at = merged_at.replace(tzinfo=timezone.utc)
-
+        if created_at is not None and created_at >= start_date and created_at <= end_date:
             total_pull_requests += 1
-            if start_date <= merged_at <= end_date:
+            if parsed_pull_request.get("state") == "merged" and merged_at is not None and merged_at >= start_date and merged_at <= end_date:
                 merged_pull_requests += 1
-            elif merged_at > end_date:
-                break
 
     if total_pull_requests > 0:
         percentage_merged = round((merged_pull_requests / total_pull_requests) * 100, 1)
