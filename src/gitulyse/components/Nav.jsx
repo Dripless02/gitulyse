@@ -8,7 +8,7 @@ import InfoModal from "@/components/infoModal";
 import SearchBar from "@/components/SearchBar";
 
 const Nav = () => {
-    const { data: session } = useSession();
+    const { data, status } = useSession();
     const [modalOpened, setModalOpened] = useState(false);
 
     const toggleModal = () => {
@@ -27,7 +27,7 @@ const Nav = () => {
                 <p className="logo_text">Gitulyse</p>
             </Link>
             <div className="sm:flex items-center">
-                {session ? (
+                {status === "authenticated" ? (
                     <>
                         <div className="flex items-center gap-3 md:gap-5">
                             <SearchBar />
@@ -43,10 +43,10 @@ const Nav = () => {
                                     <Button onClick={toggleModal}>How?</Button>
                                     <InfoModal opened={modalOpened} onClose={toggleModal} />
                                 </div>
-                                <p className="text-blue-600">{session.user.name}</p>
-                                <Link href={`/user/${session.login}`}>
+                                <p className="text-blue-600">{data.user.name}</p>
+                                <Link href={`/user/${data.login}`}>
                                     <Image
-                                        src={`${session.user.image}`}
+                                        src={`${data.user.image}`}
                                         alt="profile picture"
                                         width={50}
                                         height={0}
