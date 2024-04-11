@@ -4,7 +4,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from github import Auth, Github
 
-from . import pull_requests, repos, commits, issues, db, users
+from . import pull_requests, repos, commits, issues, db, users, search
 
 
 def create_app(test_config=None):
@@ -60,5 +60,6 @@ def create_app(test_config=None):
     app.register_blueprint(commits.bp)
     app.register_blueprint(issues.bp)
     app.register_blueprint(users.bp)
+    app.register_blueprint(search.bp)
 
     return app
