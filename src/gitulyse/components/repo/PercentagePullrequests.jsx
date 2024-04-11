@@ -38,7 +38,7 @@ export default function PercentagePullrequests({ userAccessToken, owner, repo })
 
     return (
         <div className="mt-3 flex flex-col items-center">
-            <p className="mb-4 text-2xl">Percent of PR's merged/created from</p>
+            <p className="mb-4 text-2xl">Percent of PR&apos;s merged/created from</p>
             <form onSubmit={handleSubmit}>
                 <label className="mr-3">
                     Start Date:
