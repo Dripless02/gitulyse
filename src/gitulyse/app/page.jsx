@@ -5,7 +5,6 @@ import Repos from "@/components/Repos";
 import { getSession, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
-import SearchBar from "@/components/SearchBar";
 
 const Home = () => {
     const { status } = useSession();
@@ -31,7 +30,6 @@ const Home = () => {
         <section className="w-full flex-center flex-col">
             {status === "authenticated" ? (
                 <>
-                    <SearchBar />
                     <Calendar userAccessToken={userAccessToken} user={user} />
                     <Repos />
                 </>

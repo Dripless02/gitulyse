@@ -1,14 +1,14 @@
 "use client";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { Button, TextInput } from "@mantine/core";
+import { Button } from "@mantine/core";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import InfoModal from "../components/infoModal";
+import InfoModal from "@/components/infoModal";
+import SearchBar from "@/components/SearchBar";
 
 const Nav = () => {
     const { data: session } = useSession();
-    const [value, setValue] = useState("");
     const [modalOpened, setModalOpened] = useState(false);
 
     const toggleModal = () => {
@@ -30,15 +30,7 @@ const Nav = () => {
                 {session ? (
                     <>
                         <div className="flex items-center gap-3 md:gap-5">
-                            <TextInput
-                                className="justify-center pr-4"
-                                variant="filled"
-                                placeholder="Enter Repo URL..."
-                                size="xl"
-                                radius="60"
-                                value={value}
-                                onChange={(event) => setValue(event.currentTarget.value)}
-                            />
+                            <SearchBar />
                             <div className="flex items-center gap-3 md:gap-5 ">
                                 <button
                                     type="button"

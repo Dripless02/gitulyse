@@ -8,9 +8,15 @@ bp = Blueprint('search', __name__)
 def search():
     token = request.args.get("token")
     query = request.args.get("query")
+    search_type = request.args.get("type")
 
     if query == "":
         return jsonify({"message": "No query provided"}), 400
+
+    if search_type is None:
+        return jsonify({"message": "No type provided"}), 400
+    else:
+        search_type = search_type.lower()
 
     try:
         auth = Auth.Token(token)
@@ -18,17 +24,20 @@ def search():
     except BadCredentialsException:
         return jsonify({"message": "Invalid token"}), 401
 
-    try:
-        user_results = [user.login for user in g.search_users(query=query)[:25]]
-    except IndexError:
-        user_results = []
+    results = []
 
-    try:
-        repo_results = [repo.full_name for repo in g.search_repositories(query=query)[:25]]
-    except IndexError:
-        repo_results = []
+    if search_type == "user":
+        try:
+            results = [user.login for user in g.search_users(query=query)[:25]]
+        except IndexError:
+            pass
+
+    if search_type == "repo":
+        try:
+            results = [repo.full_name for repo in g.search_repositories(query=query)[:25]]
+        except IndexError:
+            pass
 
     return jsonify({
-        "users": user_results,
-        "repos": repo_results
+        "results": results
     }), 200
