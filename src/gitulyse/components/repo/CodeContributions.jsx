@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
+import { getColour } from "@/components/user/utils";
+import CustomChartTooltip from "@/components/user/CustomChartTooltip";
 
 export default function CodeContributions({ userAccessToken, owner, repo }) {
     const [monthlyData, setMonthlyData] = useState([]);
@@ -57,14 +59,14 @@ export default function CodeContributions({ userAccessToken, owner, repo }) {
                 <CartesianGrid strokeDasharray="3 4" />
                 <XAxis dataKey="month" />
                 <YAxis />
-                <Tooltip />
+                <Tooltip content={CustomChartTooltip} />
                 {allAuthors.map((author, index) => (
                     <Line
                         key={author}
                         type="monotone"
                         dataKey={author}
                         name={author}
-                        stroke={getColor(index)}
+                        stroke={getColour(index)}
                         activeDot={{ r: 8 }}
                         isAnimationActive={false}
                         hide={!selectedAuthors.includes(author)}
@@ -72,6 +74,18 @@ export default function CodeContributions({ userAccessToken, owner, repo }) {
                 ))}
             </LineChart>
             <div className="mt-4">
+                <button
+                    className="mr-2 mb-2 p-2 rounded bg-blue-500 text-white"
+                    onClick={() => {
+                        if (selectedAuthors.length === allAuthors.length) {
+                            setSelectedAuthors([]);
+                        } else {
+                            setSelectedAuthors(allAuthors);
+                        }
+                    }}
+                >
+                    Toggle All
+                </button>
                 {allAuthors.map((author, index) => (
                     <button
                         key={author}
@@ -81,7 +95,7 @@ export default function CodeContributions({ userAccessToken, owner, repo }) {
                         }`}
                         style={{
                             backgroundColor: selectedAuthors.includes(author)
-                                ? getColor(index)
+                                ? getColour(index)
                                 : "",
                         }}
                     >
@@ -91,20 +105,4 @@ export default function CodeContributions({ userAccessToken, owner, repo }) {
             </div>
         </div>
     );
-
-    function getColor(index) {
-        const colors = [
-            "#FF0000", // Red
-            "#00FF00", // Green
-            "#0000FF", // Blue
-            "#FFFF00", // Yellow
-            "#FF00FF", // Magenta
-            "#00FFFF", // Cyan
-            "#FFA500", // Orange
-            "#800080", // Purple
-            "#008000", // Dark Green
-            "#800000", // Maroon
-        ];
-        return colors[index % colors.length];
-    }
 }

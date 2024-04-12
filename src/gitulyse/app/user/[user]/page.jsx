@@ -1,75 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import { getSession } from "next-auth/react";
-import {
-    Avatar,
-    Box,
-    Center,
-    Container,
-    Grid,
-    Group,
-    LoadingOverlay,
-    Stack,
-    Text,
-    Title,
-} from "@mantine/core";
-import { IconArrowRight, IconInfoSquareRounded, IconMapPin } from "@tabler/icons-react";
+import { Box, Center, Container, Grid, LoadingOverlay, Stack, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import Link from "next/link";
-import {
-    CartesianGrid,
-    Line,
-    LineChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
-} from "recharts";
-
-const getColor = (index) => {
-    const colors = [
-        "#FF0000", // Red
-        "#00FF00", // Green
-        "#0000FF", // Blue
-        "#FFFF00", // Yellow
-        "#FF00FF", // Magenta
-        "#00FFFF", // Cyan
-        "#FFA500", // Orange
-        "#800080", // Purple
-        "#008000", // Dark Green
-        "#800000", // Maroon
-    ];
-    return colors[index % colors.length];
-};
-
-const customChartTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-        return (
-            <div className="custom-tooltip bg-neutral-900/90 p-4">
-                <p className="label text-white underline font-bold">{label}</p>
-                <ul>
-                    {payload.map((entry, index) => {
-                        if (entry.dataKey === "overall") {
-                            return (
-                                <li key={`item-${index}`} style={{ color: entry.color }}>
-                                    Overall: {entry.value}
-                                </li>
-                            );
-                        }
-                        if (entry.value === 0) {
-                            return;
-                        }
-                        return (
-                            <li key={`item-${index}`} style={{ color: entry.color }}>
-                                {entry.name}: {entry.value}
-                            </li>
-                        );
-                    })}
-                </ul>
-            </div>
-        );
-    }
-};
+import ContributionChart from "@/components/user/ContributionChart";
+import BaseInfo from "@/components/user/BaseInfo";
+import RepoList from "@/components/user/RepoList";
+import { usePathname } from "next/navigation";
+import { IconArrowRight } from "@tabler/icons-react";
 
 export default function UserPage({ params }) {
     const user = params.user;
@@ -79,8 +17,21 @@ export default function UserPage({ params }) {
     const [userInfo, setUserInfo] = useState({});
     const [rechartsData, setRechartsData] = useState([]);
     const [largestAverageContributions, setLargestAverageContributions] = useState(0);
+    const [singleUser, setSingleUser] = useState(false);
+    const pathname = usePathname();
 
     const [isLoading, { close: disableLoading }] = useDisclosure(true);
+
+    const mockData = {
+        name: "monalisa octocat",
+        login: "octocat",
+        avatar_url: "https://avatars.githubusercontent.com/u/583231?v=4",
+        bio: "The GitHub mascot",
+        location: "San Francisco",
+        repos: [],
+        overall_contributions: {},
+        repo_contributions: {},
+    };
 
     useEffect(() => {
         async function getInfo() {
@@ -94,6 +45,14 @@ export default function UserPage({ params }) {
             console.error(err);
         });
     }, []);
+
+    useEffect(() => {
+        if ((pathname.match(/\//g) || []).length === 3) {
+            setSingleUser(false);
+        } else if ((pathname.match(/\//g) || []).length === 2) {
+            setSingleUser(true);
+        }
+    }, [pathname]);
 
     useEffect(() => {
         if (!userAccessToken) return;
@@ -174,7 +133,7 @@ export default function UserPage({ params }) {
     }, [rechartsData.length, userInfo]);
 
     return isLoading ? (
-        <Container size="xl" py="xl">
+        <Container size={singleUser ? "xl" : "55rem"}>
             <Box pos="relative">
                 <LoadingOverlay
                     visible={isLoading}
@@ -182,27 +141,16 @@ export default function UserPage({ params }) {
                     overlayProps={{ radius: "sm", blur: 12 }}
                 />
                 <Stack className="mt-7" gap="xs">
-                    <Group justify="space-between" className="mb-4">
-                        <div>
-                            <Title order={1}>monalisa octocat</Title>
-                            <Text c="dimmed">octocat</Text>
-                        </div>
-                        <Avatar
-                            src="https://avatars.githubusercontent.com/u/583231?v=4"
-                            alt="monalisa octocat"
-                            size="xl"
-                        />
-                    </Group>
-                    <Group>
-                        <IconMapPin stroke={1.5} />
-                        <Text>San Francisco</Text>
-                    </Group>
+                    <BaseInfo userInfo={mockData} />
+
+                    <ContributionChart data={[]} largest={100} userInfo={mockData} />
+
                     <Center mt="lg" mb="md">
                         <Title order={3}>Repositories</Title>
                     </Center>
                     <Container size="xl">
                         <Grid gutter="lg" grow>
-                            <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
+                            <Grid.Col span={6}>
                                 <a
                                     href="https://github.com/octocat/Spoon-Knife"
                                     target="_blank"
@@ -212,7 +160,7 @@ export default function UserPage({ params }) {
                                     <IconArrowRight stroke={1.5} />
                                 </a>
                             </Grid.Col>
-                            <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
+                            <Grid.Col span={6}>
                                 <a
                                     href="https://github.com/octocat/octocat.github.io"
                                     target="_blank"
@@ -222,7 +170,7 @@ export default function UserPage({ params }) {
                                     <IconArrowRight stroke={1.5} />
                                 </a>
                             </Grid.Col>
-                            <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
+                            <Grid.Col span={6}>
                                 <a
                                     href="https://github.com/octocat/hello-worId"
                                     target="_blank"
@@ -232,103 +180,26 @@ export default function UserPage({ params }) {
                                     <IconArrowRight stroke={1.5} />
                                 </a>
                             </Grid.Col>
-                            <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
-                                <a
-                                    href="https://github.com/octocat/git-consortium"
-                                    target="_blank"
-                                    className="py-1.5 px-8 w-full h-14 inline-flex items-center justify-between rounded text-xl bg-[#12b88626] text-[#63e6be] hover:bg-[#12b88633]"
-                                >
-                                    octocat/git-consortium
-                                    <IconArrowRight stroke={1.5} />
-                                </a>
-                            </Grid.Col>
                         </Grid>
                     </Container>
                 </Stack>
             </Box>
         </Container>
     ) : (
-        <Container size="xl" py="xl">
-            <Stack className="mt-7" gap="xs">
-                <Group justify="space-between" className="mb-4">
-                    {userInfo.name ? (
-                        <div>
-                            <Title order={1}>{userInfo.name}</Title>
-                            <Text c="dimmed">{userInfo.login}</Text>
-                        </div>
-                    ) : (
-                        <div>
-                            <Title order={1}>{userInfo.login}</Title>
-                        </div>
-                    )}
-                    <Avatar src={userInfo.avatar_url} alt={userInfo.name} size="xl" />
-                </Group>
-                {userInfo.bio && (
-                    <Group>
-                        <IconInfoSquareRounded stroke={1.5} />
-                        <Text>{userInfo.bio}</Text>
-                    </Group>
-                )}
-                {userInfo.location && (
-                    <Group>
-                        <IconMapPin stroke={1.5} />
-                        <Text>{userInfo.location}</Text>
-                    </Group>
-                )}
+        <Container size={singleUser ? "xl" : "55rem"} m={0}>
+            <Stack className="mt-7" gap="xs" align="stretch" justify="space-between">
+                <BaseInfo userInfo={userInfo} />
 
-                <ResponsiveContainer height={300} width="100%" className="mt-4">
-                    <LineChart
-                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                        data={rechartsData}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis dataKey="overall" domain={[0, largestAverageContributions]} />
-                        <Tooltip content={customChartTooltip} />
-                        <Line
-                            dataKey="overall"
-                            stroke="#8884d8"
-                            type="monotone"
-                            activeDot={{ r: 8 }}
-                            isAnimationActive={false}
-                        />
-                        {userInfo.repos.map((repo) => {
-                            return (
-                                <Line
-                                    key={repo.name}
-                                    dataKey={repo.name}
-                                    type="monotone"
-                                    stroke={getColor(userInfo.repos.indexOf(repo))}
-                                    activeDot={{ r: 8 }}
-                                    isAnimationActive={false}
-                                    connectNulls
-                                />
-                            );
-                        })}
-                    </LineChart>
-                </ResponsiveContainer>
+                <ContributionChart
+                    data={rechartsData}
+                    largest={largestAverageContributions}
+                    userInfo={userInfo}
+                />
 
                 <Center mt="lg" mb="md">
                     <Title order={3}>Repositories</Title>
                 </Center>
-                <Container size="xl">
-                    <Grid gutter="lg">
-                        {userInfo.repos.map((repo) => {
-                            return (
-                                <Grid.Col key={repo.name} span={{ base: 12, md: 6, lg: 4 }}>
-                                    <Link
-                                        href={`/repo/${repo.name}`}
-                                        target="_self"
-                                        className="py-1.5 px-8 w-full h-14 inline-flex items-center justify-between rounded text-xl bg-[#12b88626] text-[#63e6be] hover:bg-[#12b88633]"
-                                    >
-                                        {repo.name}
-                                        <IconArrowRight stroke={1.5} />
-                                    </Link>
-                                </Grid.Col>
-                            );
-                        })}
-                    </Grid>
-                </Container>
+                <RepoList repos={userInfo.repos} />
             </Stack>
         </Container>
     );
