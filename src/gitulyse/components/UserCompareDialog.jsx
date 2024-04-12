@@ -1,6 +1,8 @@
 import { Button, Dialog, Group, Stack, Text } from "@mantine/core";
+import { useRouter } from "next/navigation";
 
 const UserCompareDialog = ({ users, setUsers, opened, close }) => {
+    const router = useRouter();
     return (
         <Dialog
             opened={opened}
@@ -9,7 +11,6 @@ const UserCompareDialog = ({ users, setUsers, opened, close }) => {
             radius="md"
             withBorder
             withCloseButton
-            // position={{ bottom: 20, left: "50%" }}
             transitionProps={{ transition: "pop-bottom-right", duration: 200 }}
         >
             <Text align="center" weight={700} size="lg" mb={16}>
@@ -35,7 +36,16 @@ const UserCompareDialog = ({ users, setUsers, opened, close }) => {
                     </Group>
                 ))}
             </Stack>
-            <Button onClick={close} color="green" className="mt-5">
+            <Button
+                onClick={() => {
+                    router.push(`/user/${users.join("/")}`);
+                    close();
+                    setUsers([]);
+                }}
+                color="green"
+                className="mt-5"
+                disabled={users.length !== 2}
+            >
                 Compare
             </Button>
         </Dialog>
