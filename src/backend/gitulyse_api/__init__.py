@@ -55,6 +55,34 @@ def create_app(test_config=None):
 
         return jsonify(formatted_activity)
 
+    @app.route("/github-activity-day", methods=["GET"])
+    def github_activity_day():
+        token = request.args.get("token")
+        user = request.args.get("user").lower()
+        date = request.args.get("date")
+
+        auth = Auth.Token(token)
+        g = Github(auth=auth)
+
+        user = g.get_user(user)
+        events = user.get_events()
+
+        events_list = []
+        for event in events:
+            created_at = event.created_at.date()
+
+            if created_at.isoformat() == date:
+                event_info = {
+                    "type": event.type,
+                    "repo": event.repo.name,
+                    "created_at": event.created_at.isoformat(),
+                    "payload": event.payload,
+                }
+
+                events_list.append(event_info)
+
+        return jsonify(events_list)
+
     app.register_blueprint(pull_requests.bp)
     app.register_blueprint(repos.bp)
     app.register_blueprint(commits.bp)
