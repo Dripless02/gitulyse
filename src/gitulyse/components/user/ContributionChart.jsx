@@ -11,7 +11,7 @@ import CustomChartTooltip from "@/components/user/CustomChartTooltip";
 import { getColour } from "@/components/user/utils";
 
 const ContributionChart = ({ data, largest, userInfo }) => {
-    if (data.length === 0) return null;
+    if (!data || !userInfo.repos) return null;
     return (
         <ResponsiveContainer height={300} width="100%" className="mt-4">
             <LineChart margin={{ top: 5, right: 30, left: 20, bottom: 5 }} data={data}>

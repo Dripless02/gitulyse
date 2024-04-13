@@ -1,6 +1,14 @@
 export const getChartData = (overallContributions, repoContributions) => {
-    const newRechartsData = [];
-    let largest = 0;
+    const chartData = [];
+    let largest = {
+        number: 0,
+        month: "",
+    };
+    let largestInRepo = {
+        number: 0,
+        month: "",
+        repo: "",
+    };
 
     for (const month in overallContributions) {
         const month_info = {
@@ -18,8 +26,9 @@ export const getChartData = (overallContributions, repoContributions) => {
         }
         month_info["overall"] = average_contributions_per_commit;
 
-        if (largest < average_contributions_per_commit) {
-            largest = average_contributions_per_commit;
+        if (largest.number < average_contributions_per_commit) {
+            largest.number = average_contributions_per_commit;
+            largest.month = month;
         }
 
         for (const repo in repoContributions) {
@@ -40,14 +49,43 @@ export const getChartData = (overallContributions, repoContributions) => {
 
             month_info[repo] = average_contributions_per_commit;
 
-            if (largest < average_contributions_per_commit) {
-                largest = average_contributions_per_commit;
+            if (largest.number < average_contributions_per_commit) {
+                largest.number = average_contributions_per_commit;
+                largest.month = month;
+            }
+
+            if (largestInRepo.number < average_contributions_per_commit) {
+                largestInRepo.number = average_contributions_per_commit;
+                largestInRepo.month = month;
+                largestInRepo.repo = repo;
             }
         }
-        newRechartsData.push(month_info);
+        chartData.push(month_info);
     }
 
-    return { newRechartsData, largest };
+    return { chartData, largest, largestInRepo };
+};
+
+export const getRepoData = (repoContributions) => {
+    const data = [];
+    for (const repo in repoContributions) {
+        let repoData = {
+            name: repo,
+            additions: 0,
+            deletions: 0,
+            commits: 0,
+        };
+
+        for (const month in repoContributions[repo]) {
+            repoData.additions += repoContributions[repo][month]["additions"];
+            repoData.deletions += repoContributions[repo][month]["deletions"];
+            repoData.commits += repoContributions[repo][month]["commits"];
+        }
+
+        data.push(repoData);
+    }
+
+    return data;
 };
 
 export const getColour = (index) => {

@@ -52,7 +52,7 @@ export default function UserPage({ params }) {
                 userInfo.repo_contributions,
             );
 
-            setRechartsData(newRechartsData.newRechartsData);
+            setRechartsData(newRechartsData.chartData);
             setLargestAverageContributions(newRechartsData.largest);
         };
 

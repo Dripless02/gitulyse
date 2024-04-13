@@ -1,12 +1,10 @@
 "use client";
-import BaseInfo from "@/components/user/BaseInfo";
-import ContributionChart from "@/components/user/ContributionChart";
-import RepoList from "@/components/user/RepoList";
 import { getChartData } from "@/components/user/utils";
 import { Box, Center, Divider, LoadingOverlay, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import SingleUserCompare from "@/components/user/SingleUserCompare";
 
 const UserComparePage = ({ params }) => {
     const { user: user_one, user_two } = params;
@@ -14,8 +12,8 @@ const UserComparePage = ({ params }) => {
     const [userAccessToken, setUserAccessToken] = useState("");
     const [userOneInfo, setUserOneInfo] = useState({});
     const [userTwoInfo, setUserTwoInfo] = useState({});
-    const [userOneRechartsData, setUserOneRechartsData] = useState([]);
-    const [userTwoRechartsData, setUserTwoRechartsData] = useState([]);
+    const [userOneChartData, setUserOneChartData] = useState({});
+    const [userTwoChartData, setUserTwoChartData] = useState({});
     const [userOneLargestAverageContributions, setUserOneLargestAverageContributions] = useState(0);
     const [userTwoLargestAverageContributions, setUserTwoLargestAverageContributions] = useState(0);
 
@@ -68,15 +66,13 @@ const UserComparePage = ({ params }) => {
             userOneInfo.overall_contributions,
             userOneInfo.repo_contributions,
         );
-        setUserOneRechartsData(userOneData.newRechartsData);
-        setUserOneLargestAverageContributions(userOneData.largest);
+        setUserOneChartData(userOneData);
 
         const userTwoData = getChartData(
             userTwoInfo.overall_contributions,
             userTwoInfo.repo_contributions,
         );
-        setUserTwoRechartsData(userTwoData.newRechartsData);
-        setUserTwoLargestAverageContributions(userTwoData.largest);
+        setUserTwoChartData(userTwoData);
     }, [userOneInfo, userTwoInfo]);
 
     useEffect(() => {
@@ -99,39 +95,19 @@ const UserComparePage = ({ params }) => {
             </Center>
 
             <Box className="flex flex-row justify-center">
-                <Box className="flex-1 pr-2" pos="relative">
-                    <BaseInfo userInfo={userOneInfo} />
-
-                    <ContributionChart
-                        data={userOneRechartsData}
-                        largest={userOneLargestAverageContributions}
-                        userInfo={userOneInfo}
-                        singleUser={true}
-                    />
-
-                    <Center className="pb-5">
-                        <Title order={3}>Repositories</Title>
-                    </Center>
-                    <RepoList repos={userOneInfo.repos} />
-                </Box>
+                <SingleUserCompare
+                    userInfo={userOneInfo}
+                    chartData={userOneChartData}
+                    position="left"
+                />
 
                 <Divider orientation="vertical" size="xl" />
 
-                <Box className="flex-1 pl-2" pos="relative">
-                    <BaseInfo userInfo={userTwoInfo} />
-
-                    <ContributionChart
-                        data={userTwoRechartsData}
-                        largest={userTwoLargestAverageContributions}
-                        userInfo={userTwoInfo}
-                        singleUser={true}
-                    />
-
-                    <Center className="pb-5">
-                        <Title order={3}>Repositories</Title>
-                    </Center>
-                    <RepoList repos={userTwoInfo.repos} />
-                </Box>
+                <SingleUserCompare
+                    userInfo={userTwoInfo}
+                    chartData={userTwoChartData}
+                    position="right"
+                />
             </Box>
         </Box>
     );
