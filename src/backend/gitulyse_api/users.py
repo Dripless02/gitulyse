@@ -3,7 +3,7 @@ from datetime import datetime
 from time import time
 
 from flask import Blueprint, jsonify, request
-from github import Auth, Github, BadCredentialsException
+from github import Auth, Github, BadCredentialsException, UnknownObjectException
 
 from gitulyse_api.commits import parse_contributions
 from gitulyse_api.db import get_db
@@ -29,6 +29,8 @@ def get_user():
             user = g.get_user()
     except BadCredentialsException:
         return jsonify({"message": "Invalid token"}), 401
+    except UnknownObjectException:
+        return jsonify({"message": "User not found"}), 404
 
     try:
         latest_user_info = db_client["users"][user.login.lower()].find({}, {"_id": 0}).sort("timestamp", -1).limit(1)[0]
@@ -47,7 +49,9 @@ def get_user():
         "created_at": user.created_at,
         "avatar_url": user.avatar_url,
         "html_url": user.html_url,
-        "repos": {}
+        "repos": {},
+        "languages": get_user_languages(user.get_repos()),
+        "pull_request_count": len([pr for pr in g.search_issues(f"author:{user.login} is:pr")]),
     }
 
     all_user_repos = [repo for repo in user.get_repos(type="all")]
@@ -123,3 +127,20 @@ def get_user_contributions(all_user_repos, user):
         "repo_contributions": contributions_per_repo,
         "overall_contributions": overall_contributions
     }
+
+
+def get_user_languages(all_user_repos):
+    languages = {}
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        for repo in all_user_repos:
+            executor.submit(process_repo_languages, repo, languages)
+
+    return languages
+
+
+def process_repo_languages(repo, languages):
+    for language, bytes in repo.get_languages().items():
+        if language in languages:
+            languages[language] += bytes
+        else:
+            languages[language] = bytes

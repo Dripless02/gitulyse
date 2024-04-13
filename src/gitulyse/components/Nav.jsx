@@ -6,14 +6,22 @@ import Image from "next/image";
 import Link from "next/link";
 import InfoModal from "@/components/infoModal";
 import SearchBar from "@/components/SearchBar";
+import UserCompareDialog from "@/components/UserCompareDialog";
+import { useDisclosure } from "@mantine/hooks";
 
 const Nav = () => {
     const { data, status } = useSession();
     const [modalOpened, setModalOpened] = useState(false);
+    const [userCompare, setUserCompare] = useState([]);
+    const [
+        userCompareDialogOpened,
+        { open: userCompareDialogOpen, close: userCompareDialogClose },
+    ] = useDisclosure(false);
 
     const toggleModal = () => {
-        setModalOpened((prev) => !prev);
+        setModalOpened(!modalOpened);
     };
+
     return (
         <nav className="flex-between w-full mb-15 pt-5">
             <Link href="/" className="flex gap-2 flex-center">
@@ -30,7 +38,20 @@ const Nav = () => {
                 {status === "authenticated" ? (
                     <>
                         <div className="flex items-center gap-3 md:gap-5">
-                            <SearchBar />
+                            <UserCompareDialog
+                                users={userCompare}
+                                setUsers={setUserCompare}
+                                opened={userCompareDialogOpened}
+                                close={userCompareDialogClose}
+                            />
+
+                            <SearchBar
+                                userCompare={userCompare}
+                                setUserCompare={setUserCompare}
+                                dialogOpen={userCompareDialogOpen}
+                                dialogStatus={userCompareDialogOpened}
+                                dialogClose={userCompareDialogClose}
+                            />
                             <div className="flex items-center gap-3 md:gap-5 ">
                                 <button
                                     type="button"

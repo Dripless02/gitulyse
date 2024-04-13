@@ -10,14 +10,15 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { IconBook2, IconUser } from "@tabler/icons-react";
+import { IconBook2, IconPlus, IconUser } from "@tabler/icons-react";
 
-const SearchBar = ({}) => {
+const SearchBar = ({ userCompare, setUserCompare, dialogStatus, dialogOpen }) => {
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
     });
 
     const router = useRouter();
+
     const [userAccessToken, setUserAccessToken] = useState("");
     const [value, setValue] = useState("");
     const [loading, setLoading] = useState(false);
@@ -38,6 +39,7 @@ const SearchBar = ({}) => {
             console.error(err);
         });
     }, []);
+
     const fetchOptions = useCallback(
         (value) => {
             setLoading(true);
@@ -67,20 +69,37 @@ const SearchBar = ({}) => {
     );
 
     const options = (data || []).map((item) => (
-        <Combobox.Option
-            value={item}
-            key={item}
-            onClick={() => {
-                if (item.includes("/")) {
-                    router.push(`/repo/${item}`);
-                } else {
-                    router.push(`/user/${item}`);
-                }
-            }}
-        >
-            <Group gap="sm">
-                {item.includes("/") ? <IconBook2 stroke={2} /> : <IconUser stroke={2} />}
-                <Text>{item}</Text>
+        <Combobox.Option value={item} key={item}>
+            <Group gap="sm" justify="space-between">
+                <Group
+                    onClick={() => {
+                        if (item.includes("/")) {
+                            router.push(`/repo/${item}`);
+                        } else {
+                            router.push(`/user/${item}`);
+                        }
+                        combobox.closeDropdown();
+                    }}
+                >
+                    {item.includes("/") ? <IconBook2 stroke={2} /> : <IconUser stroke={2} />}
+                    <Text>{item}</Text>
+                </Group>
+                {!item.includes("/") &&
+                    userCompare.length < 2 &&
+                    userCompare.indexOf(item) === -1 && (
+                        <IconPlus
+                            stroke={2}
+                            size={24}
+                            onClick={() => {
+                                setUserCompare([...userCompare, item]);
+                                if (dialogStatus === false) {
+                                    dialogOpen();
+                                }
+                                console.log(userCompare);
+                            }}
+                            className="hover:text-green-600"
+                        />
+                    )}
             </Group>
         </Combobox.Option>
     ));
@@ -94,14 +113,7 @@ const SearchBar = ({}) => {
     }, [fetchOptions, value]);
 
     return (
-        <Combobox
-            onOptionSubmit={(option) => {
-                setValue(option);
-                combobox.closeDropdown();
-            }}
-            withinPortal={false}
-            store={combobox}
-        >
+        <Combobox withinPortal={false} store={combobox}>
             <Combobox.Target>
                 <Group gap="sm" className="pr-3 bg-blue-600/65 rounded-l-3xl rounded-r-2xl">
                     <SegmentedControl
