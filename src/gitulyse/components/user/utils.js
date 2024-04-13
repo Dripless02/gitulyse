@@ -1,3 +1,55 @@
+export const getChartData = (overallContributions, repoContributions) => {
+    const newRechartsData = [];
+    let largest = 0;
+
+    for (const month in overallContributions) {
+        const month_info = {
+            name: month,
+            overall: 0,
+        };
+
+        let average_contributions_per_commit =
+            overallContributions[month]["additions"] +
+            overallContributions[month]["deletions"] / overallContributions[month]["commits"];
+        average_contributions_per_commit = Number(average_contributions_per_commit.toFixed(1));
+
+        if (isNaN(average_contributions_per_commit)) {
+            average_contributions_per_commit = "0";
+        }
+        month_info["overall"] = average_contributions_per_commit;
+
+        if (largest < average_contributions_per_commit) {
+            largest = average_contributions_per_commit;
+        }
+
+        for (const repo in repoContributions) {
+            let data = repoContributions[repo][month];
+            let average_contributions_per_commit;
+            if (!data) {
+                month_info[repo] = null;
+                continue;
+            }
+
+            average_contributions_per_commit =
+                data["additions"] + data["deletions"] / data["commits"];
+            average_contributions_per_commit = Number(average_contributions_per_commit.toFixed(1));
+
+            if (isNaN(average_contributions_per_commit)) {
+                average_contributions_per_commit = 0;
+            }
+
+            month_info[repo] = average_contributions_per_commit;
+
+            if (largest < average_contributions_per_commit) {
+                largest = average_contributions_per_commit;
+            }
+        }
+        newRechartsData.push(month_info);
+    }
+
+    return { newRechartsData, largest };
+};
+
 export const getColour = (index) => {
     // extra colours found at this gist link
     // https://gist.github.com/mucar/3898821?permalink_comment_id=4069073#gistcomment-4069073

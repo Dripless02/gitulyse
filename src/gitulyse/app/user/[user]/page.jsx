@@ -6,8 +6,8 @@ import { useDisclosure } from "@mantine/hooks";
 import ContributionChart from "@/components/user/ContributionChart";
 import BaseInfo from "@/components/user/BaseInfo";
 import RepoList from "@/components/user/RepoList";
-import { usePathname } from "next/navigation";
 import { IconArrowRight } from "@tabler/icons-react";
+import { getChartData } from "@/components/user/utils";
 
 export default function UserPage({ params }) {
     const user = params.user;
@@ -17,8 +17,6 @@ export default function UserPage({ params }) {
     const [userInfo, setUserInfo] = useState({});
     const [rechartsData, setRechartsData] = useState([]);
     const [largestAverageContributions, setLargestAverageContributions] = useState(0);
-    const [singleUser, setSingleUser] = useState(false);
-    const pathname = usePathname();
 
     const [isLoading, { close: disableLoading }] = useDisclosure(true);
 
@@ -47,14 +45,6 @@ export default function UserPage({ params }) {
     }, []);
 
     useEffect(() => {
-        if ((pathname.match(/\//g) || []).length === 3) {
-            setSingleUser(false);
-        } else if ((pathname.match(/\//g) || []).length === 2) {
-            setSingleUser(true);
-        }
-    }, [pathname]);
-
-    useEffect(() => {
         if (!userAccessToken) return;
 
         fetch(`${BACKEND_URL}/get-user?token=${userAccessToken}&user=${user}`)
@@ -67,73 +57,22 @@ export default function UserPage({ params }) {
 
     useEffect(() => {
         if (Object.keys(userInfo).length === 0 || rechartsData.length !== 0) return;
-        let largest = 0;
 
         const setInfo = () => {
-            const overallContributions = userInfo.overall_contributions;
-            const repoContributions = userInfo.repo_contributions;
+            const newRechartsData = getChartData(
+                userInfo.overall_contributions,
+                userInfo.repo_contributions,
+            );
 
-            const newRechartsData = [];
-
-            for (const month in overallContributions) {
-                const month_info = {
-                    name: month,
-                    overall: 0,
-                };
-
-                let average_contributions_per_commit =
-                    overallContributions[month]["additions"] +
-                    overallContributions[month]["deletions"] /
-                        overallContributions[month]["commits"];
-                average_contributions_per_commit = Number(
-                    average_contributions_per_commit.toFixed(1),
-                );
-
-                if (isNaN(average_contributions_per_commit)) {
-                    average_contributions_per_commit = "0";
-                }
-                month_info["overall"] = average_contributions_per_commit;
-
-                if (largest < average_contributions_per_commit) {
-                    largest = average_contributions_per_commit;
-                }
-
-                for (const repo in repoContributions) {
-                    let data = repoContributions[repo][month];
-                    let average_contributions_per_commit;
-                    if (!data) {
-                        month_info[repo] = null;
-                        continue;
-                    }
-
-                    average_contributions_per_commit =
-                        data["additions"] + data["deletions"] / data["commits"];
-                    average_contributions_per_commit = Number(
-                        average_contributions_per_commit.toFixed(1),
-                    );
-
-                    if (isNaN(average_contributions_per_commit)) {
-                        average_contributions_per_commit = 0;
-                    }
-
-                    month_info[repo] = average_contributions_per_commit;
-
-                    if (largest < average_contributions_per_commit) {
-                        largest = average_contributions_per_commit;
-                    }
-                }
-                newRechartsData.push(month_info);
-            }
-
-            setRechartsData(newRechartsData);
-            setLargestAverageContributions(largest);
+            setRechartsData(newRechartsData.newRechartsData);
+            setLargestAverageContributions(newRechartsData.largest);
         };
 
         setInfo();
     }, [rechartsData.length, userInfo]);
 
     return isLoading ? (
-        <Container size={singleUser ? "xl" : "55rem"}>
+        <Container size="xl">
             <Box pos="relative">
                 <LoadingOverlay
                     visible={isLoading}
@@ -186,7 +125,7 @@ export default function UserPage({ params }) {
             </Box>
         </Container>
     ) : (
-        <Container size={singleUser ? "xl" : "55rem"} m={0}>
+        <Container size="xl">
             <Stack className="mt-7" gap="xs" align="stretch" justify="space-between">
                 <BaseInfo userInfo={userInfo} />
 
