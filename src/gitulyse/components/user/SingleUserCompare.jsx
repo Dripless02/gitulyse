@@ -31,7 +31,7 @@ const SingleUserCompare = ({ position, userInfo, chartData }) => {
 
     return (
         <Box
-            className={`flex-1 ${position === "left" && "pr-2"} ${position === "right" && "pl-2"}`}
+            className={`flex-1 ${position === "left" && "pr-7"} ${position === "right" && "pl-7"}`}
         >
             <BaseInfo userInfo={userInfo} />
 

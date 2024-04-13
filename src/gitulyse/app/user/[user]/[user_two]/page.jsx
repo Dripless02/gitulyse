@@ -88,7 +88,9 @@ const UserComparePage = ({ params }) => {
             />
             <Center className="pb-5">
                 <Title order={1}>
-                    Comparison between &apos;{user_one}&apos; and &apos;{user_two}&apos;
+                    Comparison of &apos;
+                    {userOneInfo.name ? userOneInfo.name : userOneInfo.login}&apos; and &apos;
+                    {userTwoInfo.name ? userTwoInfo.name : userTwoInfo.login}&apos;
                 </Title>
             </Center>
 

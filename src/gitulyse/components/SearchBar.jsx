@@ -10,7 +10,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { IconBook2, IconUser, IconUserPlus } from "@tabler/icons-react";
+import { IconBook2, IconPlus, IconUser } from "@tabler/icons-react";
 
 const SearchBar = ({ userCompare, setUserCompare, dialogStatus, dialogOpen }) => {
     const combobox = useCombobox({
@@ -87,7 +87,7 @@ const SearchBar = ({ userCompare, setUserCompare, dialogStatus, dialogOpen }) =>
                 {!item.includes("/") &&
                     userCompare.length < 2 &&
                     userCompare.indexOf(item) === -1 && (
-                        <IconUserPlus
+                        <IconPlus
                             stroke={2}
                             size={24}
                             onClick={() => {
