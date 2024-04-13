@@ -3,13 +3,10 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import Nav from "@/components/Nav";
 import { useSession, signIn, signOut, getSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import mockRouter from "next-router-mock";
 
 // Mock useRouter to provide a minimal router object
-jest.mock("next/router", () => ({
-    useRouter: jest.fn().mockReturnValue({
-        push: jest.fn(),
-    }),
-}));
+jest.mock("next/navigation", () => jest.requireActual("next-router-mock"));
 
 // Mock next-auth/react
 jest.mock("next-auth/react", () => ({
@@ -46,13 +43,6 @@ describe("Nav component", () => {
 
     test("calls sign out function when sign out button is clicked", () => {
         useSession.mockReturnValueOnce({
-            data: {
-                user: {
-                    name: "test",
-                    email: "test@test.com",
-                    image: "https://avatars.githubusercontent.com/u/583231?v=4",
-                },
-            },
             status: "authenticated",
         });
         render(<Nav />);
@@ -63,13 +53,6 @@ describe("Nav component", () => {
 
     test('toggles modal when "How?" button is clicked', () => {
         useSession.mockReturnValue({
-            data: {
-                user: {
-                    name: "test",
-                    email: "test@test.com",
-                    image: "https://avatars.githubusercontent.com/u/583231?v=4",
-                },
-            },
             status: "authenticated",
         });
         render(<Nav />);
