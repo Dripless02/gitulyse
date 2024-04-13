@@ -88,6 +88,17 @@ export const getRepoData = (repoContributions) => {
     return data;
 };
 
+export const sortLanguages = (languages) => {
+    let topLanguages = [];
+    for (const language in languages) {
+        topLanguages.push({ language: language, count: languages[language] });
+    }
+
+    topLanguages.sort((a, b) => b.count - a.count);
+
+    return topLanguages;
+};
+
 export const getColour = (index) => {
     // extra colours found at this gist link
     // https://gist.github.com/mucar/3898821?permalink_comment_id=4069073#gistcomment-4069073

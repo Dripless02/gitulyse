@@ -14,8 +14,6 @@ const UserComparePage = ({ params }) => {
     const [userTwoInfo, setUserTwoInfo] = useState({});
     const [userOneChartData, setUserOneChartData] = useState({});
     const [userTwoChartData, setUserTwoChartData] = useState({});
-    const [userOneLargestAverageContributions, setUserOneLargestAverageContributions] = useState(0);
-    const [userTwoLargestAverageContributions, setUserTwoLargestAverageContributions] = useState(0);
 
     const [isLoadingUserOne, { close: disableLoadingUserOne }] = useDisclosure(true);
     const [isLoadingUserTwo, { close: disableLoadingUserTwo }] = useDisclosure(true);

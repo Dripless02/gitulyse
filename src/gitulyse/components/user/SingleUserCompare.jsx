@@ -4,6 +4,7 @@ import RepoList from "@/components/user/RepoList";
 import { useEffect, useState } from "react";
 import ContributionChart from "@/components/user/ContributionChart";
 import { getRepoData } from "@/components/user/utils";
+import ExtraUserInfo from "@/components/user/ExtraUserInfo";
 
 const SingleUserCompare = ({ position, userInfo, chartData }) => {
     useEffect(() => {
@@ -40,6 +41,8 @@ const SingleUserCompare = ({ position, userInfo, chartData }) => {
                 userInfo={userInfo}
                 singleUser={true}
             />
+
+            <ExtraUserInfo chartData={chartData} userInfo={userInfo} />
 
             <Center className="pb-5 mt-4">
                 <Title order={3}>Repositories</Title>
