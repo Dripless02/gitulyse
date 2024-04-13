@@ -22,7 +22,7 @@ const BaseInfo = ({ userInfo }) => {
                     <IconInfoSquareRounded stroke={1.5} />
                     <HoverCard disabled={userInfo.bio.length < 200}>
                         <HoverCard.Target>
-                            <Text maw="50rem" lineClamp={2}>
+                            <Text maw="45rem" lineClamp={2}>
                                 {userInfo.bio}
                             </Text>
                         </HoverCard.Target>
