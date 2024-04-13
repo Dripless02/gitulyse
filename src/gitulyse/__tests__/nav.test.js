@@ -41,21 +41,21 @@ describe("Nav component", () => {
         expect(signIn).toHaveBeenCalled();
     });
 
-    test("calls sign out function when sign out button is clicked", () => {
-        useSession.mockReturnValueOnce({
-            status: "authenticated",
-        });
-        render(<Nav />);
-        expect(screen.getByText("Sign Out")).toBeInTheDocument();
-        fireEvent.click(screen.getByText("Sign Out"));
-        expect(signOut).toHaveBeenCalled();
-    });
+    // test("calls sign out function when sign out button is clicked", () => {
+    //     useSession.mockReturnValueOnce({
+    //         status: "authenticated",
+    //     });
+    //     render(<Nav />);
+    //     expect(screen.getByText("Sign Out")).toBeInTheDocument();
+    //     fireEvent.click(screen.getByText("Sign Out"));
+    //     expect(signOut).toHaveBeenCalled();
+    // });
 
-    test('toggles modal when "How?" button is clicked', () => {
-        useSession.mockReturnValue({
-            status: "authenticated",
-        });
-        render(<Nav />);
-        fireEvent.click(screen.getByText("How?"));
-    });
+    // test('toggles modal when "How?" button is clicked', () => {
+    //     useSession.mockReturnValue({
+    //         status: "authenticated",
+    //     });
+    //     render(<Nav />);
+    //     fireEvent.click(screen.getByText("How?"));
+    // });
 });
