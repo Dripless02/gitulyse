@@ -14,15 +14,16 @@ const config = {
     collectCoverage: true,
     coverageDirectory: "coverage",
     coverageProvider: "v8",
-    moduleDirectories: [
-      "node_modules",
-        "<rootDir>/"
-    ],
+    moduleDirectories: ["node_modules", "<rootDir>/"],
     moduleNameMapper: {
         "^@/(.*)/$": "<rootDir>/src/$1",
     },
-    setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+    setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
     testEnvironment: "jsdom",
+    transform: {
+        "^.+\\.jsx?$": "babel-jest",
+    },
+    transformIgnorePatterns: ["/node_modules/(?!(d3)/)"],
 };
 
 module.exports = createJestConfig(config);
