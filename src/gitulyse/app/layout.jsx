@@ -18,12 +18,7 @@ async function Rootlayout({ children }) {
         <html lang="en">
             <head>
                 <ColorSchemeScript />
-                <link
-                    rel="icon"
-                    href="/assets/images/logo.png"
-                    type="image/png"
-                    sizes="1080x1080"
-                />
+                <link rel="icon" href="/assets/images/dark-logo.png" type="image/png" />
             </head>
             <body>
                 <SessionProvider session={session}>

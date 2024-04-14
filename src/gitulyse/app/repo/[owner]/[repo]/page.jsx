@@ -9,6 +9,17 @@ import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import {
+    IconEye,
+    IconGitFork,
+    IconGitPullRequest,
+    IconGitPullRequestDraft,
+    IconLanguage,
+    IconStar,
+    IconUser,
+} from "@tabler/icons-react";
+import { Group, Loader, ScrollArea, Stack, Text, Title } from "@mantine/core";
+import Link from "next/link";
 
 export default function RepoPage({ params }) {
     const owner = params.owner;
@@ -16,9 +27,11 @@ export default function RepoPage({ params }) {
     const startDate = params.startDate;
     const endDate = params.endDate;
 
-
     const [userAccessToken, setUserAccessToken] = useState("");
     const [dropzones, setDropzones] = useState(Array.from({ length: 4 }).fill(null));
+    const [repoInfo, setRepoInfo] = useState(null);
+
+    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
     useEffect(() => {
         async function getInfo() {
@@ -33,6 +46,16 @@ export default function RepoPage({ params }) {
         });
     }, []);
 
+    useEffect(() => {
+        if (!userAccessToken) return;
+
+        fetch(`${BACKEND_URL}/get-repo-stats?token=${userAccessToken}&owner=${owner}&repo=${repo}`)
+            .then((res) => res.json())
+            .then((data) => {
+                setRepoInfo(data);
+            });
+    }, [BACKEND_URL, owner, repo, userAccessToken]);
+
     const DraggableNavItem = ({ name }) => {
         const [{ isDragging }, drag] = useDrag(() => ({
             type: "NAV_ITEM",
@@ -45,7 +68,10 @@ export default function RepoPage({ params }) {
         return (
             <div
                 ref={drag}
-                className={"cursor-pointer mb-2 p-1 border border-solid border-gray-400 rounded bg-white" + (isDragging ? " opacity-50" : "")}
+                className={
+                    "cursor-pointer mb-2 p-3 rounded bg-white bg-cyan-950 text-green-100" +
+                    (isDragging ? " opacity-50" : "")
+                }
             >
                 {name}
             </div>
@@ -65,8 +91,10 @@ export default function RepoPage({ params }) {
         return (
             <div
                 ref={drop}
-                className={"relative min-w-[500px] min-h-96 border border-solid border-gray-400 rounded p-5" +
-                    "" + (isOver && canDrop ? " border-green-500" : "")}
+                className={
+                    "relative min-w-[500px] min-h-96 border border-solid border-gray-400 rounded p-5" +
+                    (isOver && canDrop ? " border-green-500" : "")
+                }
             >
                 {isOver && canDrop && (
                     <p
@@ -103,15 +131,31 @@ export default function RepoPage({ params }) {
                     />
                 );
             case "Pull Requests":
-                return <PullRequests owner={owner} repo={repo} userAccessToken={userAccessToken}/>;
+                return <PullRequests owner={owner} repo={repo} userAccessToken={userAccessToken} />;
             case "Issue Tracking":
                 return (
-                    <IssueTracking owner={owner} repo={repo} userAccessToken={userAccessToken}/>
+                    <IssueTracking owner={owner} repo={repo} userAccessToken={userAccessToken} />
                 );
             case "Percentage Pull Requests":
-                return <PercentagePullrequests start_date={startDate} end_date={endDate} owner={owner} repo={repo} userAccessToken={userAccessToken}/>;
+                return (
+                    <PercentagePullrequests
+                        start_date={startDate}
+                        end_date={endDate}
+                        owner={owner}
+                        repo={repo}
+                        userAccessToken={userAccessToken}
+                    />
+                );
             case "Percentage Issues":
-                return <PercentageIssues start_date={startDate} end_date={endDate} owner={owner} repo={repo} userAccessToken={userAccessToken}/>;
+                return (
+                    <PercentageIssues
+                        start_date={startDate}
+                        end_date={endDate}
+                        owner={owner}
+                        repo={repo}
+                        userAccessToken={userAccessToken}
+                    />
+                );
             default:
                 return null;
         }
@@ -120,19 +164,96 @@ export default function RepoPage({ params }) {
     return (
         <DndProvider backend={HTML5Backend}>
             <div className="flex max-w-full">
-                <div className="mt-36 mr-16 flex flex-col">
-                    <DraggableNavItem name="Pull Requests"/>
-                    <DraggableNavItem name="Code Contributions"/>
-                    <DraggableNavItem name="Issue Tracking"/>
-                    <DraggableNavItem name="Percentage Pull Requests"/>
-                    <DraggableNavItem name="Percentage Issues"/>
+                <div className="mt-36 mr-12 flex flex-col w-64">
+                    <Title order={2} className="pb-3">
+                        My Available Stats
+                    </Title>
+                    <DraggableNavItem name="Pull Requests" />
+                    <DraggableNavItem name="Code Contributions" />
+                    <DraggableNavItem name="Issue Tracking" />
+                    <DraggableNavItem name="Percentage Pull Requests" />
+                    <DraggableNavItem name="Percentage Issues" />
+                    {repoInfo ? (
+                        <Stack align="flex-start" justify="flex-start">
+                            <Title order={1}>Overall Stats</Title>
+                            <Group>
+                                <IconStar stroke={2} />
+                                <Text size="lg">Stars: {repoInfo?.stars}</Text>
+                            </Group>
+                            <Group>
+                                <IconGitFork stroke={2} />
+                                <Text size="lg">Forks: {repoInfo?.forks}</Text>
+                            </Group>
+                            <Group>
+                                <IconEye stroke={2} />
+                                <Text size="lg">Watchers: {repoInfo?.watchers}</Text>
+                            </Group>
+                            <Group>
+                                <IconGitPullRequest stroke={2} />
+                                <Text size="lg">
+                                    Closed Pull Requests:{" "}
+                                    {repoInfo?.pull_requests - repoInfo?.open_pull_requests}
+                                </Text>
+                            </Group>
+                            <Group>
+                                <IconGitPullRequestDraft stroke={2} />
+                                <Text size="lg">
+                                    Open Pull Requests: {repoInfo?.open_pull_requests}
+                                </Text>
+                            </Group>
+                            <Group justify="flex-start" align="flex-start">
+                                <IconLanguage stroke={2} />
+                                <Stack>
+                                    {repoInfo?.languages &&
+                                        Object.entries(repoInfo?.languages)
+                                            .sort(([, a], [, b]) => b - a)
+                                            .map(([language, bytes]) => (
+                                                <Group key={language}>
+                                                    <Text size="lg">
+                                                        {language}: {bytes}
+                                                    </Text>
+                                                </Group>
+                                            ))}
+                                </Stack>
+                            </Group>
+                            <Group justify="flex-start" align="flex-start">
+                                <IconUser stroke={2} />
+                                <ScrollArea h={350}>
+                                    <Stack>
+                                        {repoInfo?.contributors
+                                            .filter(
+                                                (contributor) =>
+                                                    !contributor.login.endsWith("[bot]"),
+                                            )
+                                            .map((contributor) => (
+                                                <Group key={contributor}>
+                                                    <Text size="lg">
+                                                        <Link
+                                                            href={`/user/${contributor.login}`}
+                                                            className="text-blue-500 hover:underline"
+                                                        >
+                                                            {contributor.login}
+                                                        </Link>
+                                                        : {contributor.contributions}
+                                                    </Text>
+                                                </Group>
+                                            ))}
+                                    </Stack>
+                                </ScrollArea>
+                            </Group>
+                        </Stack>
+                    ) : (
+                        <Loader color="blue" size="xl" />
+                    )}
                 </div>
                 <div className="mt-4 flex flex-col items-center">
-                    <p className="mt-10 mb-10 text-5xl">Info for {repo}</p>
-                    <div className="grid grid-cols-2 gap-4">
+                    <p className="mt-10 mb-10 text-5xl">
+                        Info for {owner}/{repo}
+                    </p>
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                         {dropzones.map((item, index) => (
                             <div key={index} className="flex">
-                                <div style={{ flex: 1 }}>
+                                <div className="flex-1">
                                     <DropZone
                                         onDrop={(itemName) => handleDrop(itemName, index)}
                                         index={index}
