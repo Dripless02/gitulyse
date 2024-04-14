@@ -26,7 +26,7 @@ const Nav = () => {
         <nav className="flex-between w-full mb-15 pt-5">
             <Link href="/" className="flex gap-2 flex-center">
                 <Image
-                    src="/assets/images/logo.png"
+                    src="/assets/images/light-logo.png"
                     alt="gitulyse logo"
                     width={70}
                     height={0}
