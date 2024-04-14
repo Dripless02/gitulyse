@@ -75,3 +75,42 @@ def get_repos():
         return jsonify({"repos": repo_list[: int(limit)]})
     else:
         return jsonify({"repos": repo_list})
+
+
+@bp.route("/get-repo-stats", methods=["GET"])
+def get_repo_stats():
+    token = request.args.get("token")
+    owner = request.args.get("owner").lower()
+    repo_name = request.args.get("repo").lower()
+
+    repo = f"{owner}/{repo_name}"
+
+    try:
+        auth = Auth.Token(token)
+        gh = Github(auth=auth)
+
+        repo = gh.get_repo(repo)
+    except BadCredentialsException:
+        return jsonify({"message": "Invalid token"}), 401
+
+    stats = {
+        "stars": repo.stargazers_count,
+        "forks": repo.forks_count,
+        "watchers": repo.watchers_count,
+        "open_pull_requests": repo.get_pulls(state="open").totalCount,
+        "pull_requests": repo.get_pulls(state="all").totalCount,
+        "size": repo.size,
+        "languages": repo.get_languages(),
+    }
+
+    contributors = repo.get_contributors()
+    contributors_list = []
+    for contributor in contributors:
+        contributors_list.append({
+            "login": contributor.login,
+            "contributions": contributor.contributions,
+        })
+
+    stats["contributors"] = contributors_list
+
+    return jsonify(stats)
