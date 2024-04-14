@@ -18,7 +18,7 @@ import {
     IconStar,
     IconUser,
 } from "@tabler/icons-react";
-import { Group, Loader, Stack, Text, Title } from "@mantine/core";
+import { Group, Loader, ScrollArea, Stack, Text, Title } from "@mantine/core";
 import Link from "next/link";
 
 export default function RepoPage({ params }) {
@@ -69,7 +69,7 @@ export default function RepoPage({ params }) {
             <div
                 ref={drag}
                 className={
-                    "cursor-pointer mb-2 p-1 border border-solid border-gray-400 rounded bg-white" +
+                    "cursor-pointer mb-2 p-3 rounded bg-white bg-cyan-950 text-green-100" +
                     (isDragging ? " opacity-50" : "")
                 }
             >
@@ -164,38 +164,18 @@ export default function RepoPage({ params }) {
     return (
         <DndProvider backend={HTML5Backend}>
             <div className="flex max-w-full">
-                <div className="mt-36 mr-16 flex flex-col">
+                <div className="mt-36 mr-12 flex flex-col w-64">
+                    <Title order={2} className="pb-3">
+                        My Available Stats
+                    </Title>
                     <DraggableNavItem name="Pull Requests" />
                     <DraggableNavItem name="Code Contributions" />
                     <DraggableNavItem name="Issue Tracking" />
                     <DraggableNavItem name="Percentage Pull Requests" />
                     <DraggableNavItem name="Percentage Issues" />
-                </div>
-                <div className="mt-4 flex flex-col items-center">
-                    <p className="mt-10 mb-10 text-5xl">
-                        Info for {owner}/{repo}
-                    </p>
-                    <div className="grid grid-cols-2 gap-4">
-                        {dropzones.map((item, index) => (
-                            <div key={index} className="flex">
-                                <div style={{ flex: 1 }}>
-                                    <DropZone
-                                        onDrop={(itemName) => handleDrop(itemName, index)}
-                                        index={index}
-                                    >
-                                        {item && renderItem(item)}
-                                    </DropZone>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                <div className="mt-36 ml-16 flex flex-col">
                     {repoInfo ? (
                         <Stack align="flex-start" justify="flex-start">
-                            <Title order={1} orderMd={2} orderLg={2} orderXl={2}>
-                                Stats
-                            </Title>
+                            <Title order={1}>Overall Stats</Title>
                             <Group>
                                 <IconStar stroke={2} />
                                 <Text size="lg">Stars: {repoInfo?.stars}</Text>
@@ -222,24 +202,6 @@ export default function RepoPage({ params }) {
                                 </Text>
                             </Group>
                             <Group justify="flex-start" align="flex-start">
-                                <IconUser stroke={2} />
-                                <Stack>
-                                    {repoInfo?.contributors.map((contributor) => (
-                                        <Group key={contributor}>
-                                            <Text size="lg">
-                                                <Link
-                                                    href={`/user/${contributor.login}`}
-                                                    className="text-blue-500 hover:underline"
-                                                >
-                                                    {contributor.login}
-                                                </Link>
-                                                : {contributor.contributions}
-                                            </Text>
-                                        </Group>
-                                    ))}
-                                </Stack>
-                            </Group>
-                            <Group justify="flex-start" align="flex-start">
                                 <IconLanguage stroke={2} />
                                 <Stack>
                                     {repoInfo?.languages &&
@@ -254,10 +216,54 @@ export default function RepoPage({ params }) {
                                             ))}
                                 </Stack>
                             </Group>
+                            <Group justify="flex-start" align="flex-start">
+                                <IconUser stroke={2} />
+                                <ScrollArea h={350}>
+                                    <Stack>
+                                        {repoInfo?.contributors
+                                            .filter(
+                                                (contributor) =>
+                                                    !contributor.login.endsWith("[bot]"),
+                                            )
+                                            .map((contributor) => (
+                                                <Group key={contributor}>
+                                                    <Text size="lg">
+                                                        <Link
+                                                            href={`/user/${contributor.login}`}
+                                                            className="text-blue-500 hover:underline"
+                                                        >
+                                                            {contributor.login}
+                                                        </Link>
+                                                        : {contributor.contributions}
+                                                    </Text>
+                                                </Group>
+                                            ))}
+                                    </Stack>
+                                </ScrollArea>
+                            </Group>
                         </Stack>
                     ) : (
                         <Loader color="blue" size="xl" />
                     )}
+                </div>
+                <div className="mt-4 flex flex-col items-center">
+                    <p className="mt-10 mb-10 text-5xl">
+                        Info for {owner}/{repo}
+                    </p>
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                        {dropzones.map((item, index) => (
+                            <div key={index} className="flex">
+                                <div className="flex-1">
+                                    <DropZone
+                                        onDrop={(itemName) => handleDrop(itemName, index)}
+                                        index={index}
+                                    >
+                                        {item && renderItem(item)}
+                                    </DropZone>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </DndProvider>
