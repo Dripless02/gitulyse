@@ -1,14 +1,19 @@
+from datetime import datetime, timezone
+
 from flask import Blueprint, request, jsonify
 from github import Auth, Github
-from datetime import datetime, timezone
+
 bp = Blueprint('issues', __name__)
+
 
 def calculate_percentage_issues_resolved(issues, start_date, end_date):
     total_issues_resolved = 0
     for issue in issues:
-        if issue.closed_at is not None and issue.created_at >= start_date and issue.closed_at <= end_date:
-            total_issues_resolved += 1
+        if issue.closed_at is not None:
+            if start_date.timestamp() <= issue.closed_at.timestamp() <= end_date.timestamp():
+                total_issues_resolved += 1
     return total_issues_resolved
+
 
 # get issues get request
 @bp.route("/get-issues", methods=["GET"])
@@ -71,6 +76,7 @@ def get_issues():
 
     return jsonify({"issues": issue_list, "average_time_to_resolve": average_time_to_resolve})
 
+
 @bp.route("/get-percentage-issues", methods=["GET"])
 def get_percentage_issues():
     token = request.args.get("token")
@@ -92,7 +98,7 @@ def get_percentage_issues():
 
     total_issues = 0
     for issue in issues:
-        if issue.created_at >= start_date and issue.created_at <= end_date:
+        if start_date.timestamp() <= issue.created_at.timestamp() <= end_date.timestamp():
             total_issues += 1
 
     total_issues_resolved = calculate_percentage_issues_resolved(issues, start_date, end_date)
