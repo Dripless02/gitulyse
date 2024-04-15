@@ -102,7 +102,8 @@ def test_get_repo_stats(client, mocker):
     repo_mock.get_pulls.side_effect = [mocker.Mock(totalCount=5), mocker.Mock(totalCount=10)]
     repo_mock.get_contributors.return_value = [
         mocker.Mock(login="mock_user", contributions=10),
-        mocker.Mock(login="mock_user_2", contributions=20)]
+        mocker.Mock(login="mock_user_2", contributions=20)
+    ]
 
     github_client_mock.get_repo.return_value = repo_mock
     mocker.patch('gitulyse_api.repos.Github', return_value=github_client_mock)
