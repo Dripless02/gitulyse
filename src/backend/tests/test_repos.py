@@ -91,8 +91,8 @@ def test_get_repos_no_commits(client, mocker):
 
 
 def test_get_repo_stats(client, mocker):
-    github_client_mock = mocker.MagicMock(spec=Github)
-    repo_mock = mocker.MagicMock()
+    github_client_mock = mocker.Mock(spec=Github)
+    repo_mock = mocker.Mock()
     repo_mock.full_name = "mock_user/test_repo"
     repo_mock.stargazers_count = 10
     repo_mock.forks_count = 20
