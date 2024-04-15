@@ -27,11 +27,6 @@ def create_app(test_config=None):
             200,
         )
 
-    @app.route("/github-token", methods=["POST"])
-    def github_token():
-        token = request.get_json()["access_token"]
-        return jsonify({"message": "Token Retrieved from Frontend"}), 200
-
     @app.route("/github-activity", methods=["GET"])
     def github_activity():
         token = request.args.get("token")
