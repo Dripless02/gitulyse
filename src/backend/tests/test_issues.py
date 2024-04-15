@@ -1,41 +1,7 @@
-from datetime import datetime
-
-from github import Github, Issue
+from github import Github
 
 
-def test_get_issues(client, mocker):
-    github_client_mock = mocker.Mock(spec=Github)
-    repo_mock = mocker.Mock()
-    repo_mock.get_issues.return_value = [
-        mocker.Mock(
-            spec=Issue,
-            title="Test Issue 1",
-            user=mocker.Mock(
-                login="mock_user"
-            ),
-            created_at=datetime.fromtimestamp(1704067200),
-            updated_at=datetime.fromtimestamp(1704153600),
-            number=1,
-            closed_at=datetime.fromtimestamp(1704153600),
-            state="closed"
-        ),
-        mocker.Mock(
-            spec=Issue,
-            title="Test Issue 2",
-            user=mocker.Mock(
-                login="mock_user"
-            ),
-            created_at=datetime.fromtimestamp(1704067200),
-            updated_at=datetime.fromtimestamp(1704153600),
-            number=2,
-            closed_at=None,
-            state="open"
-        ),
-
-    ]
-    github_client_mock.get_repo.return_value = repo_mock
-    mocker.patch("gitulyse_api.issues.Github", return_value=github_client_mock)
-
+def test_get_issues(client, issues_setup):
     response = client.get(
         "/get-issues?token=gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&owner=mock_user&repo=test_repo"
     )
@@ -83,39 +49,7 @@ def test_get_issues_no_issues(client, mocker):
     }
 
 
-def test_get_percentage_issues(client, mocker):
-    github_client_mock = mocker.Mock(spec=Github)
-    repo_mock = mocker.Mock()
-    repo_mock.get_issues.return_value = [
-        mocker.Mock(
-            spec=Issue,
-            title="Test Issue 1",
-            user=mocker.Mock(
-                login="mock_user"
-            ),
-            created_at=datetime.fromtimestamp(1704067200),
-            updated_at=datetime.fromtimestamp(1704153600),
-            number=1,
-            closed_at=datetime.fromtimestamp(1704153600),
-            state="closed"
-        ),
-        mocker.Mock(
-            spec=Issue,
-            title="Test Issue 2",
-            user=mocker.Mock(
-                login="mock_user"
-            ),
-            created_at=datetime.fromtimestamp(1704067200),
-            updated_at=datetime.fromtimestamp(1704153600),
-            number=2,
-            closed_at=None,
-            state="open"
-        ),
-
-    ]
-    github_client_mock.get_repo.return_value = repo_mock
-    mocker.patch("gitulyse_api.issues.Github", return_value=github_client_mock)
-
+def test_get_percentage_issues(client, issues_setup):
     response = client.get(
         "/get-percentage-issues?token=gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&owner=mock_user&repo=test_repo"
         "&start_date=2024-01-01&end_date=2024-01-03"
@@ -147,38 +81,7 @@ def test_get_percentage_issues_no_issues(client, mocker):
     }
 
 
-def test_get_percentage_issues_incorrect_dates(client, mocker):
-    github_client_mock = mocker.Mock(spec=Github)
-    repo_mock = mocker.Mock()
-    repo_mock.get_issues.return_value = [
-        mocker.Mock(
-            spec=Issue,
-            title="Test Issue 1",
-            user=mocker.Mock(
-                login="mock_user"
-            ),
-            created_at=datetime.fromtimestamp(1704067200),
-            updated_at=datetime.fromtimestamp(1704153600),
-            number=1,
-            closed_at=datetime.fromtimestamp(1704153600),
-            state="closed"
-        ),
-        mocker.Mock(
-            spec=Issue,
-            title="Test Issue 2",
-            user=mocker.Mock(
-                login="mock_user"
-            ),
-            created_at=datetime.fromtimestamp(1704067200),
-            updated_at=datetime.fromtimestamp(1704153600),
-            number=2,
-            closed_at=None,
-            state="open"
-        ),
-
-    ]
-    github_client_mock.get_repo.return_value = repo_mock
-    mocker.patch("gitulyse_api.issues.Github", return_value=github_client_mock)
+def test_get_percentage_issues_incorrect_dates(client, issues_setup):
     response = client.get(
         "/get-percentage-issues?token=gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&owner=mock_user&repo=test_repo"
         "&start_date=2025-01-01&end_date=2024-01-03"

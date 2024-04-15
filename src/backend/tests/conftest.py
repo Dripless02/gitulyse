@@ -2,7 +2,7 @@ from datetime import datetime
 
 import mongomock
 import pytest
-from github import Github, PullRequest
+from github import Github, PullRequest, Issue
 
 from gitulyse_api import create_app
 from gitulyse_api.db import get_db
@@ -103,3 +103,37 @@ def pull_request_setup(mocker):
 
     github_client_mock.get_repo.return_value = repo_mock
     mocker.patch("gitulyse_api.pull_requests.Github", return_value=github_client_mock)
+
+
+@pytest.fixture
+def issues_setup(mocker):
+    github_client_mock = mocker.Mock(spec=Github)
+    repo_mock = mocker.Mock()
+    repo_mock.get_issues.return_value = [
+        mocker.Mock(
+            spec=Issue,
+            title="Test Issue 1",
+            user=mocker.Mock(
+                login="mock_user"
+            ),
+            created_at=datetime.fromtimestamp(1704067200),
+            updated_at=datetime.fromtimestamp(1704153600),
+            number=1,
+            closed_at=datetime.fromtimestamp(1704153600),
+            state="closed"
+        ),
+        mocker.Mock(
+            spec=Issue,
+            title="Test Issue 2",
+            user=mocker.Mock(
+                login="mock_user"
+            ),
+            created_at=datetime.fromtimestamp(1704067200),
+            updated_at=datetime.fromtimestamp(1704153600),
+            number=2,
+            closed_at=None,
+            state="open"
+        ),
+    ]
+    github_client_mock.get_repo.return_value = repo_mock
+    mocker.patch("gitulyse_api.issues.Github", return_value=github_client_mock)
