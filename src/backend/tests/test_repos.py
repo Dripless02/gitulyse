@@ -88,3 +88,45 @@ def test_get_repos_no_commits(client, mocker):
     response = client.get("/get-repos?token=gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     assert response.status_code == 200
     assert response.json == {"repos": [{"commit_count": 0, "name": "mock_user/test_repo1"}]}
+
+
+def test_get_repo_stats(client, mocker):
+    github_client_mock = mocker.MagicMock(spec=Github)
+    repo_mock = mocker.MagicMock()
+    repo_mock.full_name = "mock_user/test_repo"
+    repo_mock.stargazers_count = 10
+    repo_mock.forks_count = 20
+    repo_mock.watchers_count = 30
+    repo_mock.size = 100000
+    repo_mock.get_languages.return_value = {"Python": 1000, "JavaScript": 2000}
+    repo_mock.get_pulls.side_effect = [mocker.Mock(totalCount=5), mocker.Mock(totalCount=10)]
+    repo_mock.get_contributors.return_value = [
+        mocker.Mock(login="mock_user", contributions=10),
+        mocker.Mock(login="mock_user_2", contributions=20)]
+
+    github_client_mock.get_repo.return_value = repo_mock
+    mocker.patch('gitulyse_api.repos.Github', return_value=github_client_mock)
+
+    response = client.get(
+        "/get-repo-stats?token=gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&owner=mock_user&repo=test_repo")
+    assert response.status_code == 200
+    assert response.json == {
+        "stars": 10,
+        "forks": 20,
+        "watchers": 30,
+        "open_pull_requests": 5,
+        "pull_requests": 10,
+        "size": 100000,
+        "languages": {"Python": 1000, "JavaScript": 2000},
+        "contributors": [
+            {"login": "mock_user", "contributions": 10},
+            {"login": "mock_user_2", "contributions": 20},
+        ],
+    }
+
+
+def test_get_repo_stats_incorrect_token(client):
+    response = client.get("/get-repo-stats?token=incorrect_token&owner=mock_user&repo=test_repo")
+
+    assert response.status_code == 401
+    assert response.json == {"message": "Invalid token"}
