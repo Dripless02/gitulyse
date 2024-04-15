@@ -4,6 +4,7 @@ import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Chart } from "react-google-charts";
+import { Center, Title } from "@mantine/core";
 
 const Repos = () => {
     const [userAccessToken, setUserAccessToken] = useState("");
@@ -46,6 +47,9 @@ const Repos = () => {
 
     return (
         <div className="w-full">
+            <Center>
+                <Title order={1}>Your Recently Updated Repos</Title>
+            </Center>
             <Chart
                 chartType="PieChart"
                 data={repos_to_data(repos)}

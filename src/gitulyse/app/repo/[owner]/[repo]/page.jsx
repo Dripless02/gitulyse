@@ -69,7 +69,7 @@ export default function RepoPage({ params }) {
             <div
                 ref={drag}
                 className={
-                    "cursor-pointer mb-2 p-3 rounded bg-white bg-cyan-950 text-green-100" +
+                    "cursor-pointer mb-2 p-3 rounded bg-cyan-950 text-green-100" +
                     (isDragging ? " opacity-50" : "")
                 }
             >
