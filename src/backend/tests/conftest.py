@@ -1,6 +1,8 @@
+from datetime import datetime
+
 import mongomock
 import pytest
-from github import Github
+from github import Github, PullRequest
 
 from gitulyse_api import create_app
 from gitulyse_api.db import get_db
@@ -57,3 +59,47 @@ def repos_setup(request, mock_db, mocker):
     github_client_mock.get_user.return_value = user_mock
     mocker.patch('gitulyse_api.repos.Github', return_value=github_client_mock)
     yield mock_db
+
+
+@pytest.fixture
+def pull_request_setup(mocker):
+    github_client_mock = mocker.Mock(spec=Github)
+    repo_mock = mocker.Mock()
+    repo_mock.get_pulls.return_value = [
+        mocker.Mock(
+            spec=PullRequest,
+            title="Test Pull Request 1",
+            user=mocker.Mock(login="mock_user"),
+            created_at=datetime.fromtimestamp(1704067200),
+            updated_at=datetime.fromtimestamp(1704153600),
+            merged_at=datetime.fromtimestamp(1704153600),
+            closed_at=datetime.fromtimestamp(1704153600),
+            number=1,
+            state="closed",
+        ),
+        mocker.Mock(
+            spec=PullRequest,
+            title="Test Pull Request 2",
+            user=mocker.Mock(login="mock_user"),
+            created_at=datetime.fromtimestamp(1704067200),
+            updated_at=datetime.fromtimestamp(1704153600),
+            merged_at=None,
+            closed_at=datetime.fromtimestamp(1704153600),
+            number=2,
+            state="closed",
+        ),
+        mocker.Mock(
+            spec=PullRequest,
+            title="Test Pull Request 3",
+            user=mocker.Mock(login="mock_user"),
+            created_at=datetime.fromtimestamp(1704067200),
+            updated_at=datetime.fromtimestamp(1704153600),
+            merged_at=None,
+            closed_at=None,
+            number=3,
+            state="open",
+        ),
+    ]
+
+    github_client_mock.get_repo.return_value = repo_mock
+    mocker.patch("gitulyse_api.pull_requests.Github", return_value=github_client_mock)

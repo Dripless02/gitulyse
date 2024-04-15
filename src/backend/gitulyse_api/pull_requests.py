@@ -1,8 +1,9 @@
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timezone
 
 from flask import Blueprint, jsonify, request
 from github import Github, Auth
-from datetime import datetime, timedelta, timezone
+
 bp = Blueprint('pull_requests', __name__)
 
 
@@ -45,7 +46,6 @@ def parse_pull_request(pull_request):
     return pull_request_info
 
 
-
 @bp.route("/get-percentage-pull-requests", methods=["GET"])
 def get_percentage_pull_requests():
     token = request.args.get("token")
@@ -72,9 +72,10 @@ def get_percentage_pull_requests():
         created_at = parsed_pull_request.get("created_at")
         merged_at = parsed_pull_request.get("merged_at")
 
-        if created_at is not None and created_at >= start_date and created_at <= end_date:
+        if created_at is not None and start_date.timestamp() <= created_at.timestamp() <= end_date.timestamp():
             total_pull_requests += 1
-            if parsed_pull_request.get("state") == "merged" and merged_at is not None and merged_at >= start_date and merged_at <= end_date:
+            if (parsed_pull_request.get("state") == "merged"
+                    and merged_at is not None and start_date.timestamp() <= merged_at.timestamp() <= end_date.timestamp()):
                 merged_pull_requests += 1
 
     if total_pull_requests > 0:
