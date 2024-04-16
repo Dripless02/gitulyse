@@ -131,3 +131,17 @@ def test_get_repo_stats_incorrect_token(client):
 
     assert response.status_code == 401
     assert response.json == {"message": "Invalid token"}
+
+
+def test_get_repo_stats_no_owner(client):
+    response = client.get("/get-repo-stats?token=gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&repo=test_repo")
+
+    assert response.status_code == 400
+    assert response.json == {"message": "No owner provided"}
+
+
+def test_get_repo_stats_no_repo(client):
+    response = client.get("/get-repo-stats?token=gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&owner=mock_user")
+
+    assert response.status_code == 400
+    assert response.json == {"message": "No repo provided"}

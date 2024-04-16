@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from github import Github, StatsContributor
+from github import Github, StatsContributor, BadCredentialsException
 from github.StatsContributor import StatsContributor
 
 from gitulyse_api.commits import parse_contributions
@@ -69,6 +69,29 @@ def test_code_contribution_stats(client, mocker):
             }
         }
     }
+
+
+def test_code_contribution_stats_incorrect_token(client, mocker):
+    github_client_mock = mocker.Mock(spec=Github)
+    github_client_mock.get_repo.side_effect = BadCredentialsException(status=401)
+    mocker.patch("gitulyse_api.users.Github", return_value=github_client_mock)
+
+    response = client.get(
+        "/code-contribution-stats?token=gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&owner=mock_user&repo=test_repo")
+    assert response.status_code == 401
+    assert response.json == {"message": "Invalid token"}
+
+
+def test_code_contributions_no_owner(client):
+    response = client.get("/code-contribution-stats?token=gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&repo=test_repo")
+    assert response.status_code == 400
+    assert response.json == {"message": "No owner provided"}
+
+
+def test_code_contributions_no_repo(client):
+    response = client.get("/code-contribution-stats?token=gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&owner=mock_user")
+    assert response.status_code == 400
+    assert response.json == {"message": "No repo provided"}
 
 
 def test_parse_contributions_single_user(mocker):

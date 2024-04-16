@@ -110,7 +110,7 @@ def test_get_user_no_user_found(client, mocker):
     assert response.json == {"message": "User not found"}
 
 
-def test_get_user_bad_credentials(client, mocker):
+def test_get_user_incorrect_token(client, mocker):
     github_client_mock = mocker.Mock(spec=Github)
     github_client_mock.get_user.side_effect = BadCredentialsException(status=401)
     mocker.patch("gitulyse_api.users.Github", return_value=github_client_mock)

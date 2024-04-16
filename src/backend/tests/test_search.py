@@ -41,7 +41,7 @@ def test_search_repo(client, mocker):
     assert response.json == {"results": ["mock_user/test_repo", "mock_user/test_repo2"]}
 
 
-def test_search_invalid_credentials(client, mocker):
+def test_search_incorrect_token(client, mocker):
     github_client_mock = mocker.Mock(spec=Github)
     github_client_mock.get_user.side_effect = BadCredentialsException(status=401)
     mocker.patch("gitulyse_api.search.Github", return_value=github_client_mock)

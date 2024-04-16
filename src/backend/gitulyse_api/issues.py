@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
 from flask import Blueprint, request, jsonify
-from github import Auth, Github
+from github import Auth, Github, BadCredentialsException
 
 bp = Blueprint('issues', __name__)
 
@@ -15,19 +15,31 @@ def calculate_percentage_issues_resolved(issues, start_date, end_date):
     return total_issues_resolved
 
 
-# get issues get request
 @bp.route("/get-issues", methods=["GET"])
 def get_issues():
     token = request.args.get("token")
-    owner = request.args.get("owner").lower()
-    repo_name = request.args.get("repo").lower()
+    owner = request.args.get("owner")
+    repo_name = request.args.get("repo")
+
+    if owner is None or owner == "":
+        return jsonify({"message": "No owner provided"}), 400
+    else:
+        owner = owner.lower()
+
+    if repo_name is None or repo_name == "":
+        return jsonify({"message": "No repo provided"}), 400
+    else:
+        repo_name = repo_name.lower()
 
     repo = f"{owner}/{repo_name}"
 
     auth = Auth.Token(token)
-    g = Github(auth=auth)
+    gh = Github(auth=auth)
 
-    repo = g.get_repo(repo)
+    try:
+        repo = gh.get_repo(repo)
+    except BadCredentialsException:
+        return jsonify({"message": "Invalid token"}), 401
     issues = repo.get_issues(state="all", direction="asc")
 
     issue_list = []
@@ -80,10 +92,26 @@ def get_issues():
 @bp.route("/get-percentage-issues", methods=["GET"])
 def get_percentage_issues():
     token = request.args.get("token")
-    owner = request.args.get("owner").lower()
-    repo_name = request.args.get("repo").lower()
+    owner = request.args.get("owner")
+    repo_name = request.args.get("repo")
     start_date_str = request.args.get("start_date")
     end_date_str = request.args.get("end_date")
+
+    if owner is None or owner == "":
+        return jsonify({"message": "No owner provided"}), 400
+    else:
+        owner = owner.lower()
+
+    if repo_name is None or repo_name == "":
+        return jsonify({"message": "No repo provided"}), 400
+    else:
+        repo_name = repo_name.lower()
+
+    if start_date_str is None or start_date_str == "":
+        return jsonify({"message": "No start date provided"}), 400
+
+    if end_date_str is None or end_date_str == "":
+        return jsonify({"message": "No end date provided"}), 400
 
     start_date = datetime.strptime(start_date_str, '%Y-%m-%d').replace(tzinfo=timezone.utc)
     end_date = datetime.strptime(end_date_str, '%Y-%m-%d').replace(tzinfo=timezone.utc)
@@ -91,9 +119,12 @@ def get_percentage_issues():
     repo = f"{owner}/{repo_name}"
 
     auth = Auth.Token(token)
-    g = Github(auth=auth)
+    gh = Github(auth=auth)
 
-    repo = g.get_repo(repo)
+    try:
+        repo = gh.get_repo(repo)
+    except BadCredentialsException:
+        return jsonify({"message": "Invalid token"}), 401
     issues = repo.get_issues(state="all", direction="asc")
 
     total_issues = 0

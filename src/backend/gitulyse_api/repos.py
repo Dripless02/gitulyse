@@ -80,8 +80,18 @@ def get_repos():
 @bp.route("/get-repo-stats", methods=["GET"])
 def get_repo_stats():
     token = request.args.get("token")
-    owner = request.args.get("owner").lower()
-    repo_name = request.args.get("repo").lower()
+    owner = request.args.get("owner")
+    repo_name = request.args.get("repo")
+
+    if owner is None or owner == "":
+        return jsonify({"message": "No owner provided"}), 400
+    else:
+        owner = owner.lower()
+
+    if repo_name is None or repo_name == "":
+        return jsonify({"message": "No repo provided"}), 400
+    else:
+        repo_name = repo_name.lower()
 
     repo = f"{owner}/{repo_name}"
 
