@@ -20,9 +20,6 @@ const config = {
     },
     setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
     testEnvironment: "jsdom",
-    transform: {
-        "^.+\\.jsx?$": "babel-jest",
-    },
     transformIgnorePatterns: ["/node_modules/(?!(d3)/)"],
 };
 
