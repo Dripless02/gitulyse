@@ -2,7 +2,7 @@ import os
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from github import Auth, Github
+from github import Auth, Github, BadCredentialsException
 
 from . import pull_requests, repos, commits, issues, db, users, search
 
@@ -27,20 +27,21 @@ def create_app(test_config=None):
             200,
         )
 
-    @app.route("/github-token", methods=["POST"])
-    def github_token():
-        token = request.get_json()["access_token"]
-        return jsonify({"message": "Token Retrieved from Frontend"}), 200
-
     @app.route("/github-activity", methods=["GET"])
     def github_activity():
         token = request.args.get("token")
-        user = request.args.get("user").lower()
+        user = request.args.get("user")
 
         auth = Auth.Token(token)
-        g = Github(auth=auth)
+        gh = Github(auth=auth)
 
-        user = g.get_user(user)
+        if user is None:
+            return jsonify({"message": "No user provided"}), 400
+
+        try:
+            user = gh.get_user(user.lower())
+        except BadCredentialsException:
+            return jsonify({"message": "Invalid token"}), 401
         events = user.get_events()
 
         activity_map = {}
@@ -58,13 +59,22 @@ def create_app(test_config=None):
     @app.route("/github-activity-day", methods=["GET"])
     def github_activity_day():
         token = request.args.get("token")
-        user = request.args.get("user").lower()
+        user = request.args.get("user")
         date = request.args.get("date")
 
-        auth = Auth.Token(token)
-        g = Github(auth=auth)
+        if user is None:
+            return jsonify({"message": "No user provided"}), 400
 
-        user = g.get_user(user)
+        if date is None:
+            return jsonify({"message": "No date provided"}), 400
+
+        auth = Auth.Token(token)
+        gh = Github(auth=auth)
+
+        try:
+            user = gh.get_user(user.lower())
+        except BadCredentialsException:
+            return jsonify({"message": "Invalid token"}), 401
         events = user.get_events()
 
         events_list = []

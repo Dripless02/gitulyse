@@ -33,16 +33,20 @@ backend-test:
     - echo "Installing dependencies..."
     - cd src/backend
     - pip install -q -r requirements.txt
+    - pip install -q pytest-cov
     - pip install -q -e .
     - echo "Dependencies installed."
   script:
     - echo "Running backend tests..."
-    - pytest --junitxml=report.xml
+    - pytest --cov --cov-report term --cov-report xml:coverage.xml
     - echo "Backend tests complete."
+  coverage: '/TOTAL.*\s+(\d+%)$/'
   artifacts:
     when: always
     reports:
-      junit: src/backend/report.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: src/backend/coverage.xml
 
 build-job:
   stage: build
