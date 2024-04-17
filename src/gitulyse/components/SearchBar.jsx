@@ -115,7 +115,7 @@ const SearchBar = ({ userCompare, setUserCompare, dialogStatus, dialogOpen }) =>
     return (
         <Combobox withinPortal={false} store={combobox}>
             <Combobox.Target>
-                <Group gap="sm" className="pr-3 bg-blue-600/65 rounded-l-3xl rounded-r-2xl">
+                <Group wrap="nowrap" gap="sm" className="pr-3 bg-blue-600/65 rounded-l-3xl rounded-r-2xl">
                     <SegmentedControl
                         disabled={loading}
                         orientation="vertical"
@@ -125,11 +125,12 @@ const SearchBar = ({ userCompare, setUserCompare, dialogStatus, dialogOpen }) =>
                         onChange={setSearchType}
                         data={["Repo", "User"]}
                         className="border border-orange-500"
+                        w={75}
                     />
                     <TextInput
                         className="justify-center"
                         variant="filled"
-                        placeholder="Enter Repo URL..."
+                        placeholder={searchType === "Repo" ? "Search for a repository" : "Search for a user"}
                         size="xl"
                         radius="md"
                         value={value}

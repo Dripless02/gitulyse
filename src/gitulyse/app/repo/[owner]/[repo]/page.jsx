@@ -250,7 +250,7 @@ export default function RepoPage({ params }) {
                     <p className="mt-10 mb-10 text-5xl">
                         Info for {owner}/{repo}
                     </p>
-                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-4 2xl:grid-cols-2">
                         {dropzones.map((item, index) => (
                             <div key={index} className="flex">
                                 <div className="flex-1">
