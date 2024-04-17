@@ -14,11 +14,11 @@ const UserComparePage = ({ params }) => {
     const [userTwoInfo, setUserTwoInfo] = useState({});
     const [userOneChartData, setUserOneChartData] = useState({});
     const [userTwoChartData, setUserTwoChartData] = useState({});
+    const [largestChartValue, setLargestChartValue] = useState(0)
 
     const [isLoadingUserOne, { close: disableLoadingUserOne }] = useDisclosure(true);
     const [isLoadingUserTwo, { close: disableLoadingUserTwo }] = useDisclosure(true);
     const [overallLoading, setOverallLoading] = useState(true);
-
     useEffect(() => {
         async function getInfo() {
             const info = await getSession();
@@ -74,6 +74,14 @@ const UserComparePage = ({ params }) => {
     }, [userOneInfo, userTwoInfo]);
 
     useEffect(() => {
+        if (userOneChartData.largest?.number > userTwoChartData.largest?.number) {
+            setLargestChartValue(userOneChartData.largest?.number)
+        } else {
+            setLargestChartValue(userTwoChartData.largest?.number)
+        }
+    }, [userOneChartData, userTwoChartData])
+
+    useEffect(() => {
         if (!isLoadingUserOne && !isLoadingUserTwo) {
             setOverallLoading(false);
         }
@@ -99,6 +107,7 @@ const UserComparePage = ({ params }) => {
                     userInfo={userOneInfo}
                     chartData={userOneChartData}
                     position="left"
+                    largest={largestChartValue}
                 />
 
                 <Divider orientation="vertical" size="xl" />
@@ -107,6 +116,7 @@ const UserComparePage = ({ params }) => {
                     userInfo={userTwoInfo}
                     chartData={userTwoChartData}
                     position="right"
+                    largest={largestChartValue}
                 />
             </Box>
         </Box>
