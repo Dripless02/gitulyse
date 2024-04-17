@@ -23,62 +23,60 @@ const Nav = () => {
     };
 
     return (
-        <nav className="flex-between w-full mb-15 pt-5">
-            <Link href="/" className="flex gap-2 flex-center">
-                <Image
-                    src="/assets/images/light-logo.png"
-                    alt="gitulyse logo"
-                    width={70}
-                    height={0}
-                    className="object-contain"
+        <nav className="w-full mb-15 pt-5 flex justify-between items-center">
+            <div className="flex items-center">
+                <Link href="/" className="flex items-center gap-2">
+                    <Image
+                        src="/assets/images/light-logo.png"
+                        alt="gitulyse logo"
+                        width={70}
+                        height={50}
+                        className="object-contain"
+                    />
+                    <p className="logo_text">Gitulyse</p>
+                </Link>
+            </div>
+            <div className="flex ml-56 items-center justify-center flex-grow">
+                <SearchBar
+                    className="justify-content-center"
+                    userCompare={userCompare}
+                    setUserCompare={setUserCompare}
+                    dialogOpen={userCompareDialogOpen}
+                    dialogStatus={userCompareDialogOpened}
+                    dialogClose={userCompareDialogClose}
                 />
-                <p className="logo_text">Gitulyse</p>
-            </Link>
-            <div className="sm:flex items-center">
+            </div>
+            <div className="flex items-center">
                 {session ? (
                     <>
+                        <UserCompareDialog
+                            users={userCompare}
+                            setUsers={setUserCompare}
+                            opened={userCompareDialogOpened}
+                            close={userCompareDialogClose}
+                        />
                         <div className="flex items-center gap-3 md:gap-5">
-                            <UserCompareDialog
-                                users={userCompare}
-                                setUsers={setUserCompare}
-                                opened={userCompareDialogOpened}
-                                close={userCompareDialogClose}
-                            />
-
-                            <SearchBar
-                                userCompare={userCompare}
-                                setUserCompare={setUserCompare}
-                                dialogOpen={userCompareDialogOpen}
-                                dialogStatus={userCompareDialogOpened}
-                                dialogClose={userCompareDialogClose}
-                            />
-                            <div className="flex items-center gap-3 md:gap-5 ">
-                                <button
-                                    type="button"
-                                    onClick={() => signOut()}
-                                    className="outline_btn"
-                                >
-                                    Sign Out
-                                </button>
-                                <div>
-                                    <Button onClick={toggleModal}>How?</Button>
-                                    <InfoModal opened={modalOpened} onClose={toggleModal} />
-                                </div>
-                                <p className="text-blue-600">{session.user.name}</p>
-                                <Link href={`/user/${session.login}`}>
-                                    <Image
-                                        src={`${session.user.image}`}
-                                        alt="profile picture"
-                                        width={50}
-                                        height={0}
-                                        className="rounded-full"
-                                    />
-                                </Link>
+                            <button type="button" onClick={() => signOut()} className="outline_btn">
+                                Sign Out
+                            </button>
+                            <div>
+                                <Button onClick={toggleModal}>How?</Button>
+                                <InfoModal opened={modalOpened} onClose={toggleModal} />
                             </div>
+                            <p className="text-blue-600">{session.user.name}</p>
+                            <Link href={`/user/${session.login}`}>
+                                <Image
+                                    src={`${session.user.image}`}
+                                    alt="profile picture"
+                                    width={50}
+                                    height={50}
+                                    className="rounded-full"
+                                />
+                            </Link>
                         </div>
                     </>
                 ) : (
-                    <div className="flex gap-3 md:gap-5">
+                    <div className="">
                         <button type="button" onClick={() => signIn()} className="outline_btn">
                             Sign In
                         </button>
@@ -90,3 +88,4 @@ const Nav = () => {
 };
 
 export default Nav;
+
