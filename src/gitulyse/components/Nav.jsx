@@ -1,21 +1,21 @@
 "use client";
-import { signIn, signOut, useSession } from "next-auth/react";
-import { Button } from "@mantine/core";
-import { useState } from "react";
+import {signIn, signOut, useSession} from "next-auth/react";
+import {Button} from "@mantine/core";
+import {useState} from "react";
 import Image from "next/image";
 import Link from "next/link";
 import InfoModal from "@/components/infoModal";
 import SearchBar from "@/components/SearchBar";
 import UserCompareDialog from "@/components/UserCompareDialog";
-import { useDisclosure } from "@mantine/hooks";
+import {useDisclosure} from "@mantine/hooks";
 
 const Nav = () => {
-    const { data: session } = useSession();
+    const {data: session} = useSession();
     const [modalOpened, setModalOpened] = useState(false);
     const [userCompare, setUserCompare] = useState([]);
     const [
         userCompareDialogOpened,
-        { open: userCompareDialogOpen, close: userCompareDialogClose },
+        {open: userCompareDialogOpen, close: userCompareDialogClose},
     ] = useDisclosure(false);
 
     const toggleModal = () => {
@@ -36,53 +36,51 @@ const Nav = () => {
                     <p className="logo_text">Gitulyse</p>
                 </Link>
             </div>
-            <div className="flex ml-56 items-center justify-center flex-grow">
-                <SearchBar
-                    className="justify-content-center"
-                    userCompare={userCompare}
-                    setUserCompare={setUserCompare}
-                    dialogOpen={userCompareDialogOpen}
-                    dialogStatus={userCompareDialogOpened}
-                    dialogClose={userCompareDialogClose}
-                />
-            </div>
-            <div className="flex items-center">
-                {session ? (
-                    <>
-                        <UserCompareDialog
-                            users={userCompare}
-                            setUsers={setUserCompare}
-                            opened={userCompareDialogOpened}
-                            close={userCompareDialogClose}
+            {session ? (
+                <>
+                    <div className="flex ml-56 items-center justify-center flex-grow">
+                        <SearchBar
+                            className="justify-content-center"
+                            userCompare={userCompare}
+                            setUserCompare={setUserCompare}
+                            dialogOpen={userCompareDialogOpen}
+                            dialogStatus={userCompareDialogOpened}
+                            dialogClose={userCompareDialogClose}
                         />
-                        <div className="flex items-center gap-3 md:gap-5">
-                            <button type="button" onClick={() => signOut()} className="outline_btn">
-                                Sign Out
-                            </button>
-                            <div>
-                                <Button onClick={toggleModal}>How?</Button>
-                                <InfoModal opened={modalOpened} onClose={toggleModal} />
-                            </div>
-                            <p className="text-blue-600">{session.user.name}</p>
-                            <Link href={`/user/${session.login}`}>
-                                <Image
-                                    src={`${session.user.image}`}
-                                    alt="profile picture"
-                                    width={50}
-                                    height={50}
-                                    className="rounded-full"
-                                />
-                            </Link>
-                        </div>
-                    </>
-                ) : (
-                    <div className="">
-                        <button type="button" onClick={() => signIn()} className="outline_btn">
-                            Sign In
-                        </button>
                     </div>
-                )}
-            </div>
+                    <UserCompareDialog
+                        users={userCompare}
+                        setUsers={setUserCompare}
+                        opened={userCompareDialogOpened}
+                        close={userCompareDialogClose}
+                    />
+                    <div className="flex items-center gap-3 md:gap-5">
+                        <button type="button" onClick={() => signOut()} className="outline_btn">
+                            Sign Out
+                        </button>
+                        <div>
+                            <Button onClick={toggleModal}>How?</Button>
+                            <InfoModal opened={modalOpened} onClose={toggleModal}/>
+                        </div>
+                        <p className="text-blue-600">{session.user.name}</p>
+                        <Link href={`/user/${session.login}`}>
+                            <Image
+                                src={`${session.user.image}`}
+                                alt="profile picture"
+                                width={50}
+                                height={50}
+                                className="rounded-full"
+                            />
+                        </Link>
+                    </div>
+                </>
+            ) : (
+                <div className="">
+                    <button type="button" onClick={() => signIn()} className="outline_btn">
+                        Sign In
+                    </button>
+                </div>
+            )}
         </nav>
     );
 };
