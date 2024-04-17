@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Center, Loader, Text, Timeline } from "@mantine/core";
+import { Center, Loader, Text, Timeline, ScrollArea } from "@mantine/core";
 
 const GitTimeline = ({ userAccessToken, user, date }) => {
     const [commits, setCommits] = useState();
@@ -17,26 +17,28 @@ const GitTimeline = ({ userAccessToken, user, date }) => {
     }, [BACKEND_URL, date, user, userAccessToken]);
 
     return (
-        <div style={{ maxHeight: "600px", overflowY: "auto", overflowX: "hidden" }}>
+        <div>
             {commits && commits.length ? (
-                <Timeline active={commits && commits.length} lineWidth={6}>
-                    {commits &&
-                        parseEvents(commits)
-                            .reverse()
-                            .map((event) => (
-                                <Timeline.Item
-                                    key={event.created_at}
-                                    color={event.color}
-                                    title={event.title}
-                                    label={event.label}
-                                >
-                                    <Text size="sm">{event.message}</Text>
-                                    <Text size="xs" c="dimmed">
-                                        {event.created_at}
-                                    </Text>
-                                </Timeline.Item>
-                            ))}
-                </Timeline>
+                <ScrollArea h={600} scrollbars="y">
+                    <Timeline active={commits && commits.length} lineWidth={5}>
+                        {commits &&
+                            parseEvents(commits)
+                                .reverse()
+                                .map((event) => (
+                                    <Timeline.Item
+                                        key={event.created_at}
+                                        color={event.color}
+                                        title={event.title}
+                                        label={event.label}
+                                    >
+                                        <Text size="sm">{event.message}</Text>
+                                        <Text size="xs" c="dimmed">
+                                            {event.created_at}
+                                        </Text>
+                                    </Timeline.Item>
+                                ))}
+                    </Timeline>
+                </ScrollArea>
             ) : (
                 <Center>
                     <Loader color="blue" size={50} />
