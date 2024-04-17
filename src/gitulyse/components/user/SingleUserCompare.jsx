@@ -6,7 +6,7 @@ import ContributionChart from "@/components/user/ContributionChart";
 import { getRepoData } from "@/components/user/utils";
 import ExtraUserInfo from "@/components/user/ExtraUserInfo";
 
-const SingleUserCompare = ({ position, userInfo, chartData }) => {
+const SingleUserCompare = ({ position, userInfo, chartData, largest }) => {
     useEffect(() => {
         console.log("chartData", chartData);
     }, [chartData]);
@@ -24,10 +24,8 @@ const SingleUserCompare = ({ position, userInfo, chartData }) => {
     }, [repoData, userInfo]);
 
     useEffect(() => {
-        console.log("userInfo", userInfo);
-        console.log("chartData", chartData);
-        console.log("repoData", repoData);
-    }, [userInfo, chartData, repoData]);
+        console.log(largest)
+    }, [largest]);
 
     return (
         <Box
@@ -37,7 +35,7 @@ const SingleUserCompare = ({ position, userInfo, chartData }) => {
 
             <ContributionChart
                 data={chartData.chartData}
-                largest={chartData.largest?.number || 0}
+                largest={largest}
                 userInfo={userInfo}
                 singleUser={true}
             />
