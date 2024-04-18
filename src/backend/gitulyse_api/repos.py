@@ -30,13 +30,16 @@ def get_repos():
     repos = user.get_repos(sort="updated")
     if (
             user.login in all_db_repos.list_collection_names()
-            and force != "true"
+            and (force != "true" or force is None)
             and last_update_doc is not None
     ):
         last_updated = last_update_doc["timestamp"]
         time_diff = current_date_time - last_updated
         if time_diff > 21600:
             force = "true"
+
+    if last_update_doc is None:
+        force = "true"
 
     repo_list = []
     if user.login not in all_db_repos.list_collection_names() or force == "true":
@@ -47,8 +50,12 @@ def get_repos():
             }
 
             try:
-                repo_info["commit_count"] = repo.get_commits(author=user.login).totalCount
+                commits = repo.get_commits(author=user.login)
+                repo_info["commit_count"] = commits.totalCount
+                repo_info["last_commit"] = commits[0].commit.author.date
             except GithubException:
+                repo_info["commit_count"] = 0
+            except IndexError:
                 repo_info["commit_count"] = 0
 
             repo_list.append(repo_info)
@@ -71,6 +78,9 @@ def get_repos():
         repo_list = list(
             db_user_repos.find({"name": {"$ne": "last_update"}}, {"_id": 0})
         )
+
+    repo_list = sorted(repo_list, key=lambda x: x.get("last_commit", user.created_at).timestamp(), reverse=True)
+
     if limit is not None:
         return jsonify({"repos": repo_list[: int(limit)]})
     else:
