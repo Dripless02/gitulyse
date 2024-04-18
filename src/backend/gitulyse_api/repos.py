@@ -5,7 +5,7 @@ from github import Auth, Github, GithubException, BadCredentialsException
 
 from .db import get_db
 
-bp = Blueprint('repos', __name__)
+bp = Blueprint("repos", __name__)
 
 
 @bp.route("/get-repos", methods=["GET"])
@@ -29,9 +29,9 @@ def get_repos():
 
     repos = user.get_repos(sort="updated")
     if (
-            user.login in all_db_repos.list_collection_names()
-            and (force != "true" or force is None)
-            and last_update_doc is not None
+        user.login in all_db_repos.list_collection_names()
+        and (force != "true" or force is None)
+        and last_update_doc is not None
     ):
         last_updated = last_update_doc["timestamp"]
         time_diff = current_date_time - last_updated
@@ -79,7 +79,11 @@ def get_repos():
             db_user_repos.find({"name": {"$ne": "last_update"}}, {"_id": 0})
         )
 
-    repo_list = sorted(repo_list, key=lambda x: x.get("last_commit", user.created_at).timestamp(), reverse=True)
+    repo_list = sorted(
+        repo_list,
+        key=lambda x: x.get("last_commit", user.created_at).timestamp(),
+        reverse=True,
+    )
 
     if limit is not None:
         return jsonify({"repos": repo_list[: int(limit)]})
@@ -126,10 +130,12 @@ def get_repo_stats():
     contributors = repo.get_contributors()
     contributors_list = []
     for contributor in contributors:
-        contributors_list.append({
-            "login": contributor.login,
-            "contributions": contributor.contributions,
-        })
+        contributors_list.append(
+            {
+                "login": contributor.login,
+                "contributions": contributor.contributions,
+            }
+        )
 
     stats["contributors"] = contributors_list
 
