@@ -1,10 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
+import { Loader } from "@mantine/core";
 
 export default function IssueTracking({ userAccessToken, owner, repo }) {
     const [data, setData] = useState([]);
     const [averageTimeToResolve, setAverageTimeToResolve] = useState(0);
+    const [loading, setLoading] = useState(true);
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
     useEffect(() => {
@@ -16,6 +18,7 @@ export default function IssueTracking({ userAccessToken, owner, repo }) {
                 const { issues, average_time_to_resolve } = data;
                 setData(issues);
                 setAverageTimeToResolve(average_time_to_resolve);
+                setLoading(false);
             });
     }, [userAccessToken, BACKEND_URL, owner, repo]);
 
@@ -61,17 +64,26 @@ export default function IssueTracking({ userAccessToken, owner, repo }) {
     return (
         <div className="mt-3 flex flex-col items-center">
             <p className="mb-4 text-2xl">Issue Tracking</p>
-            <div>
-                <p>Average Time to Resolve Issues: {formatTime(averageTimeToResolve)}</p>
-                <AreaChart width={600} height={300} data={data}>
-                    <CartesianGrid strokeDasharray="3 4" />
-                    <XAxis dataKey="issue_number" />
-                    <YAxis tickFormatter={(value) => largestFormatTime(value)} />
-                    <Tooltip formatter={(value) => formatTime(value)} />
-                    <Legend />
-                    <Area type="monotone" dataKey="time_to_close.total_seconds" stackId="1" stroke="#8884d8" fill="#8884d8" name="Time to Resolve" />
-                </AreaChart>
-            </div>
+            {loading ? (
+                <Loader />
+            ) : (
+                data.length !== 0 ? (
+                    <div>
+                        <p>Average Time to Resolve Issues: {formatTime(averageTimeToResolve)}</p>
+                        <AreaChart width={600} height={300} data={data}>
+                            <CartesianGrid strokeDasharray="3 4"/>
+                            <XAxis dataKey="issue_number"/>
+                            <YAxis tickFormatter={(value) => largestFormatTime(value)}/>
+                            <Tooltip formatter={(value) => formatTime(value)}/>
+                            <Legend/>
+                            <Area type="monotone" dataKey="time_to_close.total_seconds" stackId="1" stroke="#8884d8"
+                                  fill="#8884d8" name="Time to Resolve"/>
+                        </AreaChart>
+                    </div>
+                ) : (
+                    <p>No issues found</p>
+                )
+            )}
         </div>
     );
 }
