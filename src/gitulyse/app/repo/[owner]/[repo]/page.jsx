@@ -5,7 +5,7 @@ import IssueTracking from "@/components/repo/IssueTracking";
 import PullRequests from "@/components/repo/PullRequests";
 import PercentagePullrequests from "@/components/repo/PercentagePullrequests";
 import PercentageIssues from "@/components/repo/PercentageIssues";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -20,8 +20,15 @@ import {
 } from "@tabler/icons-react";
 import { Group, Loader, ScrollArea, Stack, Text, Title } from "@mantine/core";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function RepoPage({ params }) {
+    const { status } = useSession()
+    const router = useRouter();
+    if (status === "unauthenticated") {
+        router.push("/");
+    }
+
     const owner = params.owner;
     const repo = params.repo;
     const startDate = params.startDate;

@@ -2,11 +2,18 @@
 import { getChartData } from "@/components/user/utils";
 import { Box, Center, Divider, LoadingOverlay, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import SingleUserCompare from "@/components/user/SingleUserCompare";
+import { useRouter } from "next/navigation";
 
 const UserComparePage = ({ params }) => {
+    const { status } = useSession()
+    const router = useRouter();
+    if (status === "unauthenticated") {
+        router.push("/");
+    }
+
     const { user: user_one, user_two } = params;
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
     const [userAccessToken, setUserAccessToken] = useState("");
@@ -86,6 +93,8 @@ const UserComparePage = ({ params }) => {
             setOverallLoading(false);
         }
     }, [isLoadingUserOne, isLoadingUserTwo]);
+
+
 
     return (
         <Box className="max-w-full mt-6" pos="relative">
