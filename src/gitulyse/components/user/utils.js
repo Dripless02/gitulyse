@@ -104,11 +104,8 @@ export const getColour = (index) => {
     // https://gist.github.com/mucar/3898821?permalink_comment_id=4069073#gistcomment-4069073
     const colours = [
         "#FF0000",
-        "#00FF00",
         "#0000FF",
-        "#FFFF00",
         "#FF00FF",
-        "#00FFFF",
         "#FFA500",
         "#800080",
         "#008000",

@@ -125,7 +125,7 @@ const SearchBar = ({ userCompare, setUserCompare, dialogStatus, dialogOpen }) =>
                         onChange={setSearchType}
                         data={["Repo", "User"]}
                         className="border border-orange-500"
-                        w={75}
+                        w={85}
                     />
                     <TextInput
                         className="justify-center"

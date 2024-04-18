@@ -1,21 +1,21 @@
 "use client";
-import {signIn, signOut, useSession} from "next-auth/react";
-import {Button} from "@mantine/core";
-import {useState} from "react";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { Button } from "@mantine/core";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import InfoModal from "@/components/infoModal";
 import SearchBar from "@/components/SearchBar";
 import UserCompareDialog from "@/components/UserCompareDialog";
-import {useDisclosure} from "@mantine/hooks";
+import { useDisclosure } from "@mantine/hooks";
 
 const Nav = () => {
-    const {data: session} = useSession();
+    const { data: session } = useSession();
     const [modalOpened, setModalOpened] = useState(false);
     const [userCompare, setUserCompare] = useState([]);
     const [
         userCompareDialogOpened,
-        {open: userCompareDialogOpen, close: userCompareDialogClose},
+        { open: userCompareDialogOpen, close: userCompareDialogClose },
     ] = useDisclosure(false);
 
     const toggleModal = () => {
@@ -62,8 +62,8 @@ const Nav = () => {
                             <Button onClick={toggleModal}>How?</Button>
                             <InfoModal opened={modalOpened} onClose={toggleModal}/>
                         </div>
-                        <p className="text-blue-600">{session.user.name}</p>
-                        <Link href={`/user/${session.login}`}>
+                        <Link href={`/user/${session.login}`} className="flex items-center gap-3 md:gap-5">
+                            <p className="text-blue-600">{session.user.name}</p>
                             <Image
                                 src={`${session.user.image}`}
                                 alt="profile picture"
