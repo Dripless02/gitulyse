@@ -18,7 +18,7 @@ const UserCompareDialog = ({ users, setUsers, opened, close }) => {
             </Text>
             <Stack align="stretch">
                 {users.map((user) => (
-                    <Group gap="sm" justify="space-between" fullWidth key={user}>
+                    <Group gap="sm" justify="space-between" key={user}>
                         <Text>{user}</Text>
                         <Button
                             variant="filled"
