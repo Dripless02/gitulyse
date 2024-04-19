@@ -114,7 +114,11 @@ const SearchBar = ({ userCompare, setUserCompare, dialogStatus, dialogOpen }) =>
     return (
         <Combobox withinPortal={false} store={combobox}>
             <Combobox.Target>
-                <Group wrap="nowrap" gap="sm" className="pr-3 bg-blue-600/65 rounded-l-3xl rounded-r-2xl">
+                <Group
+                    wrap="nowrap"
+                    gap="sm"
+                    className="pr-3 bg-blue-600/65 rounded-l-3xl rounded-r-2xl"
+                >
                     <SegmentedControl
                         disabled={loading}
                         orientation="vertical"
@@ -129,7 +133,9 @@ const SearchBar = ({ userCompare, setUserCompare, dialogStatus, dialogOpen }) =>
                     <TextInput
                         className="justify-center"
                         variant="filled"
-                        placeholder={searchType === "Repo" ? "Search for a repository" : "Search for a user"}
+                        placeholder={
+                            searchType === "Repo" ? "Search for a repository" : "Search for a user"
+                        }
                         size="xl"
                         radius="md"
                         value={value}
@@ -146,6 +152,11 @@ const SearchBar = ({ userCompare, setUserCompare, dialogStatus, dialogOpen }) =>
                             }
                         }}
                         onBlur={() => combobox.closeDropdown()}
+                        onKeyPress={(e) => {
+                            if (e.key === "Enter") {
+                                fetchOptions(value);
+                            }
+                        }}
                         rightSection={loading && <Loader size={18} />}
                     />
                 </Group>
