@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@/testing-utils/test-utils";
 import "@/testing-utils/resizeObserverMock";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import UserComparePage from "@/app/user/[user]/[user_two]/page";
 
 jest.mock("next-auth/react", () => ({
@@ -101,6 +101,8 @@ describe("UserComparePage Component", () => {
                 });
             }
         });
+
+        useSession.mockReturnValue({ status: "authenticated" });
 
         render(<UserComparePage params={{ user: "mock_user", user_two: "mock_user" }} />);
         await waitFor(() => {

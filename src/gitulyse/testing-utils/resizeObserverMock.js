@@ -1,10 +1,15 @@
 class ResizeObserverMock {
     observe() {
-      // Do nothing
+        // Do nothing
     }
+
     disconnect() {
-      // Do nothing
+        // Do nothing
     }
-  }
+
+    unobserve() {
+        // Do nothing
+    }
+}
 
 global.ResizeObserver = ResizeObserverMock;
