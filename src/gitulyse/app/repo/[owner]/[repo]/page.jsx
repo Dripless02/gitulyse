@@ -16,7 +16,7 @@ import {
     IconGitPullRequestDraft,
     IconLanguage,
     IconStar,
-    IconUser
+    IconUser,
 } from "@tabler/icons-react";
 import { Group, Loader, ScrollArea, Stack, Text, Title } from "@mantine/core";
 import Link from "next/link";
@@ -264,18 +264,6 @@ export default function RepoPage({ params }) {
                         Info for {owner}/{repo}
                     </p>
                     <div className="grid grid-cols-1 gap-4 2xl:grid-cols-2">
-                        {/*{dropzones.map((item, index) => (*/}
-                        {/*    <div key={index} className="flex">*/}
-                        {/*        <div className="flex-1">*/}
-                        {/*            <DropZone*/}
-                        {/*                onDrop={(itemName) => handleDrop(itemName, index)}*/}
-                        {/*                index={index}*/}
-                        {/*            >*/}
-                        {/*                {item && renderItem(item)}*/}
-                        {/*            </DropZone>*/}
-                        {/*        </div>*/}
-                        {/*    </div>*/}
-                        {/*))}*/}
                         <div className="flex">
                             <div className="flex-1">
                                 {useMemo(
@@ -287,7 +275,7 @@ export default function RepoPage({ params }) {
                                             {dropzone_1 && renderItem(dropzone_1)}
                                         </DropZone>
                                     ),
-                                    [dropzone_1],
+                                    [dropzone_1, renderItem],
                                 )}
                             </div>
                         </div>
@@ -302,7 +290,7 @@ export default function RepoPage({ params }) {
                                             {dropzone_2 && renderItem(dropzone_2)}
                                         </DropZone>
                                     ),
-                                    [dropzone_2,
+                                    [dropzone_2, renderItem],
                                 )}
                             </div>
                         </div>
@@ -317,7 +305,7 @@ export default function RepoPage({ params }) {
                                             {dropzone_3 && renderItem(dropzone_3)}
                                         </DropZone>
                                     ),
-                                    [dropzone_3]
+                                    [dropzone_3, renderItem],
                                 )}
                             </div>
                         </div>
@@ -332,7 +320,7 @@ export default function RepoPage({ params }) {
                                             {dropzone_4 && renderItem(dropzone_4)}
                                         </DropZone>
                                     ),
-                                    [dropzone_4]
+                                    [dropzone_4, renderItem],
                                 )}
                             </div>
                         </div>
