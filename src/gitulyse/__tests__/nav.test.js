@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen } from "@/testing-utils/test-utils";
 import Nav from "@/components/Nav";
-import { signIn, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 // Mock next-auth/react
 jest.mock("next-auth/react", () => ({
@@ -36,21 +36,36 @@ describe("Nav component", () => {
         expect(signIn).toHaveBeenCalled();
     });
 
-    // test("calls sign out function when sign out button is clicked", () => {
-    //     useSession.mockReturnValueOnce({
-    //         status: "authenticated",
-    //     });
-    //     render(<Nav />);
-    //     expect(screen.getByText("Sign Out")).toBeInTheDocument();
-    //     fireEvent.click(screen.getByText("Sign Out"));
-    //     expect(signOut).toHaveBeenCalled();
-    // });
+    test("calls sign out function when sign out button is clicked", () => {
+        useSession.mockReturnValue({
+            data: {
+                user: {
+                    name: "mock_user",
+                    image: "https://avatars.githubusercontent.com/u/38259057?v=4",
+                },
+                accessToken: "gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+                login: "mock_user",
+            },
+        });
+        render(<Nav />);
+        expect(screen.getByText("Sign Out")).toBeInTheDocument();
+        fireEvent.click(screen.getByText("Sign Out"));
+        expect(signOut).toHaveBeenCalled();
+    });
 
-    // test('toggles modal when "How?" button is clicked', () => {
-    //     useSession.mockReturnValue({
-    //         status: "authenticated",
-    //     });
-    //     render(<Nav />);
-    //     fireEvent.click(screen.getByText("How?"));
-    // });
+    test('toggles modal when "How?" button is clicked', () => {
+        useSession.mockReturnValue({
+            data: {
+                user: {
+                    name: "mock_user",
+                    image: "https://avatars.githubusercontent.com/u/38259057?4",
+                },
+                accessToken: "gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+                login: "mock_ur",
+            },
+        });
+        render(<Nav />);
+        fireEvent.click(screen.getByText("How?"));
+        expect(screen.getByText(/How we calculate/i)).toBeInTheDocument();
+    });
 });
