@@ -1,10 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from "recharts";
+import React, { useEffect, useState } from "react";
+
+import { Bar, BarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from "recharts";
+import { Loader } from "@mantine/core";
 
 export default function PullRequests({ userAccessToken, owner, repo }) {
     const [pullRequests, setPullRequests] = useState([]);
     const [timeToMergeData, setTimeToMergeData] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
@@ -17,6 +20,7 @@ export default function PullRequests({ userAccessToken, owner, repo }) {
             .then((res) => res.json())
             .then((data) => {
                 setPullRequests(data.pull_requests);
+                setLoading(false);
             });
     }, [userAccessToken, BACKEND_URL, owner, repo]);
 
@@ -72,17 +76,22 @@ export default function PullRequests({ userAccessToken, owner, repo }) {
         <div className="mt-3 flex flex-col items-center">
             <p className="mb-4 text-2xl">Time to Merge Pull requests</p>
 
-            {pullRequests.length > 0 && (
-                <BarChart width={600} height={300} data={timeToMergeData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" tickFormatter={(value) => `PR ${value}`} />
-                    <YAxis tickFormatter={(value) => largestFormatTime(value)}/>
-                    <Tooltip formatter={(value) => formatTime(value)} />
-                    <Legend />
-                    <Bar dataKey="time_to_merge" fill="#8884d8" name="Time to Merge" />
-                </BarChart>
+            {loading ? (
+                <Loader />
+            ) : (
+                pullRequests.length !== 0 ? (
+                    <BarChart width={600} height={300} data={timeToMergeData}>
+                        <CartesianGrid strokeDasharray="3 3"/>
+                        <XAxis dataKey="name" tickFormatter={(value) => `PR ${value}`}/>
+                        <YAxis tickFormatter={(value) => largestFormatTime(value)}/>
+                        <Tooltip formatter={(value) => formatTime(value)}/>
+                        <Legend/>
+                        <Bar dataKey="time_to_merge" fill="#8884d8" name="Time to Merge"/>
+                    </BarChart>
+                ) : (
+                    <p>No pull requests found</p>
+                )
             )}
-
         </div>
     );
 }

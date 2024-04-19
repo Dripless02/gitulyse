@@ -2,11 +2,18 @@
 import { getChartData } from "@/components/user/utils";
 import { Box, Center, Divider, LoadingOverlay, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import SingleUserCompare from "@/components/user/SingleUserCompare";
+import { useRouter } from "next/navigation";
 
 const UserComparePage = ({ params }) => {
+    const { status } = useSession()
+    const router = useRouter();
+    if (status === "unauthenticated") {
+        router.push("/");
+    }
+
     const { user: user_one, user_two } = params;
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
     const [userAccessToken, setUserAccessToken] = useState("");
@@ -14,11 +21,11 @@ const UserComparePage = ({ params }) => {
     const [userTwoInfo, setUserTwoInfo] = useState({});
     const [userOneChartData, setUserOneChartData] = useState({});
     const [userTwoChartData, setUserTwoChartData] = useState({});
+    const [largestChartValue, setLargestChartValue] = useState(0)
 
     const [isLoadingUserOne, { close: disableLoadingUserOne }] = useDisclosure(true);
     const [isLoadingUserTwo, { close: disableLoadingUserTwo }] = useDisclosure(true);
     const [overallLoading, setOverallLoading] = useState(true);
-
     useEffect(() => {
         async function getInfo() {
             const info = await getSession();
@@ -74,10 +81,20 @@ const UserComparePage = ({ params }) => {
     }, [userOneInfo, userTwoInfo]);
 
     useEffect(() => {
+        if (userOneChartData.largest?.number > userTwoChartData.largest?.number) {
+            setLargestChartValue(userOneChartData.largest?.number)
+        } else {
+            setLargestChartValue(userTwoChartData.largest?.number)
+        }
+    }, [userOneChartData, userTwoChartData])
+
+    useEffect(() => {
         if (!isLoadingUserOne && !isLoadingUserTwo) {
             setOverallLoading(false);
         }
     }, [isLoadingUserOne, isLoadingUserTwo]);
+
+
 
     return (
         <Box className="max-w-full mt-6" pos="relative">
@@ -99,6 +116,7 @@ const UserComparePage = ({ params }) => {
                     userInfo={userOneInfo}
                     chartData={userOneChartData}
                     position="left"
+                    largest={largestChartValue}
                 />
 
                 <Divider orientation="vertical" size="xl" />
@@ -107,6 +125,7 @@ const UserComparePage = ({ params }) => {
                     userInfo={userTwoInfo}
                     chartData={userTwoChartData}
                     position="right"
+                    largest={largestChartValue}
                 />
             </Box>
         </Box>

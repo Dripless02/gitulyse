@@ -41,8 +41,16 @@ def repos_setup(request, mock_db, mocker):
     else:
         num_user_repos = request.param
     mock_db.repos['mock_user'].insert_many([
-        {"name": "mock_user/test_repo1", "commit_count": 10},
-        {"name": "mock_user/test_repo2", "commit_count": 20},
+        {
+            "name": "mock_user/test_repo1",
+            "commit_count": 10,
+            "last_commit": datetime.fromtimestamp(1704067200)
+        },
+        {
+            "name": "mock_user/test_repo2",
+            "commit_count": 20,
+            "last_commit": datetime.fromtimestamp(1704067200)
+        },
     ])
     mock_db.repos['mock_user_2'].insert_many([
         {"name": "mock_user_2/test_repo", "commit_count": 10},
@@ -50,12 +58,17 @@ def repos_setup(request, mock_db, mocker):
     ])
 
     github_client_mock = mocker.Mock(spec=Github)
-    user_mock = mocker.Mock(login="mock_user")
+    user_mock = mocker.Mock(login="mock_user", created_at=datetime.fromtimestamp(1640995200))
     repos = []
+
     for i in range(num_user_repos):
         repo_mock = mocker.Mock(full_name=f"mock_user/test_repo{i + 1}")
-        repo_mock.get_commits.return_value = mocker.Mock(totalCount=(10 * (i + 1)))
+        commits_mock = mocker.MagicMock(totalCount=10 * (i + 1))
+        commits_mock.__getitem__.return_value = mocker.Mock(
+            commit=mocker.Mock(author=mocker.Mock(date=datetime.fromtimestamp(1704067200))))
+        repo_mock.get_commits.return_value = commits_mock
         repos.append(repo_mock)
+
     user_mock.get_repos.return_value = iter(repos)
     github_client_mock.get_user.return_value = user_mock
     mocker.patch('gitulyse_api.repos.Github', return_value=github_client_mock)

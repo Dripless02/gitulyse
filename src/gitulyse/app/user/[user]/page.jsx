@@ -1,14 +1,21 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { Center, Container, LoadingOverlay, Stack, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import ContributionChart from "@/components/user/ContributionChart";
 import BaseInfo from "@/components/user/BaseInfo";
 import RepoList from "@/components/user/RepoList";
 import { getChartData } from "@/components/user/utils";
+import { useRouter } from "next/navigation";
 
 export default function UserPage({ params }) {
+    const { status } = useSession()
+    const router = useRouter();
+    if (status === "unauthenticated") {
+        router.push("/");
+    }
+
     const user = params.user;
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
@@ -59,6 +66,7 @@ export default function UserPage({ params }) {
         setInfo();
     }, [rechartsData.length, userInfo]);
 
+
     return (
         <Container size="xl" pos="relative">
             <LoadingOverlay
@@ -67,7 +75,7 @@ export default function UserPage({ params }) {
                 overlayProps={{ radius: "sm", blur: 12 }}
             />
             <Stack className="mt-7" gap="xs" align="stretch" justify="space-between">
-                <BaseInfo userInfo={userInfo} />
+                <BaseInfo userInfo={userInfo}/>
 
                 <ContributionChart
                     data={rechartsData}
@@ -78,7 +86,7 @@ export default function UserPage({ params }) {
                 <Center mt="lg" mb="md">
                     <Title order={3}>Repositories</Title>
                 </Center>
-                <RepoList repos={userInfo.repos} />
+                <RepoList repos={userInfo.repos}/>
             </Stack>
         </Container>
     );

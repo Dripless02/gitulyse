@@ -1,3 +1,4 @@
+from datetime import datetime
 from time import time
 
 import pytest
@@ -5,8 +6,16 @@ from github import Github, GithubException
 
 expected_repos = {
     "repos": [
-        {"commit_count": 10, "name": "mock_user/test_repo1"},
-        {"commit_count": 20, "name": "mock_user/test_repo2"},
+        {
+            "commit_count": 10,
+            "name": "mock_user/test_repo1",
+            "last_commit": datetime.fromtimestamp(1704067200).strftime("%a, %d %b %Y %H:%M:%S GMT")
+        },
+        {
+            "commit_count": 20,
+            "name": "mock_user/test_repo2",
+            "last_commit": datetime.fromtimestamp(1704067200).strftime("%a, %d %b %Y %H:%M:%S GMT")
+        },
     ]
 }
 
@@ -31,7 +40,15 @@ def test_get_repos_limit_one(client, repos_setup):
     response = client.get("/get-repos?token=gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&limit=1")
 
     assert response.status_code == 200
-    assert response.json == {'repos': [{'commit_count': 10, 'name': 'mock_user/test_repo1'}]}
+    assert response.json == {
+        "repos": [
+            {
+                "commit_count": 10,
+                "name": "mock_user/test_repo1",
+                "last_commit": datetime.fromtimestamp(1704067200).strftime("%a, %d %b %Y %H:%M:%S GMT")
+            }
+        ]
+    }
 
 
 @pytest.mark.parametrize("repos_setup", [2], indirect=True)
@@ -47,14 +64,30 @@ def test_get_repos_force_true_extra_repo(client, repos_setup, mock_db):
     response = client.get("/get-repos?token=gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&force=true")
 
     assert response.status_code == 200
-    assert response.json == {'repos': [{'commit_count': 10, 'name': 'mock_user/test_repo1'},
-                                       {'commit_count': 20, 'name': 'mock_user/test_repo2'},
-                                       {'commit_count': 30, 'name': 'mock_user/test_repo3'}, ]}
+    assert response.json == {
+        "repos": [
+            {
+                "commit_count": 10,
+                "name": "mock_user/test_repo1",
+                "last_commit": datetime.fromtimestamp(1704067200).strftime("%a, %d %b %Y %H:%M:%S GMT")
+            },
+            {
+                "commit_count": 20,
+                "name": "mock_user/test_repo2",
+                "last_commit": datetime.fromtimestamp(1704067200).strftime("%a, %d %b %Y %H:%M:%S GMT")
+            },
+            {
+                "commit_count": 30,
+                "name": "mock_user/test_repo3",
+                "last_commit": datetime.fromtimestamp(1704067200).strftime("%a, %d %b %Y %H:%M:%S GMT")
+            },
+        ]
+    }
 
 
 @pytest.mark.parametrize("repos_setup", [2], indirect=True)
 def test_get_repos_last_update_doc_not_none(client, repos_setup, mock_db):
-    mock_db.repos['mock_user'].insert_one(
+    mock_db.repos["mock_user"].insert_one(
         {"name": "last_update", "total_repos": 10, "timestamp": 1700000000})
     response = client.get("/get-repos?token=gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 
@@ -64,8 +97,11 @@ def test_get_repos_last_update_doc_not_none(client, repos_setup, mock_db):
 
 @pytest.mark.parametrize("repos_setup", [2], indirect=True)
 def test_get_repos_last_update_doc_not_none_time_diff(client, repos_setup, mock_db):
-    mock_db.repos['mock_user'].insert_one(
-        {"name": "last_update", "total_repos": 10, "timestamp": time()})
+    mock_db.repos["mock_user"].insert_one({
+        "name": "last_update",
+        "total_repos": 10,
+        "timestamp": time()
+    })
     response = client.get("/get-repos?token=gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 
     assert response.status_code == 200
@@ -83,7 +119,7 @@ def test_get_repos_no_commits(client, mocker):
         repo_mock
     ]
     github_client_mock.get_user.return_value = user_mock
-    mocker.patch('gitulyse_api.repos.Github', return_value=github_client_mock)
+    mocker.patch("gitulyse_api.repos.Github", return_value=github_client_mock)
 
     response = client.get("/get-repos?token=gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     assert response.status_code == 200
@@ -106,7 +142,7 @@ def test_get_repo_stats(client, mocker):
     ]
 
     github_client_mock.get_repo.return_value = repo_mock
-    mocker.patch('gitulyse_api.repos.Github', return_value=github_client_mock)
+    mocker.patch("gitulyse_api.repos.Github", return_value=github_client_mock)
 
     response = client.get(
         "/get-repo-stats?token=gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&owner=mock_user&repo=test_repo")
