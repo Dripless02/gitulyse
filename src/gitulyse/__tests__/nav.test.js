@@ -1,12 +1,7 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@/testing-utils/test-utils";
 import Nav from "@/components/Nav";
-import { useSession, signIn, signOut, getSession } from "next-auth/react";
-import { useRouter } from "next/router";
-import mockRouter from "next-router-mock";
-
-// Mock useRouter to provide a minimal router object
-jest.mock("next/navigation", () => jest.requireActual("next-router-mock"));
+import { signIn, useSession } from "next-auth/react";
 
 // Mock next-auth/react
 jest.mock("next-auth/react", () => ({

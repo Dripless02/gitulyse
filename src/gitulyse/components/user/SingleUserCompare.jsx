@@ -7,27 +7,16 @@ import { getRepoData } from "@/components/user/utils";
 import ExtraUserInfo from "@/components/user/ExtraUserInfo";
 
 const SingleUserCompare = ({ position, userInfo, chartData }) => {
-    useEffect(() => {
-        console.log("chartData", chartData);
-    }, [chartData]);
-
     const [repoData, setRepoData] = useState({});
 
     useEffect(() => {
         if (Object.keys(userInfo).length === 0 || Object.keys(repoData).length !== 0) return;
-
         const setInfo = () => {
             setRepoData(getRepoData(userInfo.repo_contributions));
         };
 
         setInfo();
     }, [repoData, userInfo]);
-
-    useEffect(() => {
-        console.log("userInfo", userInfo);
-        console.log("chartData", chartData);
-        console.log("repoData", repoData);
-    }, [userInfo, chartData, repoData]);
 
     return (
         <Box

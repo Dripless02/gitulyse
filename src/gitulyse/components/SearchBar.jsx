@@ -95,7 +95,6 @@ const SearchBar = ({ userCompare, setUserCompare, dialogStatus, dialogOpen }) =>
                                 if (dialogStatus === false) {
                                     dialogOpen();
                                 }
-                                console.log(userCompare);
                             }}
                             className="hover:text-green-600"
                         />

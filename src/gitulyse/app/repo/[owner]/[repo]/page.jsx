@@ -24,8 +24,6 @@ import Link from "next/link";
 export default function RepoPage({ params }) {
     const owner = params.owner;
     const repo = params.repo;
-    const startDate = params.startDate;
-    const endDate = params.endDate;
 
     const [userAccessToken, setUserAccessToken] = useState("");
     const [dropzones, setDropzones] = useState(Array.from({ length: 4 }).fill(null));
@@ -139,8 +137,6 @@ export default function RepoPage({ params }) {
             case "Percentage Pull Requests":
                 return (
                     <PercentagePullrequests
-                        start_date={startDate}
-                        end_date={endDate}
                         owner={owner}
                         repo={repo}
                         userAccessToken={userAccessToken}
@@ -148,13 +144,7 @@ export default function RepoPage({ params }) {
                 );
             case "Percentage Issues":
                 return (
-                    <PercentageIssues
-                        start_date={startDate}
-                        end_date={endDate}
-                        owner={owner}
-                        repo={repo}
-                        userAccessToken={userAccessToken}
-                    />
+                    <PercentageIssues owner={owner} repo={repo} userAccessToken={userAccessToken} />
                 );
             default:
                 return null;

@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import GitTimeline from "@/components/GitTimeline";
 import { Popover } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
+// https://github.com/plouc/nivo/issues/2310#issuecomment-1552663752
 import dynamic from "next/dynamic";
+
 const ResponsiveCalendar = dynamic(
     () => import("@nivo/calendar").then((m) => m.ResponsiveCalendar),
     {

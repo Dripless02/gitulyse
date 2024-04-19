@@ -4,7 +4,7 @@ const nextJest = require("next/jest");
  * https://jestjs.io/docs/configuration
  */
 
-/** @type {import('jest').Config} */
+/** @type {import("jest").Config} */
 const createJestConfig = nextJest({
     dir: "./",
 });
