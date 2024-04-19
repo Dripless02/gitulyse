@@ -18,22 +18,22 @@ describe("Repos Component", () => {
         useSessionMocked.mockReturnValue({
             data: {
                 user: {
-                    name: "mock_user,
+                    name: "mock_user",
                 },
-                expires: new Date(Date.now() + 2 * 86400).toISOString(,
+                expires: new Date(Date.now() + 2 * 86400).toISOString(),
             },
             status: "authenticated",
-            update: jest.fn(,
+            update: jest.fn(),
         });
         const getSessionMocked = jest.mocked(getSession);
 
         getSessionMocked.mockReturnValue({
             user: {
-                name: "mock_user,
+                name: "mock_user",
             },
             expires: new Date(Date.now() + 2 * 86400).toISOString(),
             accessToken: "gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-            login: "mock_user,
+            login: "mock_user",
         });
     });
 
@@ -52,9 +52,12 @@ describe("Repos Component", () => {
                         Promise.resolve({
                             repos: [
                                 { commit_count: 10, name: "mock_user/test_repo1" },
-                                { commit_count: 20, name: "mock_user/test_repo2" }
-                            ]
-                        })
+                                {
+                                    commit_count: 20,
+                                    name: "mock_user/test_repo2",
+                                },
+                            ],
+                        }),
                 });
             }
         });
