@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from github import Auth, Github
+from github import Auth, Github, BadCredentialsException
 from github.StatsContributor import StatsContributor
 
 bp = Blueprint('commits', __name__)
@@ -51,10 +51,23 @@ def get_contributions_from_repo(token, owner, repo_name):
 @bp.route("/code-contribution-stats", methods=["GET"])
 def code_contribution_stats():
     token = request.args.get("token")
-    owner = request.args.get("owner").lower()
-    repo_name = request.args.get("repo").lower()
+    owner = request.args.get("owner")
+    repo_name = request.args.get("repo")
 
-    contributions = get_contributions_from_repo(token, owner, repo_name)
+    if owner is None or owner == "":
+        return jsonify({"message": "No owner provided"}), 400
+    else:
+        owner = owner.lower()
+
+    if repo_name is None or repo_name == "":
+        return jsonify({"message": "No repo provided"}), 400
+    else:
+        repo_name = repo_name.lower()
+
+    try:
+        contributions = get_contributions_from_repo(token, owner, repo_name)
+    except BadCredentialsException:
+        return jsonify({"message": "Invalid token"}), 401
 
     for month in contributions:
         for author in contributions[month]:

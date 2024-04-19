@@ -17,16 +17,6 @@ export const authOptions = {
     callbacks: {
         // send access token to the backend
         async signIn(user, access, profile) {
-            fetch(`${BACKEND_URL}/github-token`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    access_token: user.account.access_token,
-                }),
-            });
-
             return true;
         },
         async jwt({ token, user, account, profile }) {

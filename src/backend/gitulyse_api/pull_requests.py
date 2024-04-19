@@ -1,8 +1,9 @@
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timezone
 
 from flask import Blueprint, jsonify, request
-from github import Github, Auth
-from datetime import datetime, timedelta, timezone
+from github import Github, Auth, BadCredentialsException
+
 bp = Blueprint('pull_requests', __name__)
 
 
@@ -45,23 +46,41 @@ def parse_pull_request(pull_request):
     return pull_request_info
 
 
-
 @bp.route("/get-percentage-pull-requests", methods=["GET"])
 def get_percentage_pull_requests():
     token = request.args.get("token")
-    owner = request.args.get("owner").lower()
-    repo_name = request.args.get("repo").lower()
+    owner = request.args.get("owner")
+    repo_name = request.args.get("repo")
     start_date = request.args.get("start_date")
     end_date = request.args.get("end_date")
+
+    if owner is None or owner == "":
+        return jsonify({"message": "No owner provided"}), 400
+    else:
+        owner = owner.lower()
+
+    if repo_name is None or repo_name == "":
+        return jsonify({"message": "No repo provided"}), 400
+    else:
+        repo_name = repo_name.lower()
+
+    if start_date is None or start_date == "":
+        return jsonify({"message": "No start date provided"}), 400
+
+    if end_date is None or end_date == "":
+        return jsonify({"message": "No end date provided"}), 400
 
     start_date = datetime.strptime(start_date, '%Y-%m-%d').replace(tzinfo=timezone.utc)
     end_date = datetime.strptime(end_date, '%Y-%m-%d').replace(tzinfo=timezone.utc)
 
     repo = f"{owner}/{repo_name}"
 
-    g = Github(token)
+    gh = Github(token)
 
-    repo = g.get_repo(repo)
+    try:
+        repo = gh.get_repo(repo)
+    except BadCredentialsException:
+        return jsonify({"message": "Invalid token"}), 401
     pull_requests = repo.get_pulls(state="all", direction="asc")
 
     total_pull_requests = 0
@@ -72,9 +91,10 @@ def get_percentage_pull_requests():
         created_at = parsed_pull_request.get("created_at")
         merged_at = parsed_pull_request.get("merged_at")
 
-        if created_at is not None and created_at >= start_date and created_at <= end_date:
+        if created_at is not None and start_date.timestamp() <= created_at.timestamp() <= end_date.timestamp():
             total_pull_requests += 1
-            if parsed_pull_request.get("state") == "merged" and merged_at is not None and merged_at >= start_date and merged_at <= end_date:
+            if (parsed_pull_request.get("state") == "merged"
+                    and merged_at is not None and start_date.timestamp() <= merged_at.timestamp() <= end_date.timestamp()):
                 merged_pull_requests += 1
 
     if total_pull_requests > 0:
@@ -92,15 +112,28 @@ def get_percentage_pull_requests():
 @bp.route("/get-pull-requests", methods=["GET"])
 def get_pull_requests():
     token = request.args.get("token")
-    owner = request.args.get("owner").lower()
-    repo_name = request.args.get("repo").lower()
+    owner = request.args.get("owner")
+    repo_name = request.args.get("repo")
+
+    if owner is None or owner == "":
+        return jsonify({"message": "No owner provided"}), 400
+    else:
+        owner = owner.lower()
+
+    if repo_name is None or repo_name == "":
+        return jsonify({"message": "No repo provided"}), 400
+    else:
+        repo_name = repo_name.lower()
 
     repo = f"{owner}/{repo_name}"
 
     auth = Auth.Token(token)
-    g = Github(auth=auth)
+    gh = Github(auth=auth)
 
-    repo = g.get_repo(repo)
+    try:
+        repo = gh.get_repo(repo)
+    except BadCredentialsException:
+        return jsonify({"message": "Invalid token"}), 401
     pull_requests = repo.get_pulls(state="all", direction="asc")
     pull_request_list = []
     with ThreadPoolExecutor(max_workers=20) as executor:

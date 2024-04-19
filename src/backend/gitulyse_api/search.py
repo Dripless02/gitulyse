@@ -10,17 +10,18 @@ def search():
     query = request.args.get("query")
     search_type = request.args.get("type")
 
-    if query == "":
+    if query == "" or query is None:
         return jsonify({"message": "No query provided"}), 400
 
-    if search_type is None:
+    if search_type == "" or search_type is None:
         return jsonify({"message": "No type provided"}), 400
     else:
         search_type = search_type.lower()
 
+    auth = Auth.Token(token)
+    g = Github(auth=auth)
     try:
-        auth = Auth.Token(token)
-        g = Github(auth=auth)
+        _ = g.get_user().login
     except BadCredentialsException:
         return jsonify({"message": "Invalid token"}), 401
 

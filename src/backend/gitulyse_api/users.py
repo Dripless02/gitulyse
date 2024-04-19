@@ -2,6 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from time import time
 
+from dateutil.relativedelta import relativedelta
 from flask import Blueprint, jsonify, request
 from github import Auth, Github, BadCredentialsException, UnknownObjectException
 
@@ -14,7 +15,7 @@ bp = Blueprint('users', __name__)
 @bp.route("/get-user", methods=["GET"])
 def get_user():
     token = request.args.get("token")
-    user = request.args.get("user").lower()
+    user = request.args.get("user")
     force = request.args.get("force")
 
     db_client = get_db()
@@ -24,7 +25,7 @@ def get_user():
         g = Github(auth=auth)
 
         if user:
-            user = g.get_user(user)
+            user = g.get_user(user.lower())
         else:
             user = g.get_user()
     except BadCredentialsException:
@@ -68,7 +69,7 @@ def get_user():
 
 
 def clean_contributions(contributions, user_created_at):
-    user_created_at = user_created_at.replace(month=user_created_at.month - 1)
+    user_created_at = user_created_at - relativedelta(months=1)
     to_pop = []
     for month in contributions.keys():
         converted_month = datetime.strptime(month, "%Y-%m")
