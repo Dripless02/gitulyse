@@ -1,4 +1,5 @@
 import "@/testing-utils/matchMediaMock";
+import "@/testing-utils/resizeObserverMock";
 import { MantineProvider } from "@mantine/core";
 import { render } from "@testing-library/react";
 

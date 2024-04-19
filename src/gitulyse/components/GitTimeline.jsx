@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Center, Loader, Text, Timeline, ScrollArea } from "@mantine/core";
+import { Center, Loader, ScrollArea, Text, Timeline } from "@mantine/core";
 
 const GitTimeline = ({ userAccessToken, user, date }) => {
     const [commits, setCommits] = useState();
@@ -20,6 +20,9 @@ const GitTimeline = ({ userAccessToken, user, date }) => {
         <div>
             {commits && commits.length ? (
                 <ScrollArea h={600} scrollbars="y">
+                    <Text align="center" size="lg" mb="lg">
+                        {date}
+                    </Text>
                     <Timeline active={commits && commits.length} lineWidth={5}>
                         {commits &&
                             parseEvents(commits)
@@ -88,6 +91,7 @@ const parseEvents = (events) => {
                 parsed_event.color = "cyan";
                 parsed_event.label = "Forked";
                 parsed_event.message = `Forked ${event.repo}`;
+                parsed_event.title = event.payload.forkee.full_name;
                 break;
             case "PublicEvent":
                 parsed_event.color = "gray";
