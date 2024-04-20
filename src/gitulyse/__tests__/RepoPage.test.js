@@ -29,7 +29,10 @@ jest.mock("next-auth/react", () => ({
 }));
 
 describe("RepoPage Component", () => {
-    test("renders correctly", async () => {
+    beforeEach(() => {
+        jest.useFakeTimers();
+        global.fetch = jest.fn();
+
         getSession.mockResolvedValue({
             accessToken: "gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
             user: {
@@ -39,13 +42,13 @@ describe("RepoPage Component", () => {
             },
             login: "mock_user",
         });
+    });
 
-        global.fetch = jest.fn();
-
+    test("renders correctly", async () => {
         jest.spyOn(global, "fetch").mockImplementationOnce((url) => {
             if (
                 url.endsWith(
-                    "get-repo-stats?token=gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&owner=mock_user&repo=test_repo1",
+                    "/get-repo-stats?token=gho_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&owner=mock_user&repo=test_repo1",
                 )
             ) {
                 return Promise.resolve({

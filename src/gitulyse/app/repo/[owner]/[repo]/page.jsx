@@ -6,7 +6,7 @@ import PullRequests from "@/components/repo/PullRequests";
 import PercentagePullrequests from "@/components/repo/PercentagePullrequests";
 import PercentageIssues from "@/components/repo/PercentageIssues";
 import { getSession, useSession } from "next-auth/react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import {
@@ -140,39 +140,52 @@ export default function RepoPage({ params }) {
         }
     };
 
-    const renderItem = (item) => {
-        const { name } = item;
-        switch (name) {
-            case "Code Contributions":
-                return (
-                    <CodeContributions
-                        owner={owner}
-                        repo={repo}
-                        userAccessToken={userAccessToken}
-                    />
-                );
-            case "Pull Requests":
-                return <PullRequests owner={owner} repo={repo} userAccessToken={userAccessToken} />;
-            case "Issue Tracking":
-                return (
-                    <IssueTracking owner={owner} repo={repo} userAccessToken={userAccessToken} />
-                );
-            case "Percentage Pull Requests":
-                return (
-                    <PercentagePullrequests
-                        owner={owner}
-                        repo={repo}
-                        userAccessToken={userAccessToken}
-                    />
-                );
-            case "Percentage Issues":
-                return (
-                    <PercentageIssues owner={owner} repo={repo} userAccessToken={userAccessToken} />
-                );
-            default:
-                return null;
-        }
-    };
+    const renderItem = useCallback(
+        (item) => {
+            const { name } = item;
+            switch (name) {
+                case "Code Contributions":
+                    return (
+                        <CodeContributions
+                            owner={owner}
+                            repo={repo}
+                            userAccessToken={userAccessToken}
+                        />
+                    );
+                case "Pull Requests":
+                    return (
+                        <PullRequests owner={owner} repo={repo} userAccessToken={userAccessToken} />
+                    );
+                case "Issue Tracking":
+                    return (
+                        <IssueTracking
+                            owner={owner}
+                            repo={repo}
+                            userAccessToken={userAccessToken}
+                        />
+                    );
+                case "Percentage Pull Requests":
+                    return (
+                        <PercentagePullrequests
+                            owner={owner}
+                            repo={repo}
+                            userAccessToken={userAccessToken}
+                        />
+                    );
+                case "Percentage Issues":
+                    return (
+                        <PercentageIssues
+                            owner={owner}
+                            repo={repo}
+                            userAccessToken={userAccessToken}
+                        />
+                    );
+                default:
+                    return null;
+            }
+        },
+        [owner, repo, userAccessToken],
+    );
 
     return (
         <DndProvider backend={HTML5Backend}>
