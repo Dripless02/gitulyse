@@ -60,9 +60,12 @@ const Nav = () => {
                         </button>
                         <div>
                             <Button onClick={toggleModal}>How?</Button>
-                            <InfoModal opened={modalOpened} onClose={toggleModal}/>
+                            <InfoModal opened={modalOpened} onClose={toggleModal} />
                         </div>
-                        <Link href={`/user/${session.login}`} className="flex items-center gap-3 md:gap-5">
+                        <Link
+                            href={`/user/${session.login}`}
+                            className="flex items-center gap-3 md:gap-5"
+                        >
                             <p className="text-blue-600">{session.user.name}</p>
                             <Image
                                 src={`${session.user.image}`}
@@ -86,4 +89,3 @@ const Nav = () => {
 };
 
 export default Nav;
-

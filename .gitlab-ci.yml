@@ -1,8 +1,6 @@
 stages:
   - lint
   - test
-  - build
-  - deploy
 
 default:
   image: node
@@ -48,17 +46,20 @@ backend-test:
         coverage_format: cobertura
         path: src/backend/coverage.xml
 
-build-job:
-  stage: build
+frontend-test:
+  stage: test
   extends: .standard-rules
+  before_script:
+    - echo "Installing dependencies..."
+    - cd src/gitulyse
+    - npm i
+    - echo "Dependencies installed."
   script:
-    - echo "Compiling the code..."
-    - echo "Compile complete."
-
-deploy-job:
-  stage: deploy
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-  script:
-    - echo "Deploying application..."
-    - echo "Application successfully deployed."
+    - npm run test -- --ci --coverage
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+  artifacts:
+    when: always
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: src/gitulyse/coverage/cobertura-coverage.xml

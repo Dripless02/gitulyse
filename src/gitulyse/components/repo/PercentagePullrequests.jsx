@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import GaugeChart from "react-gauge-chart";
 import { Button } from "@mantine/core";
 
@@ -24,7 +24,6 @@ export default function PercentagePullrequests({ userAccessToken, owner, repo })
         fetch(`${BACKEND_URL}/get-percentage-pull-requests?${queryParams}`)
             .then((response) => response.json())
             .then((data) => {
-                console.log("Data received", data);
                 setPercentage(data.percentage_merged);
             })
             .catch((err) => console.error(err));
@@ -33,7 +32,6 @@ export default function PercentagePullrequests({ userAccessToken, owner, repo })
     const handleSubmit = (e) => {
         e.preventDefault();
         setFormSubmitted(true);
-        console.log("Fetching data");
     };
 
     return (

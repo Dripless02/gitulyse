@@ -4,7 +4,7 @@ const nextJest = require("next/jest");
  * https://jestjs.io/docs/configuration
  */
 
-/** @type {import('jest').Config} */
+/** @type {import("jest").Config} */
 const createJestConfig = nextJest({
     dir: "./",
 });
@@ -14,15 +14,14 @@ const config = {
     collectCoverage: true,
     coverageDirectory: "coverage",
     coverageProvider: "v8",
-    moduleDirectories: [
-      "node_modules",
-        "<rootDir>/"
-    ],
+    coverageReporters: ["html", "text", "text-summary", "cobertura"],
+    moduleDirectories: ["node_modules", "<rootDir>/"],
     moduleNameMapper: {
         "^@/(.*)/$": "<rootDir>/src/$1",
     },
-    setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+    setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
     testEnvironment: "jsdom",
+    transformIgnorePatterns: ["/node_modules/(?!(d3)/)"],
 };
 
 module.exports = createJestConfig(config);

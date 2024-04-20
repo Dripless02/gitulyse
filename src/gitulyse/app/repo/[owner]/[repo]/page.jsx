@@ -6,7 +6,7 @@ import PullRequests from "@/components/repo/PullRequests";
 import PercentagePullrequests from "@/components/repo/PercentagePullrequests";
 import PercentageIssues from "@/components/repo/PercentageIssues";
 import { getSession, useSession } from "next-auth/react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import {
@@ -23,7 +23,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function RepoPage({ params }) {
-    const { status } = useSession()
+    const { status } = useSession();
     const router = useRouter();
     if (status === "unauthenticated") {
         router.push("/");
@@ -31,11 +31,8 @@ export default function RepoPage({ params }) {
 
     const owner = params.owner;
     const repo = params.repo;
-    const startDate = params.startDate;
-    const endDate = params.endDate;
 
     const [userAccessToken, setUserAccessToken] = useState("");
-    // const [dropzones, setDropzones] = useState(Array.from({ length: 4 }).fill(null));
     const [dropzone_1, setDropzone_1] = useState(null);
     const [dropzone_2, setDropzone_2] = useState(null);
     const [dropzone_3, setDropzone_3] = useState(null);
@@ -125,9 +122,6 @@ export default function RepoPage({ params }) {
     };
 
     const handleDrop = (item, index) => {
-        // const newDropzones = [...dropzones];
-        // newDropzones[index] = { name: item.name };
-        // setDropzones(newDropzones);
         switch (index) {
             case 0:
                 setDropzone_1({ name: item.name });
@@ -146,48 +140,52 @@ export default function RepoPage({ params }) {
         }
     };
 
-
-    const renderItem = (item) => {
-        const { name } = item;
-        switch (name) {
-            case "Code Contributions":
-                return (
-                    <CodeContributions
-                        owner={owner}
-                        repo={repo}
-                        userAccessToken={userAccessToken}
-                    />
-                );
-            case "Pull Requests":
-                return <PullRequests owner={owner} repo={repo} userAccessToken={userAccessToken}/>;
-            case "Issue Tracking":
-                return (
-                    <IssueTracking owner={owner} repo={repo} userAccessToken={userAccessToken}/>
-                );
-            case "Percentage Pull Requests":
-                return (
-                    <PercentagePullrequests
-                        start_date={startDate}
-                        end_date={endDate}
-                        owner={owner}
-                        repo={repo}
-                        userAccessToken={userAccessToken}
-                    />
-                );
-            case "Percentage Issues":
-                return (
-                    <PercentageIssues
-                        start_date={startDate}
-                        end_date={endDate}
-                        owner={owner}
-                        repo={repo}
-                        userAccessToken={userAccessToken}
-                    />
-                );
-            default:
-                return null;
-        }
-    };
+    const renderItem = useCallback(
+        (item) => {
+            const { name } = item;
+            switch (name) {
+                case "Code Contributions":
+                    return (
+                        <CodeContributions
+                            owner={owner}
+                            repo={repo}
+                            userAccessToken={userAccessToken}
+                        />
+                    );
+                case "Pull Requests":
+                    return (
+                        <PullRequests owner={owner} repo={repo} userAccessToken={userAccessToken} />
+                    );
+                case "Issue Tracking":
+                    return (
+                        <IssueTracking
+                            owner={owner}
+                            repo={repo}
+                            userAccessToken={userAccessToken}
+                        />
+                    );
+                case "Percentage Pull Requests":
+                    return (
+                        <PercentagePullrequests
+                            owner={owner}
+                            repo={repo}
+                            userAccessToken={userAccessToken}
+                        />
+                    );
+                case "Percentage Issues":
+                    return (
+                        <PercentageIssues
+                            owner={owner}
+                            repo={repo}
+                            userAccessToken={userAccessToken}
+                        />
+                    );
+                default:
+                    return null;
+            }
+        },
+        [owner, repo, userAccessToken],
+    );
 
     return (
         <DndProvider backend={HTML5Backend}>
@@ -196,41 +194,41 @@ export default function RepoPage({ params }) {
                     <Title order={2} className="pb-3">
                         My Available Stats
                     </Title>
-                    <DraggableNavItem name="Pull Requests"/>
-                    <DraggableNavItem name="Code Contributions"/>
-                    <DraggableNavItem name="Issue Tracking"/>
-                    <DraggableNavItem name="Percentage Pull Requests"/>
-                    <DraggableNavItem name="Percentage Issues"/>
+                    <DraggableNavItem name="Pull Requests" />
+                    <DraggableNavItem name="Code Contributions" />
+                    <DraggableNavItem name="Issue Tracking" />
+                    <DraggableNavItem name="Percentage Pull Requests" />
+                    <DraggableNavItem name="Percentage Issues" />
                     {repoInfo ? (
                         <Stack align="flex-start" justify="flex-start">
                             <Title order={1}>Overall Stats</Title>
                             <Group>
-                                <IconStar stroke={2}/>
+                                <IconStar stroke={2} />
                                 <Text size="lg">Stars: {repoInfo?.stars}</Text>
                             </Group>
                             <Group>
-                                <IconGitFork stroke={2}/>
+                                <IconGitFork stroke={2} />
                                 <Text size="lg">Forks: {repoInfo?.forks}</Text>
                             </Group>
                             <Group>
-                                <IconEye stroke={2}/>
+                                <IconEye stroke={2} />
                                 <Text size="lg">Watchers: {repoInfo?.watchers}</Text>
                             </Group>
                             <Group>
-                                <IconGitPullRequest stroke={2}/>
+                                <IconGitPullRequest stroke={2} />
                                 <Text size="lg">
                                     Closed Pull Requests:{" "}
                                     {repoInfo?.pull_requests - repoInfo?.open_pull_requests}
                                 </Text>
                             </Group>
                             <Group>
-                                <IconGitPullRequestDraft stroke={2}/>
+                                <IconGitPullRequestDraft stroke={2} />
                                 <Text size="lg">
                                     Open Pull Requests: {repoInfo?.open_pull_requests}
                                 </Text>
                             </Group>
                             <Group justify="flex-start" align="flex-start">
-                                <IconLanguage stroke={2}/>
+                                <IconLanguage stroke={2} />
                                 <Stack>
                                     {repoInfo?.languages &&
                                         Object.entries(repoInfo?.languages)
@@ -245,7 +243,7 @@ export default function RepoPage({ params }) {
                                 </Stack>
                             </Group>
                             <Group justify="flex-start" align="flex-start">
-                                <IconUser stroke={2}/>
+                                <IconUser stroke={2} />
                                 <ScrollArea h={350}>
                                     <Stack>
                                         {repoInfo?.contributors
@@ -271,7 +269,7 @@ export default function RepoPage({ params }) {
                             </Group>
                         </Stack>
                     ) : (
-                        <Loader color="blue" size="xl"/>
+                        <Loader color="blue" size="xl" />
                     )}
                 </div>
                 <div className="mt-4 flex flex-col items-center">
@@ -279,64 +277,64 @@ export default function RepoPage({ params }) {
                         Info for {owner}/{repo}
                     </p>
                     <div className="grid grid-cols-1 gap-4 2xl:grid-cols-2">
-                        {/*{dropzones.map((item, index) => (*/}
-                        {/*    <div key={index} className="flex">*/}
-                        {/*        <div className="flex-1">*/}
-                        {/*            <DropZone*/}
-                        {/*                onDrop={(itemName) => handleDrop(itemName, index)}*/}
-                        {/*                index={index}*/}
-                        {/*            >*/}
-                        {/*                {item && renderItem(item)}*/}
-                        {/*            </DropZone>*/}
-                        {/*        </div>*/}
-                        {/*    </div>*/}
-                        {/*))}*/}
                         <div className="flex">
                             <div className="flex-1">
-                                {useMemo(() => (
-                                    <DropZone
-                                        onDrop={(itemName) => handleDrop(itemName, 0)}
-                                        index={0}
-                                    >
-                                        {dropzone_1 && renderItem(dropzone_1)}
-                                    </DropZone>
-                                ), [dropzone_1])}
+                                {useMemo(
+                                    () => (
+                                        <DropZone
+                                            onDrop={(itemName) => handleDrop(itemName, 0)}
+                                            index={0}
+                                        >
+                                            {dropzone_1 && renderItem(dropzone_1)}
+                                        </DropZone>
+                                    ),
+                                    [dropzone_1, renderItem],
+                                )}
                             </div>
                         </div>
                         <div className="flex">
                             <div className="flex-1">
-                                {useMemo(() => (
-                                    <DropZone
-                                        onDrop={(itemName) => handleDrop(itemName, 1)}
-                                        index={1}
-                                    >
-                                        {dropzone_2 && renderItem(dropzone_2)}
-                                    </DropZone>
-                                ), [dropzone_2])}
+                                {useMemo(
+                                    () => (
+                                        <DropZone
+                                            onDrop={(itemName) => handleDrop(itemName, 1)}
+                                            index={1}
+                                        >
+                                            {dropzone_2 && renderItem(dropzone_2)}
+                                        </DropZone>
+                                    ),
+                                    [dropzone_2, renderItem],
+                                )}
                             </div>
                         </div>
                         <div className="flex">
                             <div className="flex-1">
-                                {useMemo(() => (
-                                    <DropZone
-                                        onDrop={(itemName) => handleDrop(itemName, 2)}
-                                        index={2}
-                                    >
-                                        {dropzone_3 && renderItem(dropzone_3)}
-                                    </DropZone>
-                                ), [dropzone_3])}
+                                {useMemo(
+                                    () => (
+                                        <DropZone
+                                            onDrop={(itemName) => handleDrop(itemName, 2)}
+                                            index={2}
+                                        >
+                                            {dropzone_3 && renderItem(dropzone_3)}
+                                        </DropZone>
+                                    ),
+                                    [dropzone_3, renderItem],
+                                )}
                             </div>
                         </div>
                         <div className="flex">
                             <div className="flex-1">
-                                {useMemo(() => (
-                                    <DropZone
-                                        onDrop={(itemName) => handleDrop(itemName, 3)}
-                                        index={3}
-                                    >
-                                        {dropzone_4 && renderItem(dropzone_4)}
-                                    </DropZone>
-                                ), [dropzone_4])}
+                                {useMemo(
+                                    () => (
+                                        <DropZone
+                                            onDrop={(itemName) => handleDrop(itemName, 3)}
+                                            index={3}
+                                        >
+                                            {dropzone_4 && renderItem(dropzone_4)}
+                                        </DropZone>
+                                    ),
+                                    [dropzone_4, renderItem],
+                                )}
                             </div>
                         </div>
                     </div>

@@ -72,7 +72,6 @@ const Repos = () => {
                                 const dataTable = chartWrapper.getDataTable();
 
                                 const { row } = selectedItem;
-                                console.log(`'${dataTable.getValue(row, 0)}' selected`);
                                 router.push(`/repo/${dataTable.getValue(row, 0)}`);
                             }
                         },

@@ -7,10 +7,6 @@ import { getRepoData } from "@/components/user/utils";
 import ExtraUserInfo from "@/components/user/ExtraUserInfo";
 
 const SingleUserCompare = ({ position, userInfo, chartData, largest }) => {
-    useEffect(() => {
-        console.log("chartData", chartData);
-    }, [chartData]);
-
     const [repoData, setRepoData] = useState({});
 
     useEffect(() => {
@@ -22,10 +18,6 @@ const SingleUserCompare = ({ position, userInfo, chartData, largest }) => {
 
         setInfo();
     }, [repoData, userInfo]);
-
-    useEffect(() => {
-        console.log(largest)
-    }, [largest]);
 
     return (
         <Box
