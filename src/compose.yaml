@@ -5,8 +5,8 @@ services:
     container_name: gitulyse-db
     image: mongodb/mongodb-community-server:7.0.5-ubi8
     environment:
-      - MONGODB_INITDB_ROOT_USERNAME=user
-      - MONGODB_INITDB_ROOT_PASSWORD=pass
+      - MONGODB_INITDB_ROOT_USERNAME=${MONGODB_USERNAME}
+      - MONGODB_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
     ports:
       - "27017:27017"
     volumes:
@@ -20,7 +20,8 @@ services:
     depends_on:
       - database
     environment:
-      FLASK_DEBUG: "true"
+      - FLASK_DEBUG=true
+      - MONGODB_URL=mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@gitulyse-db:27017/
     volumes:
       - ./backend:/app
 
@@ -31,6 +32,11 @@ services:
       - "3000:3000"
     environment:
       - WATCHPACK_POLLING=true
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+      - NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
     depends_on:
       - backend
     volumes:
