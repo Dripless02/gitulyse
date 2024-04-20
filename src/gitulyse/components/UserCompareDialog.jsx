@@ -10,7 +10,6 @@ const UserCompareDialog = ({ users, setUsers, opened, close }) => {
             size="md"
             radius="md"
             withBorder
-            withCloseButton
             transitionProps={{ transition: "pop-bottom-right", duration: 200 }}
         >
             <Text align="center" weight={700} size="lg" mb={16}>
