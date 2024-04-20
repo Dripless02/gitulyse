@@ -14,6 +14,7 @@ const config = {
     collectCoverage: true,
     coverageDirectory: "coverage",
     coverageProvider: "v8",
+    coverageReporters: ["html", "text", "text-summary", "cobertura"],
     moduleDirectories: ["node_modules", "<rootDir>/"],
     moduleNameMapper: {
         "^@/(.*)/$": "<rootDir>/src/$1",
