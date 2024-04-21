@@ -1,30 +1,34 @@
-# CA400 template repo
+# Gitulyse
 
-This is a template for CA400 projects.
+Gitulyse is a comprehensive tool designed to analyse GitHub repositories and user data, providing insights and metrics
+essential for effective software development management. With its user-friendly interface and powerful features,
+Gitulyse offers a holistic view of project history, facilitating informed decision-making and optimisation of
+development workflows.
 
-## 1. Create your repo
+## How to run (Development)
 
-One person from your project team should fork this repo, then add other teammates as project members on GitLab.
+This project uses docker compose to run the development environment.
 
-## 2. Name your repo appropriately
+### Prerequisites
 
-The name of your project must be of the form `2024-ca400-XXXXXXX`, where "`XXXXXXX`"
-should be replaced with your usernames (e.g. `2024-ca400-sblott-pclarke`).
-**Note** that the year should be set as appropriate to your year of study. For example, in the
-2022/2023 academic year this would change to '2023-ca400-sblott-pclarke'), 
-in the 2023/2024 academic year this would change to '2024-ca400-sblott-pclarke'), etc. 
+- [Docker](https://docs.docker.com/engine/install/)
+- [Python 3.12](https://www.python.org/downloads/)
+- [Node.js 20.12.2 LTS](https://nodejs.org/en/download/)
+- [GitHub OAuth App Client ID and Secret](https://github.com/settings/developers)
 
-It is the *name of your repo* which matters (not the name of your project).
+### Steps
 
-You can change the name of your repo on GitLab under:
+To run the development environment, follow these steps:
 
-- Settings / General / Advanced / Change path
+1. Clone the repository
+2. Navigate to the src directory
+3. Create a `src/.env` file from the `src/.env.example` file
+4. Run the following command:
+    ```sh
+    docker compose up -d
+    ```
 
-It looks like this:
-
-![change-repo-path](./res/repo-change-path.png "Change repo path.")
-
-You should replace all of this file with a README describing your own project.
-
-## Additional resources
-
+5. To take down the dev environment, run the following command
+   ```sh
+   docker compose down
+   ```
