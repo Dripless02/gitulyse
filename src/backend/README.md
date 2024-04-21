@@ -1,46 +1,50 @@
-# Backend How To
+# Backend Development How To
 
 ## How to run dev server
 
-Before starting, ensure [Python](https://www.python.org/downloads/) is installed
+Before starting, ensure [Python](https://www.python.org/downloads/) is installed and that you have a MongoDB instance
+you can connect to.
 
-1. Navigate to the backend folder
-2. Optionally create a Python virtual environment
+1. Optionally create a Python virtual environment
     ```sh
     python -m venv venv
     ```
 
-3. Install the dependencies by running
+2. Install the dependencies by running
     ```sh
     pip install -r requirements.txt
     ```
 
-4. Create a `.env` file from the `.env.example` file and input your GitHub App client ID and secret
+3. Install the project to the virtual environment
+    ```sh
+    pip install -e .
+    ```
+
+4. Create a `.env` file from the `.env.example` file and input your MongoDB URI
 
 5. Run the backend.
     ```sh
     flask run --debug
     ```
 
-The backend will be running on [http://localhost:5000](http://localhost:5000)
+The API will be running on [http://localhost:5000](http://localhost:5000)
 
 ## How to run tests
 
-1. Navigate to the backend folder
-2. Optionally create a Python virtual environment
+1. Optionally create a Python virtual environment
     ```sh
     python -m venv venv
     ```
 
-3. Install the dependencies by running
+2. Install the dependencies by running
     ```sh
     pip install -r requirements.txt
     ```
-4. Install the project to the virtual environment
+3. Install the project to the virtual environment
     ```sh
     pip install -e .
     ```
-5. Run the tests
+4. Run the tests
     ```sh
     pytest
     ```

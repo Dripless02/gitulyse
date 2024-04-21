@@ -5,20 +5,18 @@
 - [Python](https://www.python.org/downloads/)
 - [Node.js](https://nodejs.org/en/download/)
 - [Docker](https://docs.docker.com/engine/install/)
+- [GitHub OAuth App Client ID and Secret](https://github.com/settings/developers)
 
 ## Steps
 
-1. Go to the frontend directory and create a `.env` file from the `.env.example` file and input your GitHub App client
-   ID and secret and a random string for the [NEXTAUTH_SECRET](https://next-auth.js.org/configuration/options#secret)
-2. Return to the src directory and run the following docker compose command to start the database, backend and frontend
-   server
+To run the development environment, follow these steps:
 
-```sh
-docker-compose up -d --build
-```
-
-3. To stop the servers, run the following docker compose command
-
-```sh
-docker-compose down
-```
+1. Create a `.env` file from the `.env.example` file
+2. Run the following command:
+    ```sh
+    docker compose up -d
+    ```
+3. To take down the dev environment, run the following command
+   ```sh
+   docker compose down
+   ```
